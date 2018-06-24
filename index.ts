@@ -1,6 +1,10 @@
 import * as Hapi from 'hapi';
 import * as socketio from 'socket.io';
 
+import { goodOptions } from './src/middleware/good-options';
+import { IoServer } from './src/models/io-server';
+import { SocketHandlers } from './src/models/socket-handlers';
+
 const server = new Hapi.Server({
     port: 3001
 });
@@ -8,23 +12,21 @@ const server = new Hapi.Server({
 server.route({
     path: '/',
     method: 'GET',
-    handler: () => {
-        return 'Hello World!';
+    handler: async () => {
+        return {
+            connecetdUsers: SocketHandlers.numConnected
+        };
     }
 });
 
 async function start() {
     try {
-        const io = socketio(server.listener);
-        io.on('connection', function (socket) {
-            socket.emit('Oh hii!');
-            socket.on('burp', function () {
-                socket.emit('Excuse you!');
-            });
-            socket.on('disconnect', function () {
-                console.log('user left me!');
-            });
+        await server.register({
+            plugin: require('good'),
+            options: goodOptions,
         });
+        const io = socketio(server.listener);
+        IoServer.start(io);
         await server.start();
     } catch (err) {
         console.log(err);
