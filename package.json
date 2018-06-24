@@ -1,0 +1,29 @@
+{
+  "name": "realtime",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --watch . --exec ts-node index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/hapi": "^17.0.12",
+    "@types/ioredis": "^3.2.9",
+    "@types/jasmine": "^2.8.8",
+    "@types/socket.io": "^1.4.36",
+    "jasmine": "^3.1.0",
+    "nodemon": "^1.17.5",
+    "ts-node": "^7.0.0",
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2"
+  },
+  "dependencies": {
+    "hapi": "^17.5.1",
+    "ioredis": "^3.2.2",
+    "socket.io": "^2.1.1"
+  }
+}
