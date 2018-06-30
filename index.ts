@@ -1,37 +1,16 @@
 import * as Hapi from 'hapi';
 import * as socketio from 'socket.io';
 
+import { QuizNamespaceCache } from './src/interfaces/quiz-namespace-cache';
 import { goodOptions } from './src/middleware/good-options';
 import { IoServer } from './src/models/io-server';
-import { QuizNamespace } from './src/models/quiz-namespace';
+import { registerRoutes } from './src/routes/register-routes';
 
 const server = new Hapi.Server({
     port: 3001
 });
 let ioServer: IoServer;
-const QuizNamespaces: { [quizId: string]: QuizNamespace } = {};
-
-server.route({
-    path: '/',
-    method: 'GET',
-    handler: async () => {
-        return {
-            connecetdUsers: ioServer.numConnected
-        };
-    }
-});
-
-server.route({
-    path: '/create-quiz-room',
-    method: 'POST',
-    handler: async (req) => {
-        const quizId: string = req.payload['quizId'];
-        const ns = ioServer.server.of(`/${quizId}`);
-        const quizNamespace = new QuizNamespace(quizId, ns);
-        QuizNamespaces[quizId] = quizNamespace;
-        quizNamespace.start();
-    }
-});
+const QuizNamespaces: QuizNamespaceCache = {};
 
 async function start() {
     try {
@@ -42,6 +21,7 @@ async function start() {
         const io = socketio(server.listener);
         ioServer = new IoServer(io);
         ioServer.start();
+        registerRoutes(server, QuizNamespaces, ioServer);
         await server.start();
     } catch (err) {
         console.log(err);
