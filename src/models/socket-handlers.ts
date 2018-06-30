@@ -1,16 +1,14 @@
 import * as socketio from 'socket.io';
 
-import disconnect from '../socket-handlers/disconnect';
+import { BaseSocketHandler } from './base-socket-handler';
 
-export class SocketHandlers {
-    public static numConnected = 0;
+export class QuizSocketHandlers extends BaseSocketHandler {
 
-    public static register(socket: socketio.Socket): void {
-        SocketHandlers.numConnected++;
-        console.log('a user connected');
-        socket.on('disconnect', () => {
-            SocketHandlers.numConnected--;
-            disconnect();
-        });
+    constructor() {
+        super();
+    }
+
+    public register(socket: socketio.Socket): void {
+        BaseSocketHandler.prototype.register(socket);
     }
 }
