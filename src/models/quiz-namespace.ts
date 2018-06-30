@@ -11,7 +11,7 @@ export class QuizNamespace implements Room {
     }
 
     public start(): void {
-        this.namespace.on('connect', this.socketHandlers.register);
+        this.namespace.on('connect', this.socketHandlers.register.bind(this.socketHandlers));
     }
 
     public quizId(): string {

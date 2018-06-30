@@ -11,7 +11,7 @@ export class IoServer implements Room {
     }
 
     public start(): void {
-        this.server.on('connect', this.socketHandlers.register);
+        this.server.on('connect', this.socketHandlers.register.bind(this.socketHandlers));
     }
 
     public get numConnected(): number {
