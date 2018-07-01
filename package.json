@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/boom": "^7.2.0",
     "@types/hapi": "^17.0.12",
     "@types/ioredis": "^3.2.9",
     "@types/jasmine": "^2.8.8",
@@ -25,6 +26,7 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
+    "boom": "^7.2.0",
     "good": "^8.1.1",
     "good-console": "^7.1.0",
     "good-squeeze": "^5.1.0",

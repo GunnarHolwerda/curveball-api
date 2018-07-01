@@ -1,3 +1,4 @@
+import * as Boom from 'boom';
 import * as hapi from 'hapi';
 import * as Joi from 'joi';
 
@@ -22,6 +23,52 @@ export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCac
             const quizNamespace = new QuizNamespace(quizId, ns);
             quizNamespaces[quizId] = quizNamespace;
             quizNamespace.start();
+        }
+    });
+
+    server.route({
+        path: '/{quizId}:connected',
+        method: 'GET',
+        handler: async (req) => {
+            const quizId: string = req.params['quizId'];
+            return {
+                connecetdUsers: quizNamespaces[quizId].numConnected
+            };
+        }
+    });
+
+    server.route({
+        path: '/{quizId}/question:emit',
+        method: 'POST',
+        handler: async (req) => {
+            const quizId: string = req.params['quizId'];
+            const quizNamespace = quizNamespaces[quizId];
+            quizNamespace.namespace.emit('question', req.payload);
+            return req.payload;
+        }
+    });
+
+    server.route({
+        path: '/{quizId}/results:emit',
+        method: 'POST',
+        handler: async (req) => {
+            const quizId: string = req.params['quizId'];
+            const quizNamespace = quizNamespaces[quizId];
+            quizNamespace.namespace.emit('results', req.payload);
+            return req.payload;
+        }
+    });
+
+    server.route({
+        path: '/{quizId}:destroy',
+        method: 'POST',
+        handler: async (req) => {
+            const quizId: string = req.params['quizId'];
+            if (!quizNamespaces.hasOwnProperty(quizId)) {
+                return Boom.notFound();
+            }
+            delete quizNamespaces[quizId];
+            return 'ok';
         }
     });
 }
