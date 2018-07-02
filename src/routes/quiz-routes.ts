@@ -23,6 +23,7 @@ export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCac
             const quizNamespace = new QuizNamespace(quizId, ns);
             quizNamespaces[quizId] = quizNamespace;
             quizNamespace.start();
+            return 'ok';
         }
     });
 
