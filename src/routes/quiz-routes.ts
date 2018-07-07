@@ -23,7 +23,9 @@ export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCac
             const quizNamespace = new QuizNamespace(quizId, ns);
             quizNamespaces[quizId] = quizNamespace;
             quizNamespace.start();
-            return 'ok';
+            return {
+                message: 'ok'
+            };
         }
     });
 
@@ -44,6 +46,9 @@ export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCac
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
             const quizNamespace = quizNamespaces[quizId];
+            if (!quizNamespaces.hasOwnProperty(quizId)) {
+                return Boom.notFound();
+            }
             quizNamespace.namespace.emit('question', req.payload);
             return req.payload;
         }
@@ -69,7 +74,9 @@ export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCac
                 return Boom.notFound();
             }
             delete quizNamespaces[quizId];
-            return 'ok';
+            return {
+                message: 'ok'
+            };
         }
     });
 }

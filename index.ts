@@ -7,7 +7,14 @@ import { IoServer } from './src/models/io-server';
 import { registerRoutes } from './src/routes/register-routes';
 
 const server = new Hapi.Server({
-    port: 3001
+    port: 3001,
+    routes: {
+        cors: {
+            origin: ['*'],
+            headers: ['Accept', 'Content-Type'],
+            additionalHeaders: ['X-Requested-With']
+        }
+    }
 });
 let ioServer: IoServer;
 const QuizNamespaces: QuizNamespaceCache = {};
