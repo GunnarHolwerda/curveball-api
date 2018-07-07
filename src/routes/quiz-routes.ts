@@ -81,8 +81,8 @@ export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCac
     });
 
     server.route({
-        path: '/quizzes/{quizId}:destroy',
-        method: 'POST',
+        path: '/quizzes/{quizId}',
+        method: 'DELETE',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
             if (!quizNamespaces.hasOwnProperty(quizId)) {
