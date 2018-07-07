@@ -8,7 +8,7 @@ import { QuizNamespace } from '../models/quiz-namespace';
 
 export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCache, ioServer: IoServer): void {
     server.route({
-        path: '/create-quiz-room',
+        path: '/quizzes',
         method: 'POST',
         options: {
             validate: {
@@ -24,13 +24,28 @@ export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCac
             quizNamespaces[quizId] = quizNamespace;
             quizNamespace.start();
             return {
-                message: 'ok'
+                quizId: quizNamespace.quizId
             };
         }
     });
 
     server.route({
-        path: '/{quizId}:connected',
+        path: '/quizzes/{quizId}',
+        method: 'GET',
+        handler: async (req) => {
+            const quizId: string = req.params['quizId'];
+            const quizNamespace = quizNamespaces[quizId];
+            if (!quizNamespaces.hasOwnProperty(quizId)) {
+                return Boom.notFound();
+            }
+            return {
+                quizId: quizNamespace.quizId
+            };
+        }
+    });
+
+    server.route({
+        path: '/quizzes/{quizId}:connected',
         method: 'GET',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
@@ -41,7 +56,7 @@ export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCac
     });
 
     server.route({
-        path: '/{quizId}/question:emit',
+        path: '/quizzes/{quizId}/question:emit',
         method: 'POST',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
@@ -55,7 +70,7 @@ export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCac
     });
 
     server.route({
-        path: '/{quizId}/results:emit',
+        path: '/quizzes/{quizId}/results:emit',
         method: 'POST',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
@@ -66,7 +81,7 @@ export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCac
     });
 
     server.route({
-        path: '/{quizId}:destroy',
+        path: '/quizzes/{quizId}:destroy',
         method: 'POST',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];

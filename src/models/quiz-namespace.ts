@@ -14,7 +14,7 @@ export class QuizNamespace implements Room {
         this.namespace.on('connect', this.socketHandlers.register.bind(this.socketHandlers));
     }
 
-    public quizId(): string {
+    public get quizId(): string {
         return this._quizId;
     }
 
