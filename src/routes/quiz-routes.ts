@@ -13,16 +13,23 @@ export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCac
         options: {
             validate: {
                 payload: Joi.object().required().keys({
-                    quizId: Joi.string().required().description('The quiz id to create the room for')
+                    quiz: Joi.object()
+                        .required()
+                        .keys({ quizId: Joi.string() })
+                        .requiredKeys(['quizId'])
+                        .unknown(true)
+                        .description('A newly begun quiz')
                 })
             }
         },
         handler: async (req) => {
-            const quizId: string = req.payload['quizId'];
+            const quiz = req.payload['quiz'];
+            const { quizId, title, potAmount } = quiz;
             const ns = ioServer.server.of(`/${quizId}`);
             const quizNamespace = new QuizNamespace(quizId, ns);
             quizNamespaces[quizId] = quizNamespace;
             quizNamespace.start();
+            ioServer.server.emit('start', { quizId, title, potAmount });
             return {
                 quizId: quizNamespace.quizId
             };
