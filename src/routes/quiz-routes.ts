@@ -4,6 +4,16 @@ import * as Joi from 'joi';
 
 import { IoServer } from '../models/io-server';
 import { QuizNamespace } from '../models/quiz-namespace';
+import { QuizCache } from '../models/quiz-cache';
+
+async function getNamespace(quizId: string, ioServer: IoServer): Promise<QuizNamespace | null> {
+    const quiz = await QuizCache.getQuiz(quizId);
+    if (!quiz) {
+        return null;
+    }
+    const namespace = ioServer.getNamespace(quizId);
+    return new QuizNamespace(namespace, quiz!);
+}
 
 export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
     server.route({
@@ -21,15 +31,15 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
                         })
                         .requiredKeys(['quizId'])
                         .options({ stripUnknown: true })
-                        .description('A newly begun quiz')
+                        .description('Create a new room for a quiz')
                 })
             }
         },
         handler: async (req) => {
             const quiz = req.payload['quiz'];
             const { quizId } = quiz;
-            const ns = ioServer.server.of(`/${quizId}`);
-            const quizNamespace = new QuizNamespace(quiz, ns);
+            const quizNamespace = new QuizNamespace(ioServer.getNamespace(quizId), quiz);
+            quizNamespace.start();
             ioServer.server.emit('start', quiz);
             return {
                 quizId: quizNamespace.quizId
@@ -42,13 +52,11 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
         method: 'GET',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
-            const quizNamespace = QuizNamespace.Get(quizId);
+            const quizNamespace = await QuizCache.getQuiz(quizId);
             if (!quizNamespace) {
                 return Boom.notFound();
             }
-            return {
-                quizId: quizNamespace.quizId
-            };
+            return { quizId };
         }
     });
 
@@ -57,8 +65,12 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
         method: 'GET',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
+            const quizNamespace = await getNamespace(quizId, ioServer);
+            if (quizNamespace === null) {
+                return Boom.notFound();
+            }
             return {
-                connecetdUsers: QuizNamespace.Get(quizId).numConnected
+                connecetdUsers: await quizNamespace.numConnected
             };
         }
     });
@@ -69,8 +81,8 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
             const eventType: string = req.params['eventType'];
-            const quizNamespace = QuizNamespace.Get(quizId);
-            if (!quizNamespace) {
+            const quizNamespace = await getNamespace(quizId, ioServer);
+            if (quizNamespace === null) {
                 return Boom.notFound();
             }
             quizNamespace.namespace.emit(eventType, req.payload);
@@ -91,12 +103,12 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
         method: 'DELETE',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
-            const quizNamespace = QuizNamespace.Get(quizId);
-            if (!quizNamespace) {
+            const quizNamespace = await getNamespace(quizId, ioServer);
+            if (quizNamespace === null) {
                 return Boom.notFound();
             }
             try {
-                quizNamespace.delete();
+                await quizNamespace.delete();
             } catch (e) {
                 return Boom.internal();
             }
