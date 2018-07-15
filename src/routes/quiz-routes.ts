@@ -56,27 +56,25 @@ export function quizRoutes(server: hapi.Server, quizNamespaces: QuizNamespaceCac
     });
 
     server.route({
-        path: '/quizzes/{quizId}/question:emit',
+        path: '/quizzes/{quizId}/{eventType}:emit',
         method: 'POST',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
+            const eventType: string = req.params['eventType'];
             const quizNamespace = quizNamespaces[quizId];
             if (!quizNamespaces.hasOwnProperty(quizId)) {
                 return Boom.notFound();
             }
-            quizNamespace.namespace.emit('question', req.payload);
+            quizNamespace.namespace.emit(eventType, req.payload);
             return req.payload;
-        }
-    });
-
-    server.route({
-        path: '/quizzes/{quizId}/results:emit',
-        method: 'POST',
-        handler: async (req) => {
-            const quizId: string = req.params['quizId'];
-            const quizNamespace = quizNamespaces[quizId];
-            quizNamespace.namespace.emit('results', req.payload);
-            return req.payload;
+        },
+        options: {
+            validate: {
+                params: {
+                    quizId: Joi.string().required().description('The id for the quiz to emit to'),
+                    eventType: Joi.string().allow(['question', 'results', 'winners']).required()
+                }
+            }
         }
     });
 
