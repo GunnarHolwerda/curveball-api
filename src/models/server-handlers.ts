@@ -1,13 +1,16 @@
 import * as socketio from 'socket.io';
 import { BaseSocketHandler } from './base-socket-handler';
-import { CbRedis } from './cb-redis';
+import { QuizCache } from './quiz-cache';
 
 export class ServerHandler extends BaseSocketHandler {
     public register(socket: socketio.Socket): void {
-        socket.on('disconnect', this.disconnect.bind(this));
-
-        CbRedis.instance.getQuizzes().then((quizzes) => {
+        super.register(socket);
+        QuizCache.getQuizzes().then((quizzes) => {
             socket.emit('active_quizzes', quizzes);
         });
+    }
+
+    protected get cachePrefix(): string {
+        return 'server';
     }
 }

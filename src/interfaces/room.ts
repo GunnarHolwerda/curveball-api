@@ -1,4 +1,8 @@
+import * as socketio from 'socket.io';
+
 export interface Room {
-    numConnected: number;
+    numConnected: Promise<number>;
+    namespace: socketio.Namespace;
     start(): void;
+    delete(): Promise<void>;
 }

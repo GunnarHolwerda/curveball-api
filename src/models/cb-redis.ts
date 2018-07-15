@@ -22,13 +22,4 @@ export class CbRedis {
     public get client(): Redis.Redis {
         return this.redisClient;
     }
-
-    public async addQuiz(quiz: { quizId: string, title: string, potAmount: number }): Promise<void> {
-        this.redisClient.rpush('quizzes', JSON.stringify(quiz));
-    }
-
-    public async getQuizzes(): Promise<Array<{ quizId: string, title: string, potAmount: number }>> {
-        const result = await this.redisClient.lrange('quizzes', 0, -1);
-        return result.map((r: string) => JSON.parse(r)) as Array<{ quizId: string, title: string, potAmount: number }>;
-    }
 }

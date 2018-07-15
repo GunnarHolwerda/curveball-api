@@ -8,7 +8,7 @@ export function registerRoutes(server: hapi.Server, ioServer: IoServer): void {
         method: 'GET',
         handler: async () => {
             return {
-                connecetdUsers: ioServer.numConnected
+                connecetdUsers: await ioServer.numConnected
             };
         }
     });
