@@ -1,13 +1,13 @@
 import * as socketio from 'socket.io';
 
 import { Room } from '../interfaces/room';
-import { BaseSocketHandler } from './base-socket-handler';
+import { ServerHandler } from './server-handlers';
 
 export class IoServer implements Room {
-    private socketHandlers: BaseSocketHandler;
+    private socketHandlers: ServerHandler;
 
     constructor(private _server: socketio.Server) {
-        this.socketHandlers = new BaseSocketHandler();
+        this.socketHandlers = new ServerHandler();
     }
 
     public start(): void {

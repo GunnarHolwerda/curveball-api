@@ -1,10 +1,11 @@
 import * as Hapi from 'hapi';
 import * as socketio from 'socket.io';
 
-import { QuizNamespaceCache } from './src/interfaces/quiz-namespace-cache';
 import { goodOptions } from './src/middleware/good-options';
 import { IoServer } from './src/models/io-server';
 import { registerRoutes } from './src/routes/register-routes';
+
+require('dotenv').config();
 
 const server = new Hapi.Server({
     port: 3001,
@@ -17,7 +18,6 @@ const server = new Hapi.Server({
     }
 });
 let ioServer: IoServer;
-const QuizNamespaces: QuizNamespaceCache = {};
 
 async function start() {
     try {
@@ -28,7 +28,7 @@ async function start() {
         const io = socketio(server.listener);
         ioServer = new IoServer(io);
         ioServer.start();
-        registerRoutes(server, QuizNamespaces, ioServer);
+        registerRoutes(server, ioServer);
         await server.start();
     } catch (err) {
         console.log(err);

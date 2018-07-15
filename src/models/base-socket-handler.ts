@@ -2,7 +2,7 @@ import * as socketio from 'socket.io';
 
 import disconnect from '../socket-handlers/disconnect';
 
-export class BaseSocketHandler {
+export abstract class BaseSocketHandler {
     private _numConnected = 0;
 
     public get numConnected(): number {
