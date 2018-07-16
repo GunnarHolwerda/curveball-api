@@ -1,21 +1,23 @@
 import * as socketio from 'socket.io';
 
 import { Room } from '../interfaces/room';
-import { BaseSocketHandler } from './base-socket-handler';
+import { ServerHandler } from './server-handlers';
+import { QuizCache } from './quiz-cache';
 
 export class IoServer implements Room {
-    private socketHandlers: BaseSocketHandler;
+    private socketHandlers: ServerHandler;
 
     constructor(private _server: socketio.Server) {
-        this.socketHandlers = new BaseSocketHandler();
+        this.socketHandlers = new ServerHandler();
     }
 
     public start(): void {
-        this.server.on('connect', this.socketHandlers.register.bind(this.socketHandlers));
-    }
-
-    public get numConnected(): number {
-        return this.socketHandlers.numConnected;
+        if (process.env.NODE_ENV === 'development') {
+            QuizCache.clear();
+        }
+        this.server.on('connect', (socket) => {
+            this.socketHandlers.register(socket);
+        });
     }
 
     public get server(): socketio.Server {
@@ -23,5 +25,23 @@ export class IoServer implements Room {
             throw new Error('Attempted to access server before server was started');
         }
         return this._server;
+    }
+
+    public getNamespace(namespace: string): socketio.Namespace {
+        return this._server.of(namespace);
+    }
+
+    public get numConnected(): Promise<number> {
+        return new Promise((res) => {
+            this._server.clients().clients((_: any, clients: Array<string>) => res(clients.length));
+        });
+    }
+
+    public get namespace(): socketio.Namespace {
+        return this.server.of('/');
+    }
+
+    public async delete(): Promise<void> {
+        this.server.close();
     }
 }

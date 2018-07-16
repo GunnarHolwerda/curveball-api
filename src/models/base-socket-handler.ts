@@ -1,22 +1,16 @@
 import * as socketio from 'socket.io';
 
-import disconnect from '../socket-handlers/disconnect';
-
-export class BaseSocketHandler {
-    private _numConnected = 0;
-
-    public get numConnected(): number {
-        return this._numConnected;
-    }
-
+export abstract class BaseSocketHandler {
     public register(socket: socketio.Socket): void {
-        this._numConnected++;
-        console.log('a user connected');
+        console.log(`User connected to ${this.cachePrefix}`);
         socket.on('disconnect', this.disconnect.bind(this));
     }
 
-    protected disconnect(): void {
-        this._numConnected--;
-        disconnect();
+    public async destroy(): Promise<any> { }
+
+    protected async disconnect(): Promise<void> {
+        console.table(`User disconnected from ${this.cachePrefix}`);
     }
+
+    protected abstract get cachePrefix(): string;
 }

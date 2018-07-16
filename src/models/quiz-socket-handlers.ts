@@ -4,11 +4,15 @@ import { BaseSocketHandler } from './base-socket-handler';
 
 export class QuizSocketHandlers extends BaseSocketHandler {
 
-    constructor() {
+    constructor(private quizId: string) {
         super();
     }
 
     public register(socket: socketio.Socket): void {
-        BaseSocketHandler.prototype.register(socket);
+        super.register(socket);
+    }
+
+    protected get cachePrefix(): string {
+        return this.quizId;
     }
 }
