@@ -1,6 +1,5 @@
 import * as Hapi from 'hapi';
 import * as socketio from 'socket.io';
-import * as fs from 'fs';
 
 import { goodOptions } from './src/middleware/good-options';
 import { IoServer } from './src/models/io-server';
@@ -8,14 +7,8 @@ import { registerRoutes } from './src/routes/register-routes';
 
 require('dotenv').config();
 
-const tls = {
-    key: fs.readFileSync(process.env.SSL_CERT_KEY!),
-    cert: fs.readFileSync(process.env.SSL_CERT_PATH!)
-};
-
 const server = new Hapi.Server({
     port: 3001,
-    tls,
     routes: {
         cors: {
             origin: ['*'],
