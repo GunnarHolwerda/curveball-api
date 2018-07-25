@@ -5,16 +5,15 @@ import { QuizSocketHandlers } from './quiz-socket-handlers';
 import { IQuiz } from './quiz';
 import { QuizCache } from './quiz-cache';
 
-export class QuizNamespace implements Room {
-    private socketHandlers: QuizSocketHandlers;
+export class QuizNamespace extends Room {
 
-    constructor(private _namespace: socketio.Namespace, private quiz: IQuiz) {
-        this.socketHandlers = new QuizSocketHandlers(this.quiz.quizId);
+    constructor(_namespace: socketio.Namespace, private quiz: IQuiz) {
+        super(_namespace, new QuizSocketHandlers(quiz.quizId));
     }
 
     public start(): void {
         QuizCache.addQuiz(this.quiz);
-        this.namespace.on('connect', this.socketHandlers.register.bind(this.socketHandlers));
+        super.start();
     }
 
     public get quizId(): string {
@@ -23,12 +22,8 @@ export class QuizNamespace implements Room {
 
     public get numConnected(): Promise<number> {
         return new Promise((res) => {
-            this.namespace.clients((_: any, clients: Array<string>) => res(clients.length));
+            this._namespace.clients((_: any, clients: Array<string>) => res(clients.length));
         });
-    }
-
-    public get namespace(): socketio.Namespace {
-        return this._namespace;
     }
 
     public async delete(): Promise<void> {
