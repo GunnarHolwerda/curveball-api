@@ -34,6 +34,7 @@
     "good-console": "^7.1.0",
     "good-squeeze": "^5.1.0",
     "hapi": "^17.5.1",
+    "hapi-auth-jwt2": "^8.1.0",
     "ioredis": "^3.2.2",
     "joi": "^13.4.0",
     "socket.io": "^2.1.1",

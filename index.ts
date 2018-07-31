@@ -18,13 +18,19 @@ const server = new Hapi.Server({
     // tls,
     routes: {
         cors: {
-            origin: ['*'],
-            headers: ['Accept', 'Content-Type'],
-            additionalHeaders: ['X-Requested-With']
+            origin: 'ignore'
         }
     }
 });
 let ioServer: IoServer;
+
+const validate = function (decoded: object): { isValid: boolean } {
+    if (decoded) {
+        return { isValid: true };
+    } else {
+        return { isValid: false };
+    }
+};
 
 async function start() {
     try {
@@ -32,6 +38,14 @@ async function start() {
             plugin: require('good'),
             options: goodOptions,
         });
+        await server.register(require('hapi-auth-jwt2'));
+        server.auth.strategy('jwt', 'jwt',
+            {
+                key: process.env.INTERNAL_SECRET!,
+                validate: validate,
+                verifyOptions: { algorithms: ['HS256'] }
+            });
+        server.auth.default('jwt');
         const io = socketio(server.listener);
         ioServer = new IoServer(io);
         ioServer.start();
