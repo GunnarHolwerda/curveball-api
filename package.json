@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jasmine-ts --config=tests/jasmine-api.json",
     "start": "nodemon --watch . --exec ts-node index.ts",
     "clean:images": "docker rmi $(docker images -qa -f 'dangling=true') || true ",
     "build:image": "npm run clean:images && docker build -t curveball/realtime ."
@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/boom": "^7.2.0",
     "@types/hapi": "^17.0.12",
     "@types/ioredis": "^3.2.9",
@@ -20,12 +21,19 @@
     "@types/joi": "^13.3.0",
     "@types/node": "^10.5.3",
     "@types/socket.io": "^1.4.36",
+    "@types/socket.io-client": "^1.4.32",
     "@types/socketio-jwt": "0.0.0",
+    "@types/uuid": "^3.4.3",
+    "axios": "^0.18.0",
     "jasmine": "^3.1.0",
+    "jasmine-spec-reporter": "^4.2.1",
+    "jasmine-ts": "^0.2.1",
     "nodemon": "^1.17.5",
+    "socket.io-client": "^2.1.1",
     "ts-node": "^7.0.0",
     "tslint": "^5.10.0",
-    "typescript": "^2.9.2"
+    "typescript": "^2.9.2",
+    "uuid": "^3.3.2"
   },
   "dependencies": {
     "boom": "^7.2.0",
