@@ -1,13 +1,17 @@
 import { ApiResources } from './api-resources';
 
-const jasmineSettings = require('../jasmine-api.json');
+const jasmineSettings: { config: { [key: string]: any } } = require('../jasmine-api.json');
 
 export class QuizResources extends ApiResources {
     constructor() {
-        super(jasmineSettings.testInternalToken);
+        super(jasmineSettings.config.testInternalToken);
     }
 
     createQuizRoom(quizId: string, title?: string, potAmount?: number): Promise<{ quizId: string }> {
-        return this.post<{ quizId: string }>(`/quizzes`, { quizId, title, potAmount });
+        return this.post<{ quizId: string }>(`/quizzes`, { quiz: { quizId, title, potAmount } });
+    }
+
+    getQuizRoom(quizId: string): Promise<{ quizId: string }> {
+        return this.get<{ quizId: string }>(`/quizzes/${quizId}`);
     }
 }

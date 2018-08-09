@@ -23,7 +23,6 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
             validate: {
                 payload: Joi.object().required().keys({
                     quiz: Joi.object()
-                        .required()
                         .keys({
                             quizId: Joi.string(),
                             title: Joi.string(),
