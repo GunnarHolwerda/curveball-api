@@ -13,5 +13,14 @@ export function registerRoutes(server: hapi.Server, ioServer: IoServer): void {
         }
     });
 
+    server.route({
+        path: '/health-check',
+        method: 'GET',
+        handler: () => 'ok',
+        options: {
+            auth: false
+        }
+    });
+
     quizRoutes(server, ioServer);
 }
