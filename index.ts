@@ -9,10 +9,13 @@ require('dotenv').config();
 
 let tls;
 if (process.env.SSL_CERT && process.env.SSL_KEY) {
+    console.log('SSL_CERT', process.env.SSL_CERT);
+    console.log('SSL_kEY', process.env.SSL_KEY);
     tls = {
-        key: fs.readFileSync(process.env.SSL_KEY!),
-        cert: fs.readFileSync(process.env.SSL_CERT!)
+        key: fs.readFileSync(process.env.SSL_KEY!, 'utf8'),
+        cert: fs.readFileSync(process.env.SSL_CERT!, 'utf8')
     };
+    console.log('tls', tls);
 }
 
 const server = new Hapi.Server({
