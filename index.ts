@@ -17,7 +17,8 @@ function createServer(): Hapi.Server {
             version: 'draft-11', // Let's Encrypt v2 You MUST change this to 'https://acme-v02.api.letsencrypt.org/directory' in production
             server: process.env.SSL_ISSUE_URL,
             agreeTos: true,
-            approveDomains: process.env.SSL_APPROVED_DOMAINS,
+            email: 'gunnarholwerda@gmail.com',
+            approveDomains: process.env.SSL_APPROVED_DOMAINS!.split(','),
             configDir: require('os').homedir() + '/realtime/etc',
             debug: true
         });
