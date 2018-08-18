@@ -13,7 +13,7 @@ function createServer(): Hapi.Server {
     let httpsServer: https.Server | undefined;
     let acmeResponder: any;
     if (useSsl) {
-        const greenlock = require('greenlock-hapi').create({
+        const greenlock = require('greenlock-express').create({
             version: 'draft-11',
             server: process.env.SSL_ISSUE_URL,
             agreeTos: true,
