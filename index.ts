@@ -1,64 +1,24 @@
 import * as Hapi from 'hapi';
 import * as socketio from 'socket.io';
-import * as https from 'https';
-
+// import * as fs from 'fs';
 import { goodOptions } from './src/middleware/good-options';
 import { IoServer } from './src/models/io-server';
 import { registerRoutes } from './src/routes/register-routes';
 
 require('dotenv').config();
 
-function createServer(): Hapi.Server {
-    const useSsl = !!process.env.SSL_ISSUE_URL || undefined;
-    let httpsServer: https.Server | undefined;
-    let acmeResponder: any;
-    if (useSsl) {
-        const greenlock = require('greenlock-express').create({
-            version: 'draft-11',
-            server: process.env.SSL_ISSUE_URL,
-            agreeTos: true,
-            email: 'gunnarholwerda@gmail.com',
-            approveDomains: process.env.SSL_APPROVED_DOMAINS!.split(','),
-            configDir: '/home/ec2-user/realtime/etc',
-            debug: true
-        });
-        acmeResponder = greenlock.middleware();
-        httpsServer = https.createServer(greenlock.httpsOptions).listen(443);
+const server = new Hapi.Server({
+    port: 3001,
+    routes: {
+        cors: {
+            origin: 'ignore'
+        }
     }
-
-    const hapiServer = new Hapi.Server({
-        port: useSsl ? undefined : 3001,
-        listener: useSsl ? httpsServer as any : undefined,
-        tls: useSsl,
-        autoListen: !useSsl,
-        // routes: {
-        //     cors: { origin: (process.env.ALLOWED_ORIGINS || '').split(',') }
-        // }
-        routes: { cors: { origin: 'ignore' } }
-    });
-
-    if (useSsl) {
-        hapiServer.route({
-            method: 'GET',
-            path: '/.well-known/acme-challenge',
-            handler: (request) => {
-                const req = request.raw.req;
-                const res = request.raw.res;
-                acmeResponder(req, res);
-            }
-        });
-    }
-    return hapiServer;
-}
-const server = createServer();
+});
 let ioServer: IoServer;
 
 const validate = function (decoded: object): { isValid: boolean } {
-    if (decoded) {
-        return { isValid: true };
-    } else {
-        return { isValid: false };
-    }
+    return { isValid: !!decoded };
 };
 
 async function start() {
