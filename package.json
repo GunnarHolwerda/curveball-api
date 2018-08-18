@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jasmine-ts --config=tests/jasmine-api.json",
     "start": "nodemon --watch . --exec ts-node index.ts",
+    "start:prod": "ts-node index.ts",
     "clean:images": "docker rmi $(docker images -qa -f 'dangling=true') || true ",
     "build:image": "npm run clean:images && docker build -t curveball/realtime ."
   },

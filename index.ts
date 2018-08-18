@@ -14,7 +14,7 @@ function createServer(): Hapi.Server {
     let acmeResponder: any;
     if (useSsl) {
         const greenlock = require('greenlock-hapi').create({
-            version: 'draft-11', // Let's Encrypt v2 You MUST change this to 'https://acme-v02.api.letsencrypt.org/directory' in production
+            version: 'draft-11',
             server: process.env.SSL_ISSUE_URL,
             agreeTos: true,
             email: 'gunnarholwerda@gmail.com',
