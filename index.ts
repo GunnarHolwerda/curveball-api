@@ -1,14 +1,23 @@
 import * as Hapi from 'hapi';
 import * as socketio from 'socket.io';
-// import * as fs from 'fs';
+import * as fs from 'fs';
 import { goodOptions } from './src/middleware/good-options';
 import { IoServer } from './src/models/io-server';
 import { registerRoutes } from './src/routes/register-routes';
 
 require('dotenv').config();
 
+let tls;
+if (process.env.SSL_CERT && process.env.SSL_KEY) {
+    tls = {
+        key: fs.readFileSync(process.env.SSL_KEY!),
+        cert: fs.readFileSync(process.env.SSL_CERT!)
+    };
+}
+
 const server = new Hapi.Server({
     port: 3001,
+    tls,
     routes: {
         cors: {
             origin: 'ignore'
