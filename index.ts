@@ -19,7 +19,7 @@ function createServer(): Hapi.Server {
             agreeTos: true,
             email: 'gunnarholwerda@gmail.com',
             approveDomains: process.env.SSL_APPROVED_DOMAINS!.split(','),
-            configDir: require('os').homedir() + '/realtime/etc',
+            configDir: '/home/ec2-user/realtime/etc',
             debug: true
         });
         acmeResponder = greenlock.middleware();
