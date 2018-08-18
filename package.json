@@ -42,7 +42,6 @@
     "good": "^8.1.1",
     "good-console": "^7.1.0",
     "good-squeeze": "^5.1.0",
-    "greenlock-express": "^2.4.3",
     "hapi": "^17.5.1",
     "hapi-auth-jwt2": "^8.1.0",
     "ioredis": "^3.2.2",
