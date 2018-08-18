@@ -8,6 +8,7 @@ ENV SSL_CERT_PATH /etc/ssl/private/cert.pem
 ENV SSL_CERT_KEY /etc/ssl/private/key.pem
 ENV JWT_SECRET sEcReT
 ENV INTERNAL_SECRET VerySecret
+ENV ALLOWED_ORIGINS http://localhost:4200
 COPY package*.json ./
 RUN npm install
 COPY . .

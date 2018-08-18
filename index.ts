@@ -1,6 +1,6 @@
 import * as Hapi from 'hapi';
 import * as socketio from 'socket.io';
-// import * as fs from 'fs';
+import * as https from 'https';
 
 import { goodOptions } from './src/middleware/good-options';
 import { IoServer } from './src/models/io-server';
@@ -8,20 +8,49 @@ import { registerRoutes } from './src/routes/register-routes';
 
 require('dotenv').config();
 
-// const tls = {
-//     key: fs.readFileSync(process.env.SSL_CERT_KEY!),
-//     cert: fs.readFileSync(process.env.SSL_CERT_PATH!)
-// };
-
-const server = new Hapi.Server({
-    port: 3001,
-    // tls,
-    routes: {
-        cors: {
-            origin: 'ignore'
-        }
+function createServer(): Hapi.Server {
+    const useSsl = !!process.env.SSL_ISSUE_URL || undefined;
+    let httpsServer: https.Server | undefined;
+    let acmeResponder: any;
+    if (useSsl) {
+        const greenlock = require('greenlock-hapi').create({
+            version: 'draft-11', // Let's Encrypt v2 You MUST change this to 'https://acme-v02.api.letsencrypt.org/directory' in production
+            server: process.env.SSL_ISSUE_URL,
+            agreeTos: true,
+            approveDomains: process.env.SSL_APPROVED_DOMAINS,
+            configDir: require('os').homedir() + '/realtime/etc',
+            debug: true
+        });
+        acmeResponder = greenlock.middleware();
+        httpsServer = https.createServer(greenlock.httpsOptions).listen(443);
     }
-});
+
+    const hapiServer = new Hapi.Server({
+        port: useSsl ? undefined : 3001,
+        listener: httpsServer ? undefined : httpsServer as any,
+        tls: useSsl,
+        autoListen: !useSsl,
+        // routes: {
+        //     cors: { origin: (process.env.ALLOWED_ORIGINS || '').split(',') }
+        // }
+        routes: { cors: { origin: 'ignore' } }
+    });
+
+    if (useSsl) {
+        hapiServer.route({
+            method: 'GET',
+            path: '/.well-known/acme-challenge',
+            handler: (request) => {
+                const req = request.raw.req;
+                const res = request.raw.res;
+
+                acmeResponder(req, res);
+            }
+        });
+    }
+    return hapiServer;
+}
+const server = createServer();
 let ioServer: IoServer;
 
 const validate = function (decoded: object): { isValid: boolean } {
