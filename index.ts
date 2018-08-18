@@ -28,7 +28,7 @@ function createServer(): Hapi.Server {
 
     const hapiServer = new Hapi.Server({
         port: useSsl ? undefined : 3001,
-        listener: httpsServer ? undefined : httpsServer as any,
+        listener: useSsl ? httpsServer as any : undefined,
         tls: useSsl,
         autoListen: !useSsl,
         // routes: {
@@ -44,7 +44,6 @@ function createServer(): Hapi.Server {
             handler: (request) => {
                 const req = request.raw.req;
                 const res = request.raw.res;
-
                 acmeResponder(req, res);
             }
         });
