@@ -1,6 +1,7 @@
 import * as Hapi from 'hapi';
 import * as socketio from 'socket.io';
 import * as fs from 'fs';
+import * as redisAdapter from 'socket.io-redis';
 import { goodOptions } from './src/middleware/good-options';
 import { IoServer } from './src/models/io-server';
 import { registerRoutes } from './src/routes/register-routes';
@@ -40,15 +41,12 @@ async function start() {
         await server.register(require('hapi-auth-jwt2'));
         server.auth.strategy('jwt', 'jwt',
             {
-                key: ApplicationConfig.jwtSecret,
+                key: ApplicationConfig.internalSecret,
                 validate: validate,
                 verifyOptions: { algorithms: ['HS256'] }
             });
         server.auth.default('jwt');
-        const io = socketio(server.listener, {
-            transports: ['websocket']
-        });
-        const redisAdapter = require('socket.io-redis');
+        const io = socketio(server.listener, { transports: ['websocket'] });
         io.adapter(redisAdapter({ host: ApplicationConfig.redisHost, port: ApplicationConfig.redisPort }));
         ioServer = new IoServer(io);
         ioServer.start();
