@@ -2,7 +2,7 @@ import { Socket } from '../interfaces/socket';
 
 export abstract class BaseSocketHandler {
     public register(socket: Socket): void {
-        console.log(`User, ${socket.user.userId}, connected to ${this.cachePrefix}`);
+        console.log(`User, ${socket.user.userId}, connected to ${this.cachePrefix}`, Date.now());
         socket.on('disconnect', this.disconnect.bind(this));
     }
 

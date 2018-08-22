@@ -11,7 +11,7 @@ export class IoServer extends Room {
     }
 
     public start(): void {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV !== 'production') {
             QuizCache.clear();
         }
         super.start();
