@@ -9,13 +9,10 @@ require('dotenv').config();
 
 let tls;
 if (process.env.SSL_CERT && process.env.SSL_KEY) {
-    console.log('SSL_CERT', process.env.SSL_CERT);
-    console.log('SSL_kEY', process.env.SSL_KEY);
     tls = {
         key: fs.readFileSync(process.env.SSL_KEY!, 'utf8'),
         cert: fs.readFileSync(process.env.SSL_CERT!, 'utf8')
     };
-    console.log('tls', tls);
 }
 
 const server = new Hapi.Server({
@@ -50,6 +47,8 @@ async function start() {
         const io = socketio(server.listener, {
             transports: ['websocket']
         });
+        const redisAdapter = require('socket.io-redis');
+        io.adapter(redisAdapter({ host: process.env.REDIS_HOST, port: process.env.REDIS_PORT }));
         ioServer = new IoServer(io);
         ioServer.start();
         registerRoutes(server, ioServer);
