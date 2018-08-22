@@ -1,8 +1,8 @@
-import * as socketio from 'socket.io';
+import { Socket } from '../interfaces/socket';
 
 export abstract class BaseSocketHandler {
-    public register(socket: socketio.Socket): void {
-        console.log(`User connected to ${this.cachePrefix}`);
+    public register(socket: Socket): void {
+        console.log(`User, ${socket.user.userId}, connected to ${this.cachePrefix}`);
         socket.on('disconnect', this.disconnect.bind(this));
     }
 

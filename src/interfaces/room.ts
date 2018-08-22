@@ -1,6 +1,7 @@
 import * as socketio from 'socket.io';
 import * as socketioJwt from 'socketio-jwt';
 import { BaseSocketHandler } from '../models/base-socket-handler';
+import { Socket } from './socket';
 
 export abstract class Room {
     constructor(protected _namespace: socketio.Namespace, protected socketHandlers: BaseSocketHandler) { }
@@ -17,7 +18,7 @@ export abstract class Room {
             secret: process.env.JWT_SECRET!,
             decodedPropertyName: 'user',
             timeout: 15000
-        })).on('authenticated', (socket: socketio.Socket) => {
+        })).on('authenticated', (socket: Socket) => {
             this.socketHandlers.register(socket);
         });
     }

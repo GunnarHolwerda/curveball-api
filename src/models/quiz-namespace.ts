@@ -2,7 +2,7 @@ import * as socketio from 'socket.io';
 
 import { Room } from '../interfaces/room';
 import { QuizSocketHandlers } from './quiz-socket-handlers';
-import { IQuiz } from './quiz';
+import { IQuiz } from '../interfaces/quiz';
 import { QuizCache } from './quiz-cache';
 
 export class QuizNamespace extends Room {

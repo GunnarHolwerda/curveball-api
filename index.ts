@@ -47,7 +47,9 @@ async function start() {
                 verifyOptions: { algorithms: ['HS256'] }
             });
         server.auth.default('jwt');
-        const io = socketio(server.listener);
+        const io = socketio(server.listener, {
+            transports: ['websocket']
+        });
         ioServer = new IoServer(io);
         ioServer.start();
         registerRoutes(server, ioServer);

@@ -1,6 +1,5 @@
-import * as socketio from 'socket.io';
-
 import { BaseSocketHandler } from './base-socket-handler';
+import { Socket } from '../interfaces/socket';
 
 export class QuizSocketHandlers extends BaseSocketHandler {
 
@@ -8,7 +7,7 @@ export class QuizSocketHandlers extends BaseSocketHandler {
         super();
     }
 
-    public register(socket: socketio.Socket): void {
+    public register(socket: Socket): void {
         super.register(socket);
     }
 

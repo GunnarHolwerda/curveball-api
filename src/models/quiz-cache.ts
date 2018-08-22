@@ -1,5 +1,5 @@
 import { CbRedis } from './cb-redis';
-import { IQuiz } from './quiz';
+import { IQuiz } from '../interfaces/quiz';
 
 export class QuizCache {
     private static readonly key = 'quizzes';
