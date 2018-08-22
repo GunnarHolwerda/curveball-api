@@ -1,4 +1,5 @@
 import * as Redis from 'ioredis';
+import { ApplicationConfig } from '../config';
 
 const CurveballRedisKeyPrefix = 'CB-Realtime-';
 
@@ -7,7 +8,7 @@ export class CbRedis {
     private static _instance: CbRedis;
 
     private constructor() {
-        this.redisClient = new Redis(+(process.env.REDIS_PORT!), process.env.REDIS_HOST!, {
+        this.redisClient = new Redis(ApplicationConfig.redisPort, ApplicationConfig.redisHost, {
             keyPrefix: CurveballRedisKeyPrefix
         });
     }

@@ -4,14 +4,15 @@ import * as fs from 'fs';
 import { goodOptions } from './src/middleware/good-options';
 import { IoServer } from './src/models/io-server';
 import { registerRoutes } from './src/routes/register-routes';
+import { ApplicationConfig } from './src/config';
 
 require('dotenv').config();
 
 let tls;
-if (process.env.SSL_CERT && process.env.SSL_KEY) {
+if (ApplicationConfig.sslCert && ApplicationConfig.sslCert) {
     tls = {
-        key: fs.readFileSync(process.env.SSL_KEY!, 'utf8'),
-        cert: fs.readFileSync(process.env.SSL_CERT!, 'utf8')
+        key: fs.readFileSync(ApplicationConfig.sslKey!, 'utf8'),
+        cert: fs.readFileSync(ApplicationConfig.sslCert!, 'utf8')
     };
 }
 
@@ -39,7 +40,7 @@ async function start() {
         await server.register(require('hapi-auth-jwt2'));
         server.auth.strategy('jwt', 'jwt',
             {
-                key: process.env.INTERNAL_SECRET!,
+                key: ApplicationConfig.jwtSecret,
                 validate: validate,
                 verifyOptions: { algorithms: ['HS256'] }
             });
@@ -48,7 +49,7 @@ async function start() {
             transports: ['websocket']
         });
         const redisAdapter = require('socket.io-redis');
-        io.adapter(redisAdapter({ host: process.env.REDIS_HOST, port: process.env.REDIS_PORT }));
+        io.adapter(redisAdapter({ host: ApplicationConfig.redisHost, port: ApplicationConfig.redisPort }));
         ioServer = new IoServer(io);
         ioServer.start();
         registerRoutes(server, ioServer);
