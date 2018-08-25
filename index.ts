@@ -21,9 +21,6 @@ const server = new Hapi.Server({
     port: 3001,
     tls,
     routes: {
-        timeout: {
-            socket: 30000
-        },
         cors: {
             origin: 'ignore'
         }
@@ -49,8 +46,7 @@ async function start() {
                 verifyOptions: { algorithms: ['HS256'] }
             });
         server.auth.default('jwt');
-        const io = socketio(server.listener, { transports: ['websocket'], allowUpgrades: false, pingTimeout: 60000, pingInterval: 25000 });
-        console.log('***** SOCKET IO ******', io);
+        const io = socketio(server.listener, { transports: ['websocket'], allowUpgrades: false });
         io.adapter(redisAdapter({ host: ApplicationConfig.redisHost, port: ApplicationConfig.redisPort }));
         ioServer = new IoServer(io);
         ioServer.start();

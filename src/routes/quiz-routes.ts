@@ -38,10 +38,7 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
             const quiz = req.payload['quiz'];
             const { quizId } = quiz;
             const quizNamespace = new QuizNamespace(ioServer.getNamespace(quizId), quiz);
-            console.log(quizNamespace);
-            console.log('Creating quiz namespace');
             quizNamespace.start();
-            console.log('Sending start event');
             ioServer.server.emit('start', quiz);
             return {
                 quizId: quizNamespace.quizId
@@ -87,8 +84,6 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
             if (quizNamespace === null) {
                 return Boom.notFound();
             }
-            console.log(quizNamespace);
-            console.log(`Emitting ${eventType}`, req.payload);
             quizNamespace.namespace.emit(eventType, req.payload);
             return req.payload;
         },
@@ -112,7 +107,6 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
                 return Boom.notFound();
             }
             try {
-                console.log('deleting namespace');
                 await quizNamespace.delete();
             } catch (e) {
                 return Boom.internal();

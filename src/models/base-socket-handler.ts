@@ -15,7 +15,7 @@ export abstract class BaseSocketHandler {
     public async destroy(): Promise<any> { }
 
     protected async disconnect(): Promise<void> {
-        console.table(`User disconnected from ${this.cachePrefix}`);
+        console.log(`User disconnected from ${this.cachePrefix}`);
     }
 
     protected abstract get cachePrefix(): string;
