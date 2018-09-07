@@ -11,6 +11,10 @@ export class CbRedis {
         this.redisClient = new Redis(ApplicationConfig.redisPort, ApplicationConfig.redisHost, {
             keyPrefix: CurveballRedisKeyPrefix
         });
+        this.redisClient.on('error', async (err) => {
+            console.log('REDIS ERROR', err);
+            await this.redisClient.connect();
+        });
     }
 
     public static get instance(): CbRedis {
