@@ -9,11 +9,11 @@ export class ApplicationConfig {
     }
 
     public static get sslCert(): string | undefined {
-        return process.env.SSL_CERT_PATH;
+        return process.env.SSL_CERT;
     }
 
     public static get sslKey(): string | undefined {
-        return process.env.SSL_CERT_KEY;
+        return process.env.SSL_KEY;
     }
 
     public static get jwtSecret(): string {
