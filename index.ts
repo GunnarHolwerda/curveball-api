@@ -6,7 +6,6 @@ import { goodOptions } from './src/middleware/good-options';
 import { IoServer } from './src/models/io-server';
 import { registerRoutes } from './src/routes/register-routes';
 import { ApplicationConfig } from './src/config';
-import { CbRedis } from './src/models/cb-redis';
 
 require('dotenv').config();
 
@@ -48,7 +47,6 @@ async function start() {
             });
         server.auth.default('jwt');
         const io = socketio(server.listener, { transports: ['websocket'] });
-        await CbRedis.instance.client.connect();
         io.adapter(redisAdapter({ host: ApplicationConfig.redisHost, port: ApplicationConfig.redisPort }));
         ioServer = new IoServer(io);
         ioServer.start();

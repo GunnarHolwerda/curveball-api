@@ -13,6 +13,7 @@ export class CbRedis {
         });
         this.redisClient.on('error', async (err) => {
             console.log('REDIS ERROR', err);
+            await this.redisClient.disconnect();
             await this.redisClient.connect();
         });
     }
