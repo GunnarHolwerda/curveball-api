@@ -21,9 +21,7 @@ const server = new Hapi.Server({
     port: 3001,
     tls,
     routes: {
-        cors: {
-            origin: 'ignore'
-        }
+        cors: false
     }
 });
 let ioServer: IoServer;
