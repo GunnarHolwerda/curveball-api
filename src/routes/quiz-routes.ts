@@ -5,6 +5,7 @@ import * as Joi from 'joi';
 import { IoServer } from '../models/io-server';
 import { QuizNamespace } from '../models/quiz-namespace';
 import { QuizCache } from '../models/quiz-cache';
+import { QuizEvents, ServerEvents } from '../events';
 
 async function getNamespace(quizId: string, ioServer: IoServer): Promise<QuizNamespace | null> {
     const quiz = await QuizCache.getQuiz(quizId);
@@ -39,7 +40,7 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
             const { quizId } = quiz;
             const quizNamespace = new QuizNamespace(ioServer.getNamespace(quizId), quiz);
             quizNamespace.start();
-            ioServer.server.emit('start', quiz);
+            ioServer.server.emit(ServerEvents.quizStart, quiz);
             return {
                 quizId: quizNamespace.quizId
             };

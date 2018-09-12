@@ -3,6 +3,7 @@ import * as socketioJwt from 'socketio-jwt';
 import { BaseSocketHandler } from '../models/base-socket-handler';
 import { Socket } from './socket';
 import { ApplicationConfig } from '../config';
+import { QuizEvents } from '../events';
 
 export abstract class Room {
     constructor(protected _namespace: socketio.Namespace, protected socketHandlers: BaseSocketHandler) { }
@@ -20,6 +21,10 @@ export abstract class Room {
             decodedPropertyName: 'user',
             timeout: 15000
         })).on('authenticated', (socket: Socket) => {
+            this.numConnected.then(count => {
+                socket.emit(QuizEvents.numConnected, count);
+            });
+            socket.broadcast.emit(QuizEvents.userConnected);
             this.socketHandlers.register(socket);
         });
     }
