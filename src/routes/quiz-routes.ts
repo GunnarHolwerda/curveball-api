@@ -5,7 +5,7 @@ import * as Joi from 'joi';
 import { IoServer } from '../models/io-server';
 import { QuizNamespace } from '../models/quiz-namespace';
 import { QuizCache } from '../models/quiz-cache';
-import { QuizEvents, ServerEvents } from '../events';
+import { ServerEvents } from '../events';
 
 async function getNamespace(quizId: string, ioServer: IoServer): Promise<QuizNamespace | null> {
     const quiz = await QuizCache.getQuiz(quizId);
