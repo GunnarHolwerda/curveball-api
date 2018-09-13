@@ -46,7 +46,7 @@ async function start() {
                 verifyOptions: { algorithms: ['HS256'] }
             });
         server.auth.default('jwt');
-        const io = socketio(server.listener);
+        const io = socketio(server.listener, { pingInterval: 5000, pingTimeout: 25000 });
         io.adapter(redisAdapter({ host: ApplicationConfig.redisHost, port: ApplicationConfig.redisPort }));
         ioServer = new IoServer(io);
         ioServer.start();
