@@ -27,7 +27,8 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
                         .keys({
                             quizId: Joi.string(),
                             title: Joi.string(),
-                            potAmount: Joi.number()
+                            potAmount: Joi.number(),
+                            numQuestions: Joi.number()
                         })
                         .requiredKeys(['quizId'])
                         .options({ stripUnknown: true })
