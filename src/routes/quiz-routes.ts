@@ -31,16 +31,24 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
                         })
                         .requiredKeys(['quizId'])
                         .options({ stripUnknown: true })
-                        .description('Create a new room for a quiz')
+                        .description('Create a new room for a quiz'),
+                    ticker: Joi.array()
+                        .items(
+                            Joi.object().keys({
+                                ticker: Joi.string().required(),
+                                sport: Joi.string().required()
+                            })
+                        ).required().description('The ticker for the questions for the quiz')
                 })
             }
         },
         handler: async (req) => {
             const quiz = req.payload['quiz'];
+            const ticker = req.payload['ticker'];
             const { quizId } = quiz;
             const quizNamespace = new QuizNamespace(ioServer.getNamespace(quizId), quiz);
             quizNamespace.start();
-            ioServer.server.emit(ServerEvents.quizStart, quiz);
+            ioServer.server.emit(ServerEvents.quizStart, { quiz, ticker });
             return {
                 quizId: quizNamespace.quizId
             };
