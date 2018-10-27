@@ -6,6 +6,7 @@ import { IoServer } from '../models/io-server';
 import { QuizNamespace } from '../models/quiz-namespace';
 import { QuizCache } from '../models/quiz-cache';
 import { ServerEvents } from '../events';
+import { Livestream } from '../models/livestream';
 
 async function getNamespace(quizId: string, ioServer: IoServer): Promise<QuizNamespace | null> {
     const quiz = await QuizCache.getQuiz(quizId);
@@ -46,10 +47,17 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
         handler: async (req) => {
             const quiz = req.payload['quiz'];
             const ticker = req.payload['ticker'];
-            const { quizId } = quiz;
+            const { quizId, title } = quiz;
+            const liveStream = new Livestream(title);
+            const target = await liveStream.getStreamTarget();
+
+            if (target === undefined) {
+                throw new Error('Unsupported live stream target was received');
+            }
+
             const quizNamespace = new QuizNamespace(ioServer.getNamespace(quizId), quiz);
             quizNamespace.start();
-            ioServer.server.emit(ServerEvents.quizStart, { quiz, ticker });
+            ioServer.server.emit(ServerEvents.quizStart, { quiz, title, ticker, playbackUrls: target.playbackUrls() });
             return {
                 quizId: quizNamespace.quizId
             };

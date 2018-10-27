@@ -26,7 +26,6 @@
     "@types/socket.io-redis": "^1.0.25",
     "@types/socketio-jwt": "0.0.0",
     "@types/uuid": "^3.4.3",
-    "axios": "^0.18.0",
     "jasmine": "^3.1.0",
     "jasmine-spec-reporter": "^4.2.1",
     "jasmine-ts": "^0.2.1",
@@ -39,6 +38,7 @@
   },
   "dependencies": {
     "boom": "^7.2.0",
+    "axios": "^0.18.0",
     "dotenv": "^6.0.0",
     "good": "^8.1.1",
     "good-console": "^7.1.0",
