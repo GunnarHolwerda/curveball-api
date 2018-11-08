@@ -90,12 +90,13 @@ export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
             const eventType: string = req.params['eventType'];
+            const payload = req.payload || {};
             const quizNamespace = await getNamespace(quizId, ioServer);
             if (quizNamespace === null) {
                 return Boom.notFound();
             }
-            quizNamespace.namespace.emit(eventType, req.payload);
-            return req.payload;
+            quizNamespace.namespace.emit(eventType, payload);
+            return payload;
         },
         options: {
             validate: {
