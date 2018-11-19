@@ -6,6 +6,7 @@ import { goodOptions } from './src/middleware/good-options';
 import { IoServer } from './src/models/io-server';
 import { registerRoutes } from './src/routes/register-routes';
 import { ApplicationConfig } from './src/config';
+import { Database } from './src/models/database';
 
 require('dotenv').config();
 
@@ -43,7 +44,7 @@ async function start() {
             {
                 key: ApplicationConfig.internalSecret,
                 validate: validate,
-                verifyOptions: { algorithms: ['HS256'] }
+                verifyOptions: { algorithms: ['HS256'] },
             });
         server.auth.default('jwt');
         const io = socketio(server.listener, { pingInterval: 5000, pingTimeout: 25000 });
@@ -51,8 +52,10 @@ async function start() {
         ioServer = new IoServer(io);
         ioServer.start();
         registerRoutes(server, ioServer);
+        await Database.instance.connect();
         await server.start();
     } catch (err) {
+        await Database.instance.disconnect();
         console.log(err);
         process.exit(1);
     }
