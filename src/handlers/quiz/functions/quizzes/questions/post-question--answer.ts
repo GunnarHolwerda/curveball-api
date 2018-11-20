@@ -19,8 +19,9 @@ export async function answerQuestion(event: hapi.Request): Promise<object> {
     const { userId, username, name } = event.auth.credentials as UserJwtClaims;
     console.log('username', username);
     console.log('name', name);
-    // Get QUIZ claims
+    // TODO: Get QUIZ claims
     // const { lifeUsed } = getQuizClaims(event.headers['QT']);
+    const lifeUsed = false;
     const { choice: choiceText } = event.payload as QuestionsAnswerPayload;
 
     const { quizId, questionId } = event.params;

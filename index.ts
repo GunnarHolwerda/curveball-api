@@ -6,7 +6,7 @@ import { goodOptions } from './src/middleware/good-options';
 import { IoServer } from './src/models/io-server';
 import { registerRoutes } from './src/routes/register-routes';
 import { ApplicationConfig } from './src/config';
-import { Database } from './src/models/database';
+import { Database } from './src/handlers/quiz/models/database';
 
 require('dotenv').config();
 
@@ -40,7 +40,12 @@ async function start() {
             options: goodOptions,
         });
         await server.register(require('hapi-auth-jwt2'));
-        server.auth.strategy('jwt', 'jwt',
+        server.auth.strategy('jwt', 'jwt', {
+            key: ApplicationConfig.jwtSecret,
+            validate: validate,
+            verifyOptions: { algorithms: ['HS256'] },
+        });
+        server.auth.strategy('internalJwt', 'jwt',
             {
                 key: ApplicationConfig.internalSecret,
                 validate: validate,

@@ -1,6 +1,7 @@
 import * as hapi from 'hapi';
 import { IoServer } from '../models/io-server';
 import { quizRoutes } from './quiz-routes';
+import { realtimeRoutes } from './realtime-routes';
 
 export function registerRoutes(server: hapi.Server, ioServer: IoServer): void {
     server.route({
@@ -23,4 +24,5 @@ export function registerRoutes(server: hapi.Server, ioServer: IoServer): void {
     });
 
     quizRoutes(server, ioServer);
+    realtimeRoutes(server, ioServer);
 }

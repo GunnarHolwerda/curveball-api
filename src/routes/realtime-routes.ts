@@ -18,7 +18,7 @@ async function getNamespace(quizId: string, ioServer: IoServer): Promise<QuizNam
 
 export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
     server.route({
-        path: '/quizzes',
+        path: '/realtime/quizzes',
         method: 'POST',
         options: {
             validate: {
@@ -57,7 +57,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
     });
 
     server.route({
-        path: '/quizzes/{quizId}',
+        path: '/realtime/quizzes/{quizId}',
         method: 'GET',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
@@ -70,7 +70,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
     });
 
     server.route({
-        path: '/quizzes/{quizId}:connected',
+        path: '/realtime/quizzes/{quizId}:connected',
         method: 'GET',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
@@ -85,7 +85,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
     });
 
     server.route({
-        path: '/quizzes/{quizId}/{eventType}:emit',
+        path: '/realtime/quizzes/{quizId}/{eventType}:emit',
         method: 'POST',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
@@ -109,7 +109,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
     });
 
     server.route({
-        path: '/quizzes/{quizId}',
+        path: '/realtime/quizzes/{quizId}',
         method: 'DELETE',
         handler: async (req) => {
             const quizId: string = req.params['quizId'];

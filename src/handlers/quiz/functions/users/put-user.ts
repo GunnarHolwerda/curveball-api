@@ -1,4 +1,5 @@
 import * as Joi from 'joi';
+import * as Boom from 'boom';
 
 import * as hapi from 'hapi';
 import { IUser } from '../../models/user';
@@ -15,6 +16,10 @@ export async function putUser(event: hapi.Request): Promise<object> {
     const userId = event.params['userId'];
     const userParams = event.payload as IUser;
     const user = await UserFactory.load(userId);
+
+    if (user === null) {
+        throw Boom.notFound();
+    }
 
     for (const property in userParams) {
         if (userParams.hasOwnProperty(property)) {

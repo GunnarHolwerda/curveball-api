@@ -1,7 +1,6 @@
 import * as Joi from 'joi';
-
+import * as Boom from 'boom';
 import * as hapi from 'hapi';
-import { CurveballBadRequest } from '../../models/curveball-error';
 import { UserFactory } from '../../models/factories/user-factory';
 import { PhoneVerifier } from '../../models/phone-verifier';
 
@@ -14,11 +13,14 @@ export async function postUserVerify(event: hapi.Request): Promise<object> {
     const { code, username } = event.payload as { code: string, username: string };
     const { userId } = event.params;
     const user = await UserFactory.load(userId);
+    if (user === null) {
+        throw Boom.notFound();
+    }
     const verifier = new PhoneVerifier(user.properties.phone);
     const response = await verifier.verifyCode(code);
 
     if (!response.success) {
-        throw new CurveballBadRequest('Invalid verification code');
+        throw Boom.badRequest('Invalid verification code');
     }
 
     if (username) {

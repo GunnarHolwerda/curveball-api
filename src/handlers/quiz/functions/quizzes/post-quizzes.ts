@@ -1,7 +1,7 @@
 import * as Joi from 'joi';
 
 import * as hapi from 'hapi';
-import { IQuiz, Quiz } from '../../models/quiz';
+import { IQuiz, Quiz, IQuizResponse } from '../../models/quiz';
 
 export const postQuizzesSchema = Joi.object().keys({
     title: Joi.string().required(),
@@ -16,8 +16,13 @@ export interface PostQuizPayload {
 }
 
 export async function postQuizzes(event: hapi.Request): Promise<object> {
-    const quizParams = event.payload as IQuiz;
-    const quiz = await Quiz.create(quizParams);
+    const quizParams = event.payload as IQuizResponse;
+    const newQuiz: Partial<IQuiz> = {
+        title: quizParams.title,
+        auth: quizParams.auth,
+        pot_amount: quizParams.potAmount
+    };
+    const quiz = await Quiz.create(newQuiz);
 
     return { quiz: await quiz.toResponseObject() };
 }

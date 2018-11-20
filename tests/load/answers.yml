@@ -1,0 +1,18 @@
+config:
+  target: 'https://quiz.dev.curveball.tv/dev'
+  phases:
+    - duration: 45
+      arrivalRate: 10
+      rampTo: 500
+      name: 'Answer blast'
+  processor: './login-user.js'
+  defaults:
+    headers:
+      QT: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc0xhc3RRdWVzdGlvbiI6ZmFsc2UsImxpZmVVc2VkIjpmYWxzZSwiaWF0IjoxNTQwMzUxMDA2LCJleHAiOjE1NDAzNTE2MDYsImlzcyI6IjVkM2YyNDFkLWJjZmEtNDQxYS04ZWZkLWI1NmViNjFhMDMzNCIsInN1YiI6IjNhZTRlNTdlLTcyMzQtNDIwYi05OTRkLTg1MDg1ZDlhMGM0MiIsImp0aSI6IjAyYTY1YzI4LWYwZTctNDRlMy04ZWMxLTM0NmM3NDE5NzNlNCJ9.h3zVGkcCAVQ2itcMdwo5WAZwRryOjn8kPVV1N8nr7cQ'
+scenarios:
+  - flow:
+    - post:
+        beforeRequest: 'setAuthorizationHeader'
+        url: "/quizzes/5d3f241d-bcfa-441a-8efd-b56eb61a0334/questions/3ae4e57e-7234-420b-994d-85085d9a0c42/answer"
+        json: 
+          choice: 'ba25ae40-d027-4785-ba5a-acfb11ecc4e5'

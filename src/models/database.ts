@@ -1,4 +1,8 @@
-import { Client } from 'pg';
+import { Client, types } from 'pg';
+
+types.setTypeParser(20, function (val): number {
+    return parseInt(val, 10);
+});
 
 export class Database {
     private activeSchema = '';
@@ -32,9 +36,9 @@ export class Database {
         try {
             await this.client.connect();
         } catch (e) {
-            if (!e.message.includes('Client has already been connected')) {
-                throw e;
-            }
+            setTimeout(() => {
+                this.connect(schema);
+            }, 3000);
         }
         this.connected = true;
         console.log('Connected to DB');

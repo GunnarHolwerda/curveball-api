@@ -18,7 +18,7 @@ export class PhoneVerifier {
     constructor(private phoneNumber: string) { }
 
     public async sendCode(): Promise<ISendCodeResponse> {
-        if (process.env.ENV === Environment.local) {
+        if (process.env.NODE_ENV === Environment.local) {
             return MockSendCodeResponse;
         }
         const params = new URLSearchParams();

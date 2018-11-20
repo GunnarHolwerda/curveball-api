@@ -7,7 +7,7 @@ export interface IAnswer {
     choice_id: string;
     question_id: string;
     user_id: string;
-    life: string;
+    life: number;
     submitted: Date;
     disabled: boolean;
 }

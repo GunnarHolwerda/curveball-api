@@ -28,6 +28,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
         path: '/users',
         method: 'post',
         options: {
+            auth: false,
             validate: { payload: postUserSchema }
         },
         handler: postUser
@@ -57,7 +58,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
     server.route({
         path: '/users/{userId}/verify',
         method: 'post',
-        options: { validate: { payload: postUserVerifySchema } },
+        options: { auth: false, validate: { payload: postUserVerifySchema } },
         handler: postUserVerify
     });
 

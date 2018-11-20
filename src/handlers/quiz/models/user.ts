@@ -9,6 +9,7 @@ import { Database } from './database';
 import { UserFactory } from './factories/user-factory';
 import { LivesFactory } from './factories/lives-factory';
 import { omit } from '../util/omit';
+import { camelizeKeys } from '../util/camelize-keys';
 
 export interface IUser {
     user_id: string;
@@ -54,7 +55,7 @@ export class User {
             RETURNING user_id;
         `, [phoneNumber, getAvatarUrl()]);
         const userId = result!.rows[0].user_id;
-        return UserFactory.load(userId);
+        return (await UserFactory.load(userId))!;
     }
 
     public getJWTToken(): string {
@@ -91,7 +92,7 @@ export class User {
         result = result.rows[0];
 
         return {
-            wins: result['wins'],
+            wins: Number.parseInt(result['wins'], 10),
             winnings: result['winnings'] ? Number.parseFloat(result['winnings']).toFixed(2) : '0'
         };
     }
@@ -100,6 +101,6 @@ export class User {
         const response = {
             ...(omit(this.properties, ['password', 'phone']))
         };
-        return response as Partial<IUser>;
+        return camelizeKeys(response) as Partial<IUser>;
     }
 }

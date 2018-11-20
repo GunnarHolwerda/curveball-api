@@ -1,16 +1,13 @@
-import { Dynamo } from './dynamo';
-import { String } from 'aws-sdk/clients/lambda';
-import { StoredRecord } from './stored-record';
-import { IUserResponse } from './user';
-export interface ILife extends StoredRecord {
-    lifeId: String;
-    userId: string;
-    referredUserId: string;
-    referredUser: IUserResponse;
-    question?: string;
+import { Postgres } from '../postgres';
+import { Database } from './database';
+
+export interface ILife {
+    id: number;
+    user_id: string;
+    question: string;
 }
 
-export const LIFE_TABLE_NAME: string = process.env.LIFE_TABLE!;
+export const LIFE_TABLE_NAME = 'lives';
 
 export class Life {
     public properties: ILife;
@@ -18,9 +15,9 @@ export class Life {
         this.properties = { ..._life };
     }
 
-    public static async create(properties: Partial<ILife>): Promise<Life> {
-        const life = await Dynamo.createItem<ILife>(LIFE_TABLE_NAME, 'lifeId', properties);
-        return new Life(life);
+    public static async create(userId: string): Promise<boolean> {
+        const result = await Database.instance.client.query(`INSERT INTO ${LIFE_TABLE_NAME} (user_id) VALUES ($1);`, [userId]);
+        return result.rowCount === 1;
     }
 
     public async use(questionId: string): Promise<void> {
@@ -29,8 +26,14 @@ export class Life {
     }
 
     public async save(): Promise<void> {
-        if (JSON.stringify(this._life) !== JSON.stringify(this.properties)) {
-            this.properties = await Dynamo.updateItem<ILife>(LIFE_TABLE_NAME, 'lifeId', this.properties);
+        const updateString: string = Postgres.buildUpatePropertyString(this._life, this.properties);
+        if (updateString) {
+            await Database.instance.client.query(`
+                UPDATE ${LIFE_TABLE_NAME}
+                SET
+                    ${updateString}
+                WHERE id = $1;
+            `, [this._life.id]);
         }
     }
 }
