@@ -10,6 +10,8 @@ export interface UserJwtClaims {
     data: any;
 }
 
+export type AllQtClaims = QTClaims & BaseClaims;
+
 export namespace CurveballLambda {
 
     export const CurveballErrorResponse: Response = {
@@ -18,8 +20,6 @@ export namespace CurveballLambda {
             message: 'Internal Server Error'
         }
     };
-
-    export type AllQtClaims = QTClaims & BaseClaims;
 
     export interface Dictionary {
         [key: string]: string;

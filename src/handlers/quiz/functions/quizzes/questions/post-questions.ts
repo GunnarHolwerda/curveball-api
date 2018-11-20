@@ -1,5 +1,5 @@
 import * as Joi from 'joi';
-
+import * as Boom from 'boom';
 import * as hapi from 'hapi';
 import { IQuestion, Question } from '../../../models/question';
 import { IChoice, IChoiceResponse, Choice } from '../../../models/question-choice';
@@ -37,6 +37,9 @@ export async function postQuestions(event: hapi.Request): Promise<object> {
     const quizId: string = event.params['quizId'];
     const payload = event.payload as SnakifiedQuestionsPayload;
     const quiz = await QuizFactory.load(quizId);
+    if (quiz === null) {
+        throw Boom.notFound();
+    }
 
     const createdQuestions: Array<Question> = [];
     for (const question of payload.questions) {

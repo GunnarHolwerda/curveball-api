@@ -1,16 +1,11 @@
 import * as jwt from 'jsonwebtoken';
+import * as Boom from 'boom';
+import { UserJwtClaims, AllQtClaims } from '../../lambda/lambda';
+import { ApplicationConfig } from '../../../../config';
 
-import { CurveballLambda, UserJwtClaims } from '../../lambda/lambda';
-import { CurveballUnauthorized, CurveballForbidden } from '../../models/curveball-error';
-import { String } from 'aws-sdk/clients/lexruntime';
-export interface Claims {
-    userClaims: UserJwtClaims;
-    quizClaims: CurveballLambda.AllQtClaims;
-}
-
-export function verifyQt(token: String, quizId: string, questionId: string, userClaims: UserJwtClaims, auth: boolean): Claims {
+export function verifyQt(token: string, quizId: string, questionId: string, userClaims: UserJwtClaims, auth: boolean): AllQtClaims {
     try {
-        const secret = process.env.QT_SECRET!;
+        const secret = ApplicationConfig.qtSecret;
 
         const claimsToVerify = { issuer: quizId };
 
@@ -18,12 +13,12 @@ export function verifyQt(token: String, quizId: string, questionId: string, user
             claimsToVerify['subject'] = questionId;
         }
 
-        const verifiedToken: CurveballLambda.AllQtClaims = jwt.verify(token, secret, claimsToVerify) as CurveballLambda.AllQtClaims;
+        const verifiedToken: AllQtClaims = jwt.verify(token, secret, claimsToVerify) as AllQtClaims;
         if (verifiedToken.aud && verifiedToken.aud !== userClaims.userId) {
-            throw new CurveballUnauthorized('Invalid user');
+            throw Boom.unauthorized('Invalid user');
         }
-        return { userClaims: userClaims, quizClaims: verifiedToken };
+        return verifiedToken;
     } catch (e) {
-        throw new CurveballForbidden('Invalid QT');
+        throw Boom.forbidden('Invalid QT');
     }
 }

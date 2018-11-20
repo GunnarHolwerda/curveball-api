@@ -22,6 +22,7 @@ import { postQuizReset } from '../handlers/quiz/functions/quizzes/post-quiz--res
 import { postQuizComplete } from '../handlers/quiz/functions/quizzes/post-quiz--complete';
 import { getQuizAccess } from '../handlers/quiz/functions/quizzes/get-quiz--access';
 import { getQuiz } from '../handlers/quiz/functions/quizzes/get-quiz';
+import { qtPreRouteHandler } from './pres/qt-access';
 
 export function quizRoutes(server: hapi.Server, _: IoServer): void {
     server.route({
@@ -65,92 +66,105 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
     server.route({
         path: '/users_force_login',
         method: 'post',
-        options: { validate: { payload: postUserForceLoginSchema } },
+        options: { auth: 'internalJwt', validate: { payload: postUserForceLoginSchema } },
         handler: postUserForceLogin
     });
     server.route({
         path: '/quizzes',
         method: 'post',
-        options: { validate: { payload: postQuizzesSchema } },
+        options: { auth: 'internalJwt', validate: { payload: postQuizzesSchema } },
         handler: postQuizzes
     });
     server.route({
         path: '/quizzes/{quizId}',
         method: 'put',
-        options: { validate: { payload: putQuizSchema } },
+        options: { auth: 'internalJwt', validate: { payload: putQuizSchema } },
         handler: putQuiz
     });
     server.route({
         path: '/quizzes/{quizId}',
         method: 'get',
+        options: { auth: 'internalJwt' },
         handler: getQuiz
     });
     server.route({
         path: '/quizzes/{quizId}/questions',
         method: 'post',
-        options: { validate: { payload: postQuestionsSchema } },
+        options: { auth: 'internalJwt', validate: { payload: postQuestionsSchema } },
         handler: postQuestions
     });
     server.route({
         path: '/quizzes/{quizId}/questions',
         method: 'get',
+        options: { auth: 'internalJwt' },
         handler: getQuestions
     });
     server.route({
         path: '/quizzes/{quizId}/start',
         method: 'post',
+        options: { auth: 'internalJwt' },
         handler: postQuizzesStart
     });
     server.route({
         path: '/quizzes/{quizId}/questions/{questionId}/answer',
         method: 'post',
-        options: { validate: { payload: questionsAnswerSchema } },
+        options: {
+            pre: [qtPreRouteHandler],
+            validate: { payload: questionsAnswerSchema }
+        },
         handler: answerQuestion
     });
     server.route({
         path: '/quizzes/{quizId}/questions/{questionId}/start',
         method: 'post',
+        options: { auth: 'internalJwt' },
         handler: postQuestionStart
     });
     server.route({
         path: '/questions/{questionId}',
         method: 'put',
-        options: { validate: { payload: putQuestionSchema } },
+        options: { auth: 'internalJwt', validate: { payload: putQuestionSchema } },
         handler: putQuestions
     });
     server.route({
         path: '/quizzes/{quizId}/questions/{questionId}/results',
         method: 'get',
+        options: { auth: 'internalJwt' },
         handler: getQuestionResults
     });
 
     server.route({
         path: '/quizzes',
         method: 'get',
+        options: { auth: 'internalJwt' },
         handler: getQuizzes
     });
 
     server.route({
         path: '/quizzes/{quizId}/users',
         method: 'get',
+        options: { auth: 'internalJwt' },
         handler: getQuizUsers
     });
 
     server.route({
         path: '/users/{userId}/lives/use',
         method: 'post',
+        options: { pre: [qtPreRouteHandler] },
         handler: useLife
     });
 
     server.route({
         path: '/quizzes/{quizId}/reset',
         method: 'post',
+        options: { auth: 'internalJwt' },
         handler: postQuizReset
     });
 
     server.route({
         path: '/quizzes/{quizId}/complete',
         method: 'post',
+        options: { auth: 'internalJwt' },
         handler: postQuizComplete
     });
 

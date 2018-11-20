@@ -4,6 +4,8 @@ import { Database } from './database';
 import { QuestionFactory } from './factories/question-factory';
 import { AnswerFactory } from './factories/answer-factory';
 import { ChoiceFactory } from './factories/choice-factory';
+import { snakifyKeys } from '../util/snakify-keys';
+import { camelizeKeys } from '../util/camelize-keys';
 
 export interface IQuestion {
     question_id: string;
@@ -49,11 +51,12 @@ export class Question {
     }
 
     public static async create(question: Partial<IQuestion>): Promise<Question> {
+        const params = snakifyKeys(question);
         const result = await Database.instance.client.query(`
             INSERT INTO ${QUESTION_TABLE_NAME} (quiz_id, question, question_num, sport, ticker)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING question_id;
-        `, [question.quiz_id, question.question, question.question_num, question.sport, question.ticker]);
+        `, [params.quiz_id, params.question, params.question_num, params.sport, params.ticker]);
         return (await QuestionFactory.load(result!.rows[0].question_id))!;
     }
 
@@ -108,7 +111,7 @@ export class Question {
             response['choices'] = choices.map(c => c.toResponseObject());
         }
 
-        return response;
+        return camelizeKeys(response);
     }
 
     public isExpired(): boolean {

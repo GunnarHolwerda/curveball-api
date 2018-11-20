@@ -2,6 +2,8 @@ import { Postgres } from '../postgres';
 import { omit } from '../util/omit';
 import { ChoiceFactory } from './factories/choice-factory';
 import { Database } from './database';
+import { snakifyKeys } from '../util/snakify-keys';
+import { camelizeKeys } from '../util/camelize-keys';
 
 export interface IChoice {
     choice_id: string;
@@ -27,11 +29,12 @@ export class Choice {
     }
 
     public static async create(choice: Partial<IChoice>): Promise<Choice> {
+        const params = snakifyKeys(choice);
         const result = await Database.instance.client.query(`
             INSERT INTO ${CHOICES_TABLE_NAME} (question_id, text, is_answer)
             VALUES ($1, $2, $3)
             RETURNING choice_id;
-        `, [choice.question_id, choice.text, choice.is_answer]);
+        `, [params.question_id, params.text, params.is_answer]);
         return ChoiceFactory.load(result!.rows[0].choice_id);
     }
 
@@ -48,6 +51,6 @@ export class Choice {
         const response = {
             ...omit(this.properties, ['is_answer']),
         };
-        return response;
+        return camelizeKeys(response);
     }
 }

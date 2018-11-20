@@ -9,7 +9,7 @@ import { Test as UserTest } from '../resources/user-resources';
 import { BaseClaims, QTClaims } from '../../../src/handlers/quiz/models/qt';
 import { QuestionPayload } from '../../../src/handlers/quiz/functions/quizzes/questions/post-questions';
 
-describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
+fdescribe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
     let quizResources: Test.QuizResources;
     let questions: Test.QuestionResponse;
     let userResponse: UserTest.UserTokenResponse;

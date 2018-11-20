@@ -10,6 +10,7 @@ ENV PGUSER root
 ENV PGHOST infrastructure_curveball-db_1
 ENV PGPASSWORD password
 ENV PGDATABASE curveball
+ENV QT_SECRET ExtraSecret
 COPY package*.json ./
 RUN npm install
 COPY . .

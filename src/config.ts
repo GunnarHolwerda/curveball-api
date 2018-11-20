@@ -27,4 +27,8 @@ export class ApplicationConfig {
     public static get nodeEnv(): string {
         return process.env.NODE_ENV!;
     }
+
+    public static get qtSecret(): string {
+        return process.env.QT_SECRET!;
+    }
 }

@@ -7,6 +7,7 @@ import { Database } from './database';
 import { QuestionFactory } from './factories/question-factory';
 import { Cacheable } from '../interfaces/cacheable';
 import { EventEmitter } from 'events';
+import { camelizeKeys } from '../util/camelize-keys';
 
 export interface IQuiz {
     quiz_id: string;
@@ -44,7 +45,7 @@ export class Quiz implements Cacheable {
             VALUES ($1, $2, $3)
             RETURNING quiz_id;
         `, [quiz.title, quiz.pot_amount, quiz.auth]);
-        return QuizFactory.load(result!.rows[0].quiz_id);
+        return (await QuizFactory.load(result!.rows[0].quiz_id))!;
     }
 
     public async markUserAsIncorrect(userId: string): Promise<boolean> {
@@ -91,7 +92,7 @@ export class Quiz implements Cacheable {
             response['questions'] = questionResponses;
         }
 
-        return response;
+        return camelizeKeys(response);
     }
 
     public async activeParticipants(): Promise<Array<User>> {
