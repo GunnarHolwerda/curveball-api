@@ -9,7 +9,7 @@ import { Test as UserTest } from '../resources/user-resources';
 import { BaseClaims, QTClaims } from '../../../src/handlers/quiz/models/qt';
 import { QuestionPayload } from '../../../src/handlers/quiz/functions/quizzes/questions/post-questions';
 
-fdescribe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
+describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
     let quizResources: Test.QuizResources;
     let questions: Test.QuestionResponse;
     let userResponse: UserTest.UserTokenResponse;
@@ -118,6 +118,7 @@ fdescribe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
 
         it('should return 403 if submitting to quiz that does not match QT', async () => {
             const otherQuiz = (await quizResources.createQuiz({ title: uuid(), potAmount: 20 })).quiz;
+            await quizResources.addQuestions(otherQuiz.quizId, { questions: quizQuestions });
             const { firstQuestion } = startResponse;
             await expectHttpError(quizResources.answerQuestion(
                 otherQuiz.quizId,
@@ -140,6 +141,7 @@ fdescribe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
         it('should return 403 if submitting to quiz that does not match iss', async () => {
             const { firstQuestion } = startResponse;
             const response = await quizResources.createQuiz({ title: uuid(), potAmount: 10 });
+            await quizResources.addQuestions(response.quiz.quizId, { questions: quizQuestions });
             await expectHttpError(quizResources.answerQuestion(
                 response.quiz.quizId,
                 firstQuestion.questionId,
@@ -147,14 +149,14 @@ fdescribe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
             ), 403);
         });
 
-        it('should return 403 if submitting by user that does not match aud', async () => {
+        it('should return 401 if submitting by user that does not match aud', async () => {
             const { quiz, firstQuestion } = startResponse;
             quizResources.token = 'banana';
             await expectHttpError(quizResources.answerQuestion(
                 quiz.quizId,
                 firstQuestion.questionId,
                 getWrongAnswer(firstQuestion.questionId)
-            ), 403);
+            ), 401);
         });
 
         it('should return 403 if jwt is invalid', async () => {
