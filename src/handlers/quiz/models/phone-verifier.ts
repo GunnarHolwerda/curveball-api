@@ -25,7 +25,7 @@ export class PhoneVerifier {
         params.append('via', 'sms');
         params.append('phone_number', this.phoneNumber);
         params.append('country_code', '1');
-        params.append('code_length', '7');
+        params.append('code_length', '4');
         params.append('locale', 'en');
 
         const response = await fetch(`${this.endpoint}/phones/verification/start`, {

@@ -4,10 +4,10 @@ import { QuizFactory } from '../../models/factories/quiz-factory';
 import { Winner } from '../../models/winner';
 
 export async function postQuizComplete(event: hapi.Request): Promise<object> {
-    const quizId: string = event.path['quizId'];
+    const quizId: string = event.params.quizId;
     const quiz = await QuizFactory.load(quizId);
     if (quiz === null) {
-        throw Boom.notFound();
+        throw Boom.notFound('Quiz not found');
     }
     const participants = await quiz.activeParticipants();
 
@@ -29,8 +29,8 @@ export async function postQuizComplete(event: hapi.Request): Promise<object> {
     try {
         await Winner.batchCreate(participants, quiz, Number.parseFloat(amountWon));
     } catch (e) {
-        console.error('Failed to create winners');
-        throw e;
+        console.error('Failed to create winners', e);
+        throw Boom.internal();
     }
 
     return {

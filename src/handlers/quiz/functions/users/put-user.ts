@@ -8,7 +8,7 @@ import { UserFactory } from '../../models/factories/user-factory';
 export const putUserSchema = Joi.object().keys({
     name: Joi.string().optional(),
     username: Joi.string().optional(),
-    phone: Joi.string().regex(/\d{3}-\d{3}-\d{4}/).optional(),
+    phone: Joi.string().optional(),
     photo: Joi.string().optional()
 });
 
@@ -26,7 +26,15 @@ export async function putUser(event: hapi.Request): Promise<object> {
             user.properties[property] = userParams[property];
         }
     }
-    await user.save();
+
+    try {
+        await user.save();
+    } catch (e) {
+        if (e.code === '23505') {
+            throw Boom.conflict();
+        }
+        throw Boom.internal();
+    }
 
     return {
         user: user.toResponseObject()

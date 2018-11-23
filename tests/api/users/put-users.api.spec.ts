@@ -1,6 +1,7 @@
 import { expectHttpError } from '../resources/test-helpers';
 import { Test } from '../resources/user-resources';
 import { IUserResponse } from '../../../src/handlers/quiz/models/user';
+import uuid = require('uuid');
 
 describe('PUT /users/{userId}', () => {
     let user: IUserResponse;
@@ -22,14 +23,14 @@ describe('PUT /users/{userId}', () => {
         expect(response.user.photo).not.toBe('');
     });
 
-    it('should return 403 if no token is provided', async () => {
+    it('should return 401 if no token is provided', async () => {
         const myResources = new Test.UserResources();
-        await expectHttpError(myResources.updateUser(user.userId!, { name: '', phone: '' }), 403);
+        await expectHttpError(myResources.updateUser(user.userId!, { name: '', phone: '' }), 401);
     });
 
     it('should return 403 if changing user that is not user in token', async () => {
         const { user: otherUser } = await userResources.getNewUser();
-        await expectHttpError(userResources.updateUser(otherUser.userId!, { name: '', phone: '' }), 403);
+        await expectHttpError(userResources.updateUser(otherUser.userId!, { name: uuid(), phone: Test.generatePhone() }), 403);
     });
 
     it('should return 409 if tring to update to a used username', async () => {

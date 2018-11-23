@@ -36,7 +36,7 @@ export class AnswerFactory {
             SELECT *
             FROM ${ANSWER_TABLE_NAME} a
                 JOIN questions q ON q.question_id = a.question_id
-            WHERE a.quiz_id = $1 AND a.user_id = userId
+            WHERE q.quiz_id = $1 AND a.user_id = $2
             ORDER BY q.sent DESC
             LIMIT 1;
         `, [quizId, userId]);

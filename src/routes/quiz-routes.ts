@@ -23,6 +23,8 @@ import { postQuizComplete } from '../handlers/quiz/functions/quizzes/post-quiz--
 import { getQuizAccess } from '../handlers/quiz/functions/quizzes/get-quiz--access';
 import { getQuiz } from '../handlers/quiz/functions/quizzes/get-quiz';
 import { qtPreRouteHandler } from './pres/qt-access';
+import { extractQtClaims } from './pres/extract-quiz-claims';
+import { onlyCurrentUser } from './pres/only-current-user';
 
 export function quizRoutes(server: hapi.Server, _: IoServer): void {
     server.route({
@@ -45,6 +47,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
         path: '/users/{userId}',
         method: 'put',
         options: {
+            pre: [onlyCurrentUser],
             validate: { payload: putUserSchema }
         },
         handler: putUser
@@ -150,7 +153,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
     server.route({
         path: '/users/{userId}/lives/use',
         method: 'post',
-        options: { pre: [qtPreRouteHandler] },
+        options: { pre: [extractQtClaims, onlyCurrentUser] },
         handler: useLife
     });
 

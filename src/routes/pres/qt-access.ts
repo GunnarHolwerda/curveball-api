@@ -3,17 +3,7 @@ import * as Boom from 'boom';
 import { QuizFactory } from '../../handlers/quiz/models/factories/quiz-factory';
 import { verifyQt } from '../../handlers/quiz/authorizers/helpers/verify-qt';
 import { UserJwtClaims } from '../../handlers/quiz/lambda/lambda';
-
-const getQtTokenFromHeader = (req: Request): string | false => {
-    const header = req.headers['QT'] || req.headers['qt'];
-    if (header === undefined) {
-        return false;
-    }
-    if (!header.startsWith('Bearer ')) {
-        return false;
-    }
-    return header.replace('Bearer ', '');
-};
+import { getQtTokenFromHeader } from './extract-quiz-claims';
 
 export const qtPreRouteHandler: RouteOptionsPreObject = {
     method: async (request: Request, _: ResponseToolkit): Promise<any> => {
