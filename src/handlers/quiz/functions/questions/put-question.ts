@@ -1,9 +1,8 @@
 import * as Joi from 'joi';
-
+import * as Boom from 'boom';
 import * as hapi from 'hapi';
 import { IQuestion } from '../../models/question';
 import { QuestionFactory } from '../../models/factories/question-factory';
-import { CurveballNotFound } from '../../models/curveball-error';
 
 export const putQuestionSchema = Joi.object().keys({
     question: Joi.string().optional(),
@@ -20,7 +19,7 @@ export async function putQuestions(event: hapi.Request): Promise<object> {
     const questionParams = event.payload as IQuestion;
     const question = await QuestionFactory.load(questionId);
     if (!question) {
-        throw new CurveballNotFound();
+        throw Boom.notFound();
     }
 
     for (const property in questionParams) {
@@ -31,7 +30,7 @@ export async function putQuestions(event: hapi.Request): Promise<object> {
 
     await question.save();
 
-    return { question: question.toResponseObject() };
+    return { question: await question.toResponseObject() };
 }
 
 

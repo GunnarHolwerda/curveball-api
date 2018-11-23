@@ -72,7 +72,8 @@ describe('POST /users/{userId}/lives:use', () => {
     });
 
     describe('Authorization', () => {
-        it('should return 403 if user has not failed a question', async () => {
+        // TODO: Removing this test until we are sure we want this functionality back
+        xit('should return 403 if user has not failed a question', async () => {
             const { quiz, firstQuestion } = startResponse;
             const { user, token } = await userResources.getNewUser();
             // Give user a life by adding a user with their referral code

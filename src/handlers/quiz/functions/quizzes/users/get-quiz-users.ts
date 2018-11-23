@@ -3,7 +3,7 @@ import * as hapi from 'hapi';
 import * as Boom from 'boom';
 
 export async function getQuizUsers(event: hapi.Request): Promise<object> {
-    const quizId: string = event.path['quizId'];
+    const quizId: string = event.params['quizId'];
     const quiz = await QuizFactory.load(quizId);
 
     if (quiz === null) {

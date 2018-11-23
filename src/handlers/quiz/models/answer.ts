@@ -4,6 +4,7 @@ import { AnswerFactory } from './factories/answer-factory';
 import { CbRedis } from './cb-redis';
 
 export interface IAnswer {
+    answer_id: number;
     choice_id: string;
     question_id: string;
     user_id: string;

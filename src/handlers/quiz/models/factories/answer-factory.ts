@@ -2,7 +2,7 @@ import { Database } from '../database';
 import { ANSWER_TABLE_NAME, Answer, IAnswer } from '../answer';
 
 export interface AnswerStats {
-    count: number;
+    count: string;
     choice_id: string;
 }
 

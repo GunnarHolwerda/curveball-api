@@ -24,10 +24,6 @@ describe('POST /users', () => {
         await expectHttpError(userResources.rawCreateUser(undefined), 400);
     });
 
-    it('should return 400 if phone number is not of the form XXX-XXX-XXXX', async () => {
-        await expectHttpError(userResources.createUser('123-123'), 400);
-    });
-
     it('should return the same userId when submitting the same phone number', async () => {
         const phone = Test.generatePhone();
         const { userId } = await userResources.createUser(phone);

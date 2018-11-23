@@ -33,7 +33,7 @@ describe('PUT /questions/{questionId}', () => {
         });
     });
 
-    it('should update quiz properly', async () => {
+    it('should update question properly', async () => {
         const { questions } = questionResponse;
         const newTitle = 'This is a new question now';
         const response = await questionResources.updateQuestion(questions[0].questionId, {

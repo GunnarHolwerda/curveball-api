@@ -56,6 +56,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
     server.route({
         path: '/users/{userId}/lives',
         method: 'get',
+        options: { pre: [onlyCurrentUser] },
         handler: getUserLives
     });
 

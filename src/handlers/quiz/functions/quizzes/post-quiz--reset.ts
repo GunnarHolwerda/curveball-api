@@ -4,7 +4,7 @@ import { QuizFactory } from '../../models/factories/quiz-factory';
 import { AnswerFactory } from '../../models/factories/answer-factory';
 
 export async function postQuizReset(event: hapi.Request): Promise<object> {
-    const quizId = event.path['quizId'];
+    const quizId = event.params['quizId'];
     const quiz = await QuizFactory.load(quizId);
     if (quiz === null) {
         throw Boom.notFound();
@@ -18,10 +18,11 @@ export async function postQuizReset(event: hapi.Request): Promise<object> {
         question.properties.sent = null;
         question.properties.expired = null;
         const answers = await AnswerFactory.loadAllForQuestion(question.properties.question_id);
-        for (const answer of answers) {
-            answer.properties.disabled = true;
-            await answer.save();
-        }
+        const answerPromises = answers.map(async (a) => {
+            a.properties.disabled = true;
+            await a.save();
+        });
+        await Promise.all(answerPromises);
         await question.save();
     }
 

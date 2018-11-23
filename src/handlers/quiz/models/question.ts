@@ -89,7 +89,7 @@ export class Question {
         const choices = await this.choices();
         const correctAnswer = choices.find(c => c.properties.is_answer);
         const result: QuestionResults = {
-            totalAnswers: results.reduce((carry, value) => carry + value.count, 0),
+            totalAnswers: results.reduce((carry, value) => carry + Number.parseInt(value.count, 10), 0),
             results: choices.reduce((carry, value) => {
                 const choiceId = value.properties.choice_id;
                 const choice = results.find(r => r.choice_id === choiceId);

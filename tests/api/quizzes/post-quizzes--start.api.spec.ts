@@ -50,6 +50,6 @@ describe('POST /quizzes/{quizId}:start', () => {
 
     it('should return 404 if quiz started does not exist', async () => {
         await quizResources.updateQuiz(quiz.quizId, { active: false });
-        await expectHttpError(quizResources.startQuiz('wow'), 404);
+        await expectHttpError(quizResources.startQuiz(uuid()), 404);
     });
 });

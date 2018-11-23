@@ -60,7 +60,7 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
         const { quiz, firstQuestion } = startedQuiz;
         const results = await quizResources.getQuestionResults(quiz.quizId, firstQuestion.questionId);
         const correctAnswerText = mockQuestionsPayload.questions[0].choices.find(c => c.isAnswer!)!.text!;
-        expect(results.correctAnswer).toBe(firstQuestion.choices.find(c => c.text === correctAnswerText)!.text);
+        expect(results.correctAnswer).toBe(firstQuestion.choices.find(c => c.text === correctAnswerText)!.choiceId);
     });
 
     it('should return 404 question does not belong to quiz', async () => {
@@ -70,7 +70,7 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
 
     it('should return 404 if question does not exist', async () => {
         const { quiz } = startedQuiz;
-        await expectHttpError(quizResources.getQuestionResults(quiz.quizId, 'wow'), 404);
+        await expectHttpError(quizResources.getQuestionResults(quiz.quizId, uuid()), 404);
     });
 
     describe('Answerless questions', () => {

@@ -1,11 +1,10 @@
 import * as Joi from 'joi';
-
+import * as Boom from 'boom';
 import * as hapi from 'hapi';
 import { UserFactory } from '../../models/factories/user-factory';
-import { CurveballForbidden } from '../../models/curveball-error';
 
 export const postUserForceLoginSchema = Joi.object().keys({
-    phone: Joi.string().regex(/\d{3}-\d{3}-\d{4}/).required()
+    phone: Joi.string().required()
 }).unknown(false);
 
 export async function postUserForceLogin(event: hapi.Request): Promise<object> {
@@ -13,7 +12,7 @@ export async function postUserForceLogin(event: hapi.Request): Promise<object> {
     const user = await UserFactory.loadByPhone(phone);
 
     if (!user) {
-        throw new CurveballForbidden('User does not exist');
+        throw Boom.notFound('User does not exist');
     }
 
     return {

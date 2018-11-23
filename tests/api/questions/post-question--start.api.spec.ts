@@ -29,7 +29,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:start', () => {
     describe('Validation', () => {
         it('should return 404 if question does not exist on quiz', async () => {
             const { quiz } = startResponse;
-            await expectHttpError(quizResources.startQuestion(quiz.quizId, 'banana'), 404);
+            await expectHttpError(quizResources.startQuestion(quiz.quizId, uuid()), 404);
         });
 
         it('should return 404 if quiz does not exist', async () => {
