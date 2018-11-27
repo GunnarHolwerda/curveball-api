@@ -31,4 +31,8 @@ export class ApplicationConfig {
     public static get qtSecret(): string {
         return process.env.QT_SECRET!;
     }
+
+    public static get twilioKey(): string {
+        return process.env.TWILIO_KEY!;
+    }
 }

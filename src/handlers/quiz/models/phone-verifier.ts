@@ -3,6 +3,7 @@ import * as fetch from 'node-fetch';
 import { URLSearchParams } from 'url';
 import { IVerifyCodeResponse } from '../interfaces/IVerifyCodeResponse';
 import { Environment } from '../types/environments';
+import { ApplicationConfig } from '../../../config';
 
 const MockSendCodeResponse: ISendCodeResponse = {
     message: 'hello',
@@ -30,7 +31,7 @@ export class PhoneVerifier {
 
         const response = await fetch(`${this.endpoint}/phones/verification/start`, {
             method: 'post',
-            headers: { 'X-Authy-API-Key': process.env.TWILIO_KEY! },
+            headers: { 'X-Authy-API-Key': ApplicationConfig.twilioKey },
             body: params
         }).then(res => res.json());
         return response as ISendCodeResponse;
