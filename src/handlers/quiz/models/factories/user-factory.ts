@@ -1,5 +1,6 @@
 import { User, IUser, USER_TABLE_NAME } from '../user';
 import { Database } from '../database';
+import { PhoneVerifier } from '../phone-verifier';
 
 export class UserFactory {
     public static async load(userId: string): Promise<User | null> {
@@ -42,11 +43,15 @@ export class UserFactory {
     }
 
     public static async loadByPhone(phone: string): Promise<User | null> {
+        const formattedPhoneNumber = PhoneVerifier.getValidPhoneNumber(phone);
+        if (formattedPhoneNumber === null) {
+            throw new Error('Invalid phone number');
+        }
         const result = await Database.instance.client.query(`
                                         SELECT *
                                         FROM ${USER_TABLE_NAME}
                                         WHERE phone = $1;
-                                    `, [phone]);
+                                    `, [formattedPhoneNumber]);
         if (result.rows.length === 0) {
             return null;
         }

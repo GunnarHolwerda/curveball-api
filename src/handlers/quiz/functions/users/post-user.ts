@@ -14,7 +14,12 @@ export const postUserSchema = Joi.object().keys({
 
 export async function postUser(event: hapi.Request): Promise<object> {
     const { phone, referral } = event.payload as { phone: string, referral?: string };
-    let user: User | null = await UserFactory.loadByPhone(phone);
+    let user: User | null = null;
+    try {
+        user = await UserFactory.loadByPhone(phone);
+    } catch (e) {
+        throw Boom.badRequest('Invalid phone number');
+    }
     if (user === null) {
         user = await User.create(phone);
         if (referral) {

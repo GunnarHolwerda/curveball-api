@@ -1,5 +1,6 @@
 import { ISendCodeResponse } from '../interfaces/ISendCodeResponse';
 import * as fetch from 'node-fetch';
+import PhoneNumber from 'awesome-phonenumber';
 import { URLSearchParams } from 'url';
 import { IVerifyCodeResponse } from '../interfaces/IVerifyCodeResponse';
 import { Environment } from '../types/environments';
@@ -46,5 +47,17 @@ export class PhoneVerifier {
             headers: { 'X-Authy-API-Key': ApplicationConfig.twilioKey }
         }).then(res => res.json());
         return response as IVerifyCodeResponse;
+    }
+
+    /**
+     * Returns the e164 formatted version of phone number. Null if invalid
+     * @param phone the phone number to validate
+     */
+    public static getValidPhoneNumber(phone: string): string | null {
+        const phoneNum = new PhoneNumber(phone);
+        if (!phoneNum.isValid() && (ApplicationConfig.nodeEnv !== Environment.local && phoneNum.getType() !== 'unknown')) {
+            return null;
+        }
+        return phoneNum.getNumber('e164');
     }
 }

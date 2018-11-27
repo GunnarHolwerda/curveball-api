@@ -31,7 +31,7 @@ export namespace Test {
     export function generatePhone(): string {
         const getDigit = () => Math.round(Math.random() * 9);
         // tslint:disable-next-line
-        const phone = `${getDigit()}${getDigit()}${getDigit()}-${getDigit()}${getDigit()}${getDigit()}-${getDigit()}${getDigit()}${getDigit()}${getDigit()}`;
+        const phone = `+1${getDigit()}${getDigit()}${getDigit()}${getDigit()}${getDigit()}${getDigit()}${getDigit()}${getDigit()}${getDigit()}${getDigit()}`;
         return phone;
     }
 

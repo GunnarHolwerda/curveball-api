@@ -1,6 +1,5 @@
 import { QueryResult } from 'pg';
 import * as Randomstring from 'randomstring';
-
 import { Postgres } from '../postgres';
 import { createUserJWT } from './jwt';
 import { Powerup } from './powerup';
@@ -10,6 +9,7 @@ import { UserFactory } from './factories/user-factory';
 import { PowerupFactory } from './factories/lives-factory';
 import { omit } from '../util/omit';
 import { camelizeKeys } from '../util/camelize-keys';
+import { PhoneVerifier } from '../../../handlers/quiz/models/phone-verifier';
 
 export interface IUser {
     user_id: string;
@@ -48,12 +48,16 @@ export class User {
     }
 
     public static async create(phoneNumber: string): Promise<User> {
+        const formattedPhoneNumber = PhoneVerifier.getValidPhoneNumber(phoneNumber);
+        if (formattedPhoneNumber === null) {
+            throw new Error('Invalid phone number');
+        }
         let result: QueryResult;
         result = await Database.instance.client.query(`
             INSERT INTO ${USER_TABLE_NAME} (phone, photo)
             VALUES ($1, $2)
             RETURNING user_id;
-        `, [phoneNumber, getAvatarUrl()]);
+        `, [formattedPhoneNumber, getAvatarUrl()]);
         const userId = result!.rows[0].user_id;
         return (await UserFactory.load(userId))!;
     }
@@ -66,6 +70,9 @@ export class User {
     public async save(): Promise<void> {
         if (this.properties.photo === '') {
             this.properties.photo = getAvatarUrl();
+        }
+        if (PhoneVerifier.getValidPhoneNumber(this.properties.phone) === null) {
+            throw new Error('Invalid phone number');
         }
 
         const updateString: string = Postgres.buildUpatePropertyString(this._user, this.properties);
