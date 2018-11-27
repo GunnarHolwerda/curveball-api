@@ -5,7 +5,7 @@ import { UserFactory } from '../../models/factories/user-factory';
 import { PhoneVerifier } from '../../models/phone-verifier';
 
 export const postUserVerifySchema = Joi.object().keys({
-    code: Joi.string().min(4).max(7).required().description('The verification code for the user'),
+    code: Joi.string().min(4).required().description('The verification code for the user'),
     username: Joi.string().min(1).max(15).optional().description('Username for the user')
 });
 

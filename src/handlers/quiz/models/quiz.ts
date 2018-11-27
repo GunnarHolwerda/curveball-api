@@ -1,6 +1,6 @@
 import { Postgres } from '../postgres';
 import { QuizFactory } from './factories/quiz-factory';
-import { Question } from './question';
+import { Question, QUESTION_TABLE_NAME } from './question';
 import { IUser, User } from './user';
 import { CbRedis } from './cb-redis';
 import { Database } from './database';
@@ -8,6 +8,10 @@ import { QuestionFactory } from './factories/question-factory';
 import { Cacheable } from '../interfaces/cacheable';
 import { EventEmitter } from 'events';
 import { camelizeKeys } from '../util/camelize-keys';
+import { ANSWER_TABLE_NAME } from '../../../handlers/quiz/models/answer';
+import { USER_TABLE_NAME } from '../../../handlers/quiz/models/user';
+import { CHOICES_TABLE_NAME } from './question-choice';
+import { POWERUP_TABLE_NAME } from './powerup';
 
 export interface IQuiz {
     quiz_id: string;
@@ -99,11 +103,11 @@ export class Quiz implements Cacheable {
         const result = await Database.instance.client.query(`
         SELECT u.*
             from ${QUIZZES_TABLE_NAME} qz
-                JOIN questions q ON q.quiz_id = qz.quiz_id
-                JOIN questions_choices c ON q.question_id = c.question_id
-                JOIN answer_submission a ON a.choice_id = c.choice_id
-                JOIN users u ON u.user_id = a.user_id
-                LEFT JOIN lives l ON l.user_id = u.user_id
+                JOIN ${QUESTION_TABLE_NAME} q ON q.quiz_id = qz.quiz_id
+                JOIN ${CHOICES_TABLE_NAME} c ON q.question_id = c.question_id
+                JOIN ${ANSWER_TABLE_NAME} a ON a.choice_id = c.choice_id
+                JOIN ${USER_TABLE_NAME} u ON u.user_id = a.user_id
+                LEFT JOIN ${POWERUP_TABLE_NAME} l ON l.user_id = u.user_id
             WHERE
                 qz.quiz_id = $1
                 AND (c.is_answer = TRUE OR l.question IS NOT NULL)

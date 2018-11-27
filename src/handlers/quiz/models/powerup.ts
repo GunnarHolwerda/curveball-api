@@ -1,22 +1,22 @@
 import { Postgres } from '../postgres';
 import { Database } from './database';
 
-export interface ILife {
+export interface IPowerup {
     id: number;
     user_id: string;
     question: string;
 }
 
-export const LIFE_TABLE_NAME = 'lives';
+export const POWERUP_TABLE_NAME = 'powerup';
 
-export class Life {
-    public properties: ILife;
-    constructor(private _life: ILife) {
-        this.properties = { ..._life };
+export class Powerup {
+    public properties: IPowerup;
+    constructor(private _powerup: IPowerup) {
+        this.properties = { ..._powerup };
     }
 
     public static async create(userId: string): Promise<boolean> {
-        const result = await Database.instance.client.query(`INSERT INTO ${LIFE_TABLE_NAME} (user_id) VALUES ($1);`, [userId]);
+        const result = await Database.instance.client.query(`INSERT INTO ${POWERUP_TABLE_NAME} (user_id) VALUES ($1);`, [userId]);
         return result.rowCount === 1;
     }
 
@@ -26,14 +26,14 @@ export class Life {
     }
 
     public async save(): Promise<void> {
-        const updateString: string = Postgres.buildUpatePropertyString(this._life, this.properties);
+        const updateString: string = Postgres.buildUpatePropertyString(this._powerup, this.properties);
         if (updateString) {
             await Database.instance.client.query(`
-                UPDATE ${LIFE_TABLE_NAME}
+                UPDATE ${POWERUP_TABLE_NAME}
                 SET
                     ${updateString}
                 WHERE id = $1;
-            `, [this._life.id]);
+            `, [this._powerup.id]);
         }
     }
 }

@@ -43,7 +43,7 @@ export class PhoneVerifier {
         }
         const queryParams = `?phone_number=${this.phoneNumber}&verification_code=${code}&country_code=${1}`;
         const response = await fetch(`${this.endpoint}/phones/verification/check${queryParams}`, {
-            headers: { 'X-Authy-API-Key': process.env.TWILIO_KEY! }
+            headers: { 'X-Authy-API-Key': ApplicationConfig.twilioKey }
         }).then(res => res.json());
         return response as IVerifyCodeResponse;
     }

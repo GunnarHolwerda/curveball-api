@@ -1,11 +1,11 @@
-import { Life, LIFE_TABLE_NAME, ILife } from '../lives';
+import { Powerup, POWERUP_TABLE_NAME, IPowerup } from '../powerup';
 import { Database } from '../database';
 
-export class LivesFactory {
-    public static async loadAvailableForUser(userId: string): Promise<Array<Life>> {
+export class PowerupFactory {
+    public static async loadAvailableForUser(userId: string): Promise<Array<Powerup>> {
         const result = await Database.instance.client.query(`
-            SELECT * FROM ${LIFE_TABLE_NAME} WHERE user_id = $1 AND question IS NULL;
+            SELECT * FROM ${POWERUP_TABLE_NAME} WHERE user_id = $1 AND question IS NULL;
         `, [userId]);
-        return result.rows.map(r => new Life(r as ILife));
+        return result.rows.map(r => new Powerup(r as IPowerup));
     }
 }

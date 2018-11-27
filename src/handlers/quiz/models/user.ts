@@ -3,11 +3,11 @@ import * as Randomstring from 'randomstring';
 
 import { Postgres } from '../postgres';
 import { createUserJWT } from './jwt';
-import { Life } from './lives';
+import { Powerup } from './powerup';
 import { UserJwtClaims } from '../lambda/lambda';
 import { Database } from './database';
 import { UserFactory } from './factories/user-factory';
-import { LivesFactory } from './factories/lives-factory';
+import { PowerupFactory } from './factories/lives-factory';
 import { omit } from '../util/omit';
 import { camelizeKeys } from '../util/camelize-keys';
 
@@ -79,8 +79,8 @@ export class User {
         }
     }
 
-    public async lives(): Promise<Array<Life>> {
-        return await LivesFactory.loadAvailableForUser(this.properties.user_id);
+    public async lives(): Promise<Array<Powerup>> {
+        return await PowerupFactory.loadAvailableForUser(this.properties.user_id);
     }
 
     public async stats(): Promise<{ wins: number, winnings: string }> {

@@ -2,7 +2,7 @@ import * as Joi from 'joi';
 
 import * as hapi from 'hapi';
 import { User } from '../../models/user';
-import { Life } from '../../models/lives';
+import { Powerup } from '../../models/powerup';
 import { UserFactory } from '../../models/factories/user-factory';
 import { PhoneVerifier } from '../../models/phone-verifier';
 import * as Boom from 'boom';
@@ -23,7 +23,7 @@ export async function postUser(event: hapi.Request): Promise<object> {
                 if (referrer === null) {
                     throw Boom.badRequest('Invalid referral code');
                 }
-                await Life.create(referrer.properties.user_id);
+                await Powerup.create(referrer.properties.user_id);
             } catch (e) {
                 throw Boom.badRequest('Invalid referral code');
             }

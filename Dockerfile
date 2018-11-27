@@ -1,13 +1,13 @@
 FROM node:8
 WORKDIR /usr/local/src/realtime
 
-ENV REDIS_HOST infrastructure_curveball-cache_1
+ENV REDIS_HOST curveball-cache
 ENV REDIS_PORT 6379
 ENV NODE_ENV local
 ENV JWT_SECRET sEcReT
 ENV INTERNAL_SECRET VerySecret
 ENV PGUSER root
-ENV PGHOST infrastructure_curveball-db_1
+ENV PGHOST curveball-db
 ENV PGPASSWORD password
 ENV PGDATABASE curveball
 ENV QT_SECRET ExtraSecret
