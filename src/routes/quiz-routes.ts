@@ -1,130 +1,178 @@
-import * as Boom from 'boom';
 import * as hapi from 'hapi';
-import * as Joi from 'joi';
-
 import { IoServer } from '../models/io-server';
-import { QuizNamespace } from '../models/quiz-namespace';
-import { QuizCache } from '../models/quiz-cache';
-import { ServerEvents } from '../events';
+import { postUser, postUserSchema } from '../handlers/quiz/functions/users/post-user';
+import { getUser } from '../handlers/quiz/functions/users/get-user';
+import { putUser, putUserSchema } from '../handlers/quiz/functions/users/put-user';
+import { getUserLives } from '../handlers/quiz/functions/users/get-user-lives';
+import { postUserVerify, postUserVerifySchema } from '../handlers/quiz/functions/users/post-user--verify';
+import { postUserForceLogin, postUserForceLoginSchema } from '../handlers/quiz/functions/users/post-user--forcelogin';
+import { postQuizzes, postQuizzesSchema } from '../handlers/quiz/functions/quizzes/post-quizzes';
+import { putQuiz, putQuizSchema } from '../handlers/quiz/functions/quizzes/put-quiz';
+import { postQuestions, postQuestionsSchema } from '../handlers/quiz/functions/quizzes/questions/post-questions';
+import { getQuestions } from '../handlers/quiz/functions/quizzes/questions/get-questions';
+import { postQuizzesStart } from '../handlers/quiz/functions/quizzes/post-quiz--start';
+import { answerQuestion, questionsAnswerSchema } from '../handlers/quiz/functions/quizzes/questions/post-question--answer';
+import { postQuestionStart } from '../handlers/quiz/functions/quizzes/questions/post-question--start';
+import { putQuestions, putQuestionSchema } from '../handlers/quiz/functions/questions/put-question';
+import { getQuestionResults } from '../handlers/quiz/functions/quizzes/questions/get-question--results';
+import { getQuizzes } from '../handlers/quiz/functions/quizzes/get-quizzes';
+import { getQuizUsers } from '../handlers/quiz/functions/quizzes/users/get-quiz-users';
+import { useLife } from '../handlers/quiz/functions/users/post-users-lives--use';
+import { postQuizReset } from '../handlers/quiz/functions/quizzes/post-quiz--reset';
+import { postQuizComplete } from '../handlers/quiz/functions/quizzes/post-quiz--complete';
+import { getQuizAccess } from '../handlers/quiz/functions/quizzes/get-quiz--access';
+import { getQuiz } from '../handlers/quiz/functions/quizzes/get-quiz';
+import { qtPreRouteHandler } from './pres/qt-access';
+import { extractQtClaims } from './pres/extract-quiz-claims';
+import { onlyCurrentUser } from './pres/only-current-user';
 
-async function getNamespace(quizId: string, ioServer: IoServer): Promise<QuizNamespace | null> {
-    const quiz = await QuizCache.getQuiz(quizId);
-    if (!quiz) {
-        return null;
-    }
-    const namespace = ioServer.getNamespace(quizId);
-    return new QuizNamespace(namespace, quiz!);
-}
-
-export function quizRoutes(server: hapi.Server, ioServer: IoServer): void {
-    server.route({
-        path: '/quizzes',
-        method: 'POST',
-        options: {
-            validate: {
-                payload: Joi.object().required().keys({
-                    quiz: Joi.object()
-                        .keys({
-                            quizId: Joi.string(),
-                            title: Joi.string(),
-                            potAmount: Joi.number(),
-                            numQuestions: Joi.number()
-                        })
-                        .requiredKeys(['quizId'])
-                        .options({ stripUnknown: true })
-                        .description('Create a new room for a quiz'),
-                    ticker: Joi.array()
-                        .items(
-                            Joi.object().keys({
-                                ticker: Joi.string().required(),
-                                sport: Joi.string().required()
-                            })
-                        ).required().description('The ticker for the questions for the quiz')
-                })
-            }
+export function quizRoutes(server: hapi.Server, _: IoServer): void {
+    const routes: Array<hapi.ServerRoute> = [
+        {
+            path: '/users',
+            method: 'post',
+            options: {
+                auth: false,
+                validate: { payload: postUserSchema }
+            },
+            handler: postUser
         },
-        handler: async (req) => {
-            const quiz = req.payload['quiz'];
-            const ticker = req.payload['ticker'];
-            const { quizId } = quiz;
-            const quizNamespace = new QuizNamespace(ioServer.getNamespace(quizId), quiz);
-            quizNamespace.start();
-            ioServer.server.emit(ServerEvents.quizStart, { quiz, ticker });
-            return {
-                quizId: quizNamespace.quizId
-            };
-        }
-    });
-
-    server.route({
-        path: '/quizzes/{quizId}',
-        method: 'GET',
-        handler: async (req) => {
-            const quizId: string = req.params['quizId'];
-            const quizNamespace = await QuizCache.getQuiz(quizId);
-            if (!quizNamespace) {
-                return Boom.notFound();
-            }
-            return { quizId };
-        }
-    });
-
-    server.route({
-        path: '/quizzes/{quizId}:connected',
-        method: 'GET',
-        handler: async (req) => {
-            const quizId: string = req.params['quizId'];
-            const quizNamespace = await getNamespace(quizId, ioServer);
-            if (quizNamespace === null) {
-                return Boom.notFound();
-            }
-            return {
-                connecetdUsers: await quizNamespace.numConnected
-            };
-        }
-    });
-
-    server.route({
-        path: '/quizzes/{quizId}/{eventType}:emit',
-        method: 'POST',
-        handler: async (req) => {
-            const quizId: string = req.params['quizId'];
-            const eventType: string = req.params['eventType'];
-            const payload = req.payload || {};
-            const quizNamespace = await getNamespace(quizId, ioServer);
-            if (quizNamespace === null) {
-                return Boom.notFound();
-            }
-            quizNamespace.namespace.emit(eventType, payload);
-            return payload;
+        {
+            path: '/users/{userId}',
+            method: 'get',
+            handler: getUser
         },
-        options: {
-            validate: {
-                params: {
-                    quizId: Joi.string().required().description('The id for the quiz to emit to'),
-                    eventType: Joi.string().allow(['question', 'results', 'winners', 'complete']).required()
-                }
-            }
-        }
+        {
+            path: '/users/{userId}',
+            method: 'put',
+            options: {
+                pre: [onlyCurrentUser],
+                validate: { payload: putUserSchema }
+            },
+            handler: putUser
+        },
+        {
+            path: '/users/{userId}/lives',
+            method: 'get',
+            options: { pre: [onlyCurrentUser] },
+            handler: getUserLives
+        },
+        {
+            path: '/users/{userId}/verify',
+            method: 'post',
+            options: { auth: false, validate: { payload: postUserVerifySchema } },
+            handler: postUserVerify
+        },
+        {
+            path: '/users_force_login',
+            method: 'post',
+            options: { auth: 'internalJwt', validate: { payload: postUserForceLoginSchema } },
+            handler: postUserForceLogin
+        },
+        {
+            path: '/quizzes',
+            method: 'post',
+            options: { auth: 'internalJwt', validate: { payload: postQuizzesSchema } },
+            handler: postQuizzes
+        },
+        {
+            path: '/quizzes/{quizId}',
+            method: 'put',
+            options: { auth: 'internalJwt', validate: { payload: putQuizSchema } },
+            handler: putQuiz
+        },
+        {
+            path: '/quizzes/{quizId}',
+            method: 'get',
+            options: { auth: 'internalJwt' },
+            handler: getQuiz
+        },
+        {
+            path: '/quizzes/{quizId}/questions',
+            method: 'post',
+            options: { auth: 'internalJwt', validate: { payload: postQuestionsSchema } },
+            handler: postQuestions
+        },
+        {
+            path: '/quizzes/{quizId}/questions',
+            method: 'get',
+            options: { auth: 'internalJwt' },
+            handler: getQuestions
+        },
+        {
+            path: '/quizzes/{quizId}/start',
+            method: 'post',
+            options: { auth: 'internalJwt' },
+            handler: postQuizzesStart
+        },
+        {
+            path: '/quizzes/{quizId}/questions/{questionId}/answer',
+            method: 'post',
+            options: {
+                pre: [qtPreRouteHandler],
+                validate: { payload: questionsAnswerSchema }
+            },
+            handler: answerQuestion
+        },
+        {
+            path: '/quizzes/{quizId}/questions/{questionId}/start',
+            method: 'post',
+            options: { auth: 'internalJwt' },
+            handler: postQuestionStart
+        },
+        {
+            path: '/questions/{questionId}',
+            method: 'put',
+            options: { auth: 'internalJwt', validate: { payload: putQuestionSchema } },
+            handler: putQuestions
+        },
+        {
+            path: '/quizzes/{quizId}/questions/{questionId}/results',
+            method: 'get',
+            options: { auth: 'internalJwt' },
+            handler: getQuestionResults
+        },
+        {
+            path: '/quizzes',
+            method: 'get',
+            options: { auth: 'internalJwt' },
+            handler: getQuizzes
+        },
+        {
+            path: '/quizzes/{quizId}/users',
+            method: 'get',
+            options: { auth: 'internalJwt' },
+            handler: getQuizUsers
+        },
+        {
+            path: '/users/{userId}/lives/use',
+            method: 'post',
+            options: { pre: [extractQtClaims, onlyCurrentUser] },
+            handler: useLife
+        },
+        {
+            path: '/quizzes/{quizId}/reset',
+            method: 'post',
+            options: { auth: 'internalJwt' },
+            handler: postQuizReset
+        },
+        {
+            path: '/quizzes/{quizId}/complete',
+            method: 'post',
+            options: { auth: 'internalJwt' },
+            handler: postQuizComplete
+        },
+        {
+            path: '/quizzes/{quizId}/access',
+            method: 'get',
+            handler: getQuizAccess
+        },
+    ];
+
+    const devRoutes = routes.map(r => {
+        r.path = '/dev' + r.path;
+        return r;
     });
 
-    server.route({
-        path: '/quizzes/{quizId}',
-        method: 'DELETE',
-        handler: async (req) => {
-            const quizId: string = req.params['quizId'];
-            const quizNamespace = await getNamespace(quizId, ioServer);
-            if (quizNamespace === null) {
-                return Boom.notFound();
-            }
-            try {
-                await quizNamespace.delete();
-            } catch (e) {
-                return Boom.internal();
-            }
-            return {
-                message: 'ok'
-            };
-        }
-    });
+    devRoutes.forEach(r => server.route(r));
 }
