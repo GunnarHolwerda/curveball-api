@@ -114,13 +114,13 @@ describe('POST /users/{userId}/lives:use', () => {
     });
 
     function getWrongAnswer(questionId: string): string {
-        return questions.questions.find(q => q.questionId === questionId)!.choices[1].text;
+        return questions.questions.find(q => q.questionId === questionId)!.choices[1].choiceId;
     }
 
     function getRightAnswer(questionId: string, originalQuestions: Array<QuestionPayload>): string {
         const question = questions.questions.find(q => q.questionId === questionId)!;
         const correctAnswerText = originalQuestions
-            .find(q => q.question === question.question)!.choices.find(c => c.isAnswer === true)!.text;
-        return question.choices.find(c => c.text === correctAnswerText)!.text;
+            .find(q => q.question === question.question)!.choices.find(c => c.isAnswer === true)!.choiceId;
+        return question.choices.find(c => c.text === correctAnswerText)!.choiceId;
     }
 });

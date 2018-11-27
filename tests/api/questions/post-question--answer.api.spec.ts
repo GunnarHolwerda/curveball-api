@@ -47,7 +47,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
         const response = await quizResources.answerQuestion(
             quiz.quizId,
             firstQuestion.questionId,
-            firstQuestion.choices[0].text
+            firstQuestion.choices[0].choiceId
         );
         expect(response.token).toBeDefined('QT token was not returned by response');
     });
@@ -57,7 +57,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
         const response = await quizResources.answerQuestion(
             quiz.quizId,
             firstQuestion.questionId,
-            firstQuestion.choices[0].text,
+            firstQuestion.choices[0].choiceId,
         );
         const claims: QTClaims & BaseClaims = jwt.decode(response.token) as QTClaims & BaseClaims;
         expect(claims.iss).toBe(quiz.quizId, 'iss claim was not quizId');
@@ -241,13 +241,13 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
     });
 
     function getWrongAnswer(questionId: string): string {
-        return questions.questions.find(q => q.questionId === questionId)!.choices[1].text;
+        return questions.questions.find(q => q.questionId === questionId)!.choices[1].choiceId;
     }
 
     function getRightAnswer(questionId: string, originalQuestions: Array<QuestionPayload>): string {
         const question = questions.questions.find(q => q.questionId === questionId)!;
-        const correctAnswerText = originalQuestions
-            .find(q => q.question === question.question)!.choices.find((c) => c.isAnswer === true)!.text;
-        return question.choices.find(c => c.text === correctAnswerText)!.text;
+        const correctAnswer = originalQuestions
+            .find(q => q.question === question.question)!.choices.find(c => c.isAnswer!)!.text;
+        return question.choices.find(c => c.text === correctAnswer)!.choiceId;
     }
 });

@@ -113,6 +113,6 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
     });
 
     function getRandomChoice(choices: Array<IChoiceResponse>): string {
-        return choices[Math.floor(Math.random() * choices.length)].text;
+        return choices[Math.floor(Math.random() * choices.length)].choiceId;
     }
 });

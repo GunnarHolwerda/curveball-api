@@ -59,14 +59,14 @@ describe('POST /quizzes/{quizId}/complete', () => {
         quizResources.token = wrongUserResponse.token;
         const wrongAnswer = questions
             .find(q => q.questionId === firstQuestion.questionId)!.choices
-            .find(c => c.text !== correctAnswer)!.text;
+            .find(c => c.text !== correctAnswer)!.choiceId;
         const { token: wrongUserToken } = await quizResources.answerQuestion(quiz.quizId, questionId, wrongAnswer);
         wrongUserQt = wrongUserToken;
 
         quizResources.token = rightUserResponse.token;
         const correctAnswerChoice = questions
             .find(q => q.questionId === firstQuestion.questionId)!.choices
-            .find(c => c.text === correctAnswer)!.text;
+            .find(c => c.text === correctAnswer)!.choiceId;
         await quizResources.answerQuestion(quiz.quizId, questionId, correctAnswerChoice);
     });
 

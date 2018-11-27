@@ -26,7 +26,7 @@ describe('POST /quizzes/{quizId}/reset', () => {
         await quizResources.answerQuestion(
             quiz.quizId,
             firstQuestion.questionId,
-            firstQuestion.choices[1].text
+            firstQuestion.choices[1].choiceId
         );
     });
 
@@ -46,7 +46,7 @@ describe('POST /quizzes/{quizId}/reset', () => {
         await quizResources.answerQuestion(
             quiz.quizId,
             firstQuestion.questionId,
-            firstQuestion.choices[1].text
+            firstQuestion.choices[1].choiceId
         );
     });
 });

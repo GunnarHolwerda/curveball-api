@@ -17,7 +17,7 @@ export interface QuestionsAnswerPayload {
 export async function answerQuestion(event: hapi.Request): Promise<object> {
     const { userId } = event.auth.credentials as UserJwtClaims;
     const { lifeUsed } = event.pre.quizClaims as AllQtClaims;
-    const { choice: choiceText } = event.payload as QuestionsAnswerPayload;
+    const { choice: choiceId } = event.payload as QuestionsAnswerPayload;
 
     const { quizId, questionId } = event.params;
     const quiz = await QuizFactory.load(quizId);
@@ -36,7 +36,7 @@ export async function answerQuestion(event: hapi.Request): Promise<object> {
 
     // If answer is correct return new QT with aud for userId of the jwt
     const choices = await question.choices();
-    const selectedChoice = choices.find(c => c.properties.text === choiceText);
+    const selectedChoice = choices.find(c => c.properties.choice_id === choiceId);
     if (selectedChoice === undefined) {
         throw Boom.badRequest('Choice does not exist');
     }

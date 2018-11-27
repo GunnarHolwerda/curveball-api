@@ -58,14 +58,14 @@ describe('GET /quizzes/{quizId}/users', () => {
         quizResources.token = wrongUserResponse.token;
         const wrongChoice = questions
             .find(q => q.questionId === firstQuestion.questionId)!.choices
-            .find(c => c.text !== correctAnswer)!.text;
+            .find(c => c.text !== correctAnswer)!.choiceId;
         const { token: wrongUserToken } = await quizResources.answerQuestion(quiz.quizId, questionId, wrongChoice);
         wrongUserQt = wrongUserToken;
 
         quizResources.token = rightUserResponse.token;
         const correctAnswerId = questions
             .find(q => q.questionId === firstQuestion.questionId)!.choices
-            .find(c => c.text === correctAnswer)!.text;
+            .find(c => c.text === correctAnswer)!.choiceId;
         await quizResources.answerQuestion(quiz.quizId, questionId, correctAnswerId);
     });
 
