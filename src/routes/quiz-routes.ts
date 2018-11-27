@@ -27,155 +27,152 @@ import { extractQtClaims } from './pres/extract-quiz-claims';
 import { onlyCurrentUser } from './pres/only-current-user';
 
 export function quizRoutes(server: hapi.Server, _: IoServer): void {
-    server.route({
-        path: '/users',
-        method: 'post',
-        options: {
-            auth: false,
-            validate: { payload: postUserSchema }
+    const routes: Array<hapi.ServerRoute> = [
+        {
+            path: '/users',
+            method: 'post',
+            options: {
+                auth: false,
+                validate: { payload: postUserSchema }
+            },
+            handler: postUser
         },
-        handler: postUser
-    });
-
-    server.route({
-        path: '/users/{userId}',
-        method: 'get',
-        handler: getUser
-    });
-
-    server.route({
-        path: '/users/{userId}',
-        method: 'put',
-        options: {
-            pre: [onlyCurrentUser],
-            validate: { payload: putUserSchema }
+        {
+            path: '/users/{userId}',
+            method: 'get',
+            handler: getUser
         },
-        handler: putUser
-    });
-
-    server.route({
-        path: '/users/{userId}/lives',
-        method: 'get',
-        options: { pre: [onlyCurrentUser] },
-        handler: getUserLives
-    });
-
-    server.route({
-        path: '/users/{userId}/verify',
-        method: 'post',
-        options: { auth: false, validate: { payload: postUserVerifySchema } },
-        handler: postUserVerify
-    });
-
-    server.route({
-        path: '/users_force_login',
-        method: 'post',
-        options: { auth: 'internalJwt', validate: { payload: postUserForceLoginSchema } },
-        handler: postUserForceLogin
-    });
-    server.route({
-        path: '/quizzes',
-        method: 'post',
-        options: { auth: 'internalJwt', validate: { payload: postQuizzesSchema } },
-        handler: postQuizzes
-    });
-    server.route({
-        path: '/quizzes/{quizId}',
-        method: 'put',
-        options: { auth: 'internalJwt', validate: { payload: putQuizSchema } },
-        handler: putQuiz
-    });
-    server.route({
-        path: '/quizzes/{quizId}',
-        method: 'get',
-        options: { auth: 'internalJwt' },
-        handler: getQuiz
-    });
-    server.route({
-        path: '/quizzes/{quizId}/questions',
-        method: 'post',
-        options: { auth: 'internalJwt', validate: { payload: postQuestionsSchema } },
-        handler: postQuestions
-    });
-    server.route({
-        path: '/quizzes/{quizId}/questions',
-        method: 'get',
-        options: { auth: 'internalJwt' },
-        handler: getQuestions
-    });
-    server.route({
-        path: '/quizzes/{quizId}/start',
-        method: 'post',
-        options: { auth: 'internalJwt' },
-        handler: postQuizzesStart
-    });
-    server.route({
-        path: '/quizzes/{quizId}/questions/{questionId}/answer',
-        method: 'post',
-        options: {
-            pre: [qtPreRouteHandler],
-            validate: { payload: questionsAnswerSchema }
+        {
+            path: '/users/{userId}',
+            method: 'put',
+            options: {
+                pre: [onlyCurrentUser],
+                validate: { payload: putUserSchema }
+            },
+            handler: putUser
         },
-        handler: answerQuestion
-    });
-    server.route({
-        path: '/quizzes/{quizId}/questions/{questionId}/start',
-        method: 'post',
-        options: { auth: 'internalJwt' },
-        handler: postQuestionStart
-    });
-    server.route({
-        path: '/questions/{questionId}',
-        method: 'put',
-        options: { auth: 'internalJwt', validate: { payload: putQuestionSchema } },
-        handler: putQuestions
-    });
-    server.route({
-        path: '/quizzes/{quizId}/questions/{questionId}/results',
-        method: 'get',
-        options: { auth: 'internalJwt' },
-        handler: getQuestionResults
+        {
+            path: '/users/{userId}/lives',
+            method: 'get',
+            options: { pre: [onlyCurrentUser] },
+            handler: getUserLives
+        },
+        {
+            path: '/users/{userId}/verify',
+            method: 'post',
+            options: { auth: false, validate: { payload: postUserVerifySchema } },
+            handler: postUserVerify
+        },
+        {
+            path: '/users_force_login',
+            method: 'post',
+            options: { auth: 'internalJwt', validate: { payload: postUserForceLoginSchema } },
+            handler: postUserForceLogin
+        },
+        {
+            path: '/quizzes',
+            method: 'post',
+            options: { auth: 'internalJwt', validate: { payload: postQuizzesSchema } },
+            handler: postQuizzes
+        },
+        {
+            path: '/quizzes/{quizId}',
+            method: 'put',
+            options: { auth: 'internalJwt', validate: { payload: putQuizSchema } },
+            handler: putQuiz
+        },
+        {
+            path: '/quizzes/{quizId}',
+            method: 'get',
+            options: { auth: 'internalJwt' },
+            handler: getQuiz
+        },
+        {
+            path: '/quizzes/{quizId}/questions',
+            method: 'post',
+            options: { auth: 'internalJwt', validate: { payload: postQuestionsSchema } },
+            handler: postQuestions
+        },
+        {
+            path: '/quizzes/{quizId}/questions',
+            method: 'get',
+            options: { auth: 'internalJwt' },
+            handler: getQuestions
+        },
+        {
+            path: '/quizzes/{quizId}/start',
+            method: 'post',
+            options: { auth: 'internalJwt' },
+            handler: postQuizzesStart
+        },
+        {
+            path: '/quizzes/{quizId}/questions/{questionId}/answer',
+            method: 'post',
+            options: {
+                pre: [qtPreRouteHandler],
+                validate: { payload: questionsAnswerSchema }
+            },
+            handler: answerQuestion
+        },
+        {
+            path: '/quizzes/{quizId}/questions/{questionId}/start',
+            method: 'post',
+            options: { auth: 'internalJwt' },
+            handler: postQuestionStart
+        },
+        {
+            path: '/questions/{questionId}',
+            method: 'put',
+            options: { auth: 'internalJwt', validate: { payload: putQuestionSchema } },
+            handler: putQuestions
+        },
+        {
+            path: '/quizzes/{quizId}/questions/{questionId}/results',
+            method: 'get',
+            options: { auth: 'internalJwt' },
+            handler: getQuestionResults
+        },
+        {
+            path: '/quizzes',
+            method: 'get',
+            options: { auth: 'internalJwt' },
+            handler: getQuizzes
+        },
+        {
+            path: '/quizzes/{quizId}/users',
+            method: 'get',
+            options: { auth: 'internalJwt' },
+            handler: getQuizUsers
+        },
+        {
+            path: '/users/{userId}/lives/use',
+            method: 'post',
+            options: { pre: [extractQtClaims, onlyCurrentUser] },
+            handler: useLife
+        },
+        {
+            path: '/quizzes/{quizId}/reset',
+            method: 'post',
+            options: { auth: 'internalJwt' },
+            handler: postQuizReset
+        },
+        {
+            path: '/quizzes/{quizId}/complete',
+            method: 'post',
+            options: { auth: 'internalJwt' },
+            handler: postQuizComplete
+        },
+        {
+            path: '/quizzes/{quizId}/access',
+            method: 'get',
+            handler: getQuizAccess
+        },
+    ];
+
+    const devRoutes = routes.map(r => {
+        r.path = '/dev' + r.path;
+        return r;
     });
 
-    server.route({
-        path: '/quizzes',
-        method: 'get',
-        options: { auth: 'internalJwt' },
-        handler: getQuizzes
-    });
-
-    server.route({
-        path: '/quizzes/{quizId}/users',
-        method: 'get',
-        options: { auth: 'internalJwt' },
-        handler: getQuizUsers
-    });
-
-    server.route({
-        path: '/users/{userId}/lives/use',
-        method: 'post',
-        options: { pre: [extractQtClaims, onlyCurrentUser] },
-        handler: useLife
-    });
-
-    server.route({
-        path: '/quizzes/{quizId}/reset',
-        method: 'post',
-        options: { auth: 'internalJwt' },
-        handler: postQuizReset
-    });
-
-    server.route({
-        path: '/quizzes/{quizId}/complete',
-        method: 'post',
-        options: { auth: 'internalJwt' },
-        handler: postQuizComplete
-    });
-
-    server.route({
-        path: '/quizzes/{quizId}/access',
-        method: 'get',
-        handler: getQuizAccess
-    });
-
+    devRoutes.forEach(r => server.route(r));
 }
