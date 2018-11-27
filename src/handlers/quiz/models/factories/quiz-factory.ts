@@ -16,7 +16,7 @@ export class QuizFactory {
     }
 
     public static async loadAll(): Promise<Array<Quiz>> {
-        const result = await Database.instance.client.query(`SELECT * FROM ${QUIZZES_TABLE_NAME};`);
+        const result = await Database.instance.client.query(`SELECT * FROM quizrunner.${QUIZZES_TABLE_NAME};`);
         return result.rows.map(r => new Quiz(r));
     }
 }

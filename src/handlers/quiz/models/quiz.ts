@@ -98,7 +98,7 @@ export class Quiz implements Cacheable {
     public async activeParticipants(): Promise<Array<User>> {
         const result = await Database.instance.client.query(`
         SELECT u.*
-            from quizzes qz
+            from ${QUIZZES_TABLE_NAME} qz
                 JOIN questions q ON q.quiz_id = qz.quiz_id
                 JOIN questions_choices c ON q.question_id = c.question_id
                 JOIN answer_submission a ON a.choice_id = c.choice_id
