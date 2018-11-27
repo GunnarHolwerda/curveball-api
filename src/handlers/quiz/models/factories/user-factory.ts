@@ -44,6 +44,7 @@ export class UserFactory {
 
     public static async loadByPhone(phone: string): Promise<User | null> {
         const formattedPhoneNumber = PhoneVerifier.getValidPhoneNumber(phone);
+        console.log(formattedPhoneNumber);
         if (formattedPhoneNumber === null) {
             throw new Error('Invalid phone number');
         }

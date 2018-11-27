@@ -54,7 +54,7 @@ export class PhoneVerifier {
      * @param phone the phone number to validate
      */
     public static getValidPhoneNumber(phone: string): string | null {
-        const phoneNum = new PhoneNumber(phone);
+        const phoneNum = new PhoneNumber(phone, 'US');
         if (!phoneNum.isValid() && (ApplicationConfig.nodeEnv !== Environment.local && phoneNum.getType() !== 'unknown')) {
             return null;
         }
