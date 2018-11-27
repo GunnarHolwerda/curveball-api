@@ -21,6 +21,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
         path: '/realtime/quizzes',
         method: 'POST',
         options: {
+            auth: 'internalJwt',
             validate: {
                 payload: Joi.object().required().keys({
                     quiz: Joi.object()
@@ -59,6 +60,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
     server.route({
         path: '/realtime/quizzes/{quizId}',
         method: 'GET',
+        options: { auth: 'internalJwt' },
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
             const quizNamespace = await QuizCache.getQuiz(quizId);
@@ -72,6 +74,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
     server.route({
         path: '/realtime/quizzes/{quizId}:connected',
         method: 'GET',
+        options: { auth: 'internalJwt' },
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
             const quizNamespace = await getNamespace(quizId, ioServer);
@@ -99,6 +102,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
             return payload;
         },
         options: {
+            auth: 'internalJwt',
             validate: {
                 params: {
                     quizId: Joi.string().required().description('The id for the quiz to emit to'),
@@ -111,6 +115,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
     server.route({
         path: '/realtime/quizzes/{quizId}',
         method: 'DELETE',
+        options: { auth: 'internalJwt' },
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
             const quizNamespace = await getNamespace(quizId, ioServer);
