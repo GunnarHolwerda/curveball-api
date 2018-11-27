@@ -18,13 +18,20 @@ if (ApplicationConfig.sslCert && ApplicationConfig.sslCert) {
     };
 }
 
+// TODO: Add options path to all routes
+// let cors: boolean | Hapi.RouteOptionsCors = false;
+// if (ApplicationConfig.nodeEnv === Environment.local) {
+//     cors = {
+//         origin: ['*.dev.curveball.tv'],
+//         additionalHeaders: ['qt']
+//     };
+// }
+
 const server = new Hapi.Server({
     port: 3001,
     tls,
     routes: {
-        cors: {
-            origin: 'ignore'
-        }
+        cors: false
     }
 });
 let ioServer: IoServer;
