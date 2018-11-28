@@ -8,8 +8,8 @@ import { UserFactory } from '../../models/factories/user-factory';
 export const putUserSchema = Joi.object().keys({
     name: Joi.string().optional(),
     username: Joi.string().optional(),
-    phone: Joi.string().optional(),
-    photo: Joi.string().optional()
+    // referral: Joi.string().optional(),
+    photo: Joi.string().uri().optional()
 });
 
 export async function putUser(event: hapi.Request): Promise<object> {
@@ -20,6 +20,19 @@ export async function putUser(event: hapi.Request): Promise<object> {
     if (user === null) {
         throw Boom.notFound();
     }
+
+    // TODO: Set this up, keep track of who referred who
+    // if (referral) {
+    //     try {
+    //         const referrer = await UserFactory.loadByUsername(referral);
+    //         if (referrer === null) {
+    //             throw Boom.badRequest('Invalid referral code');
+    //         }
+    //         await Powerup.create(referrer.properties.user_id);
+    //     } catch (e) {
+    //         throw Boom.badRequest('Invalid referral code');
+    //     }
+    // }
 
     for (const property in userParams) {
         if (userParams.hasOwnProperty(property)) {
@@ -33,7 +46,7 @@ export async function putUser(event: hapi.Request): Promise<object> {
         if (e.code === '23505') {
             throw Boom.conflict();
         }
-        throw Boom.internal();
+        throw Boom.badRequest();
     }
 
     return {
