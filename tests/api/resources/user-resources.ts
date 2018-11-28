@@ -26,7 +26,13 @@ export namespace Test {
         };
     }
 
-    export type UserTokenResponse = UserResponse & TokenResponse;
+    export interface UpdateUserPayload {
+        name?: string;
+        username?: string;
+        photo?: string;
+    }
+
+    export type UserTokenResponse = UserResponse & TokenResponse & StatsPayload;
 
     export function generatePhone(): string {
         const getDigit = () => Math.round(Math.random() * 9);
@@ -51,8 +57,8 @@ export namespace Test {
         public async verifyUser(
             userId: string,
             code: string = DevVerificationCode,
-            username: string = Randomstring.generate(15)): Promise<UserTokenResponse> {
-            return this.post<UserTokenResponse>(`/users/${userId}/verify`, { code, username });
+            options: { username: string; name?: string } = { username: Randomstring.generate(15) }): Promise<UserTokenResponse> {
+            return this.post<UserTokenResponse>(`/users/${userId}/verify`, { code, ...options });
         }
 
         public async getNewUser(referrer?: string): Promise<UserTokenResponse> {
@@ -64,7 +70,7 @@ export namespace Test {
             return this.get<UserResponse & StatsPayload>(`/users/${userId}`);
         }
 
-        public async updateUser(userId: string, properties: Partial<IUserResponse>): Promise<UserResponse> {
+        public async updateUser(userId: string, properties: UpdateUserPayload): Promise<UserResponse> {
             return this.put<UserResponse>(`/users/${userId}`, properties);
         }
 

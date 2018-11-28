@@ -6,11 +6,12 @@ import { PhoneVerifier } from '../../models/phone-verifier';
 
 export const postUserVerifySchema = Joi.object().keys({
     code: Joi.string().min(4).required().description('The verification code for the user'),
-    username: Joi.string().min(1).max(15).optional().description('Username for the user')
+    username: Joi.string().min(1).max(15).optional().description('Username for the user'),
+    name: Joi.string().min(1).optional().description('Name of the user')
 });
 
 export async function postUserVerify(event: hapi.Request): Promise<object> {
-    const { code, username } = event.payload as { code: string, username: string };
+    const { code, username, name } = event.payload as { code: string, username?: string, name?: string };
     const { userId } = event.params;
     const user = await UserFactory.load(userId);
     if (user === null) {
@@ -28,8 +29,14 @@ export async function postUserVerify(event: hapi.Request): Promise<object> {
         await user.save();
     }
 
+    if (name) {
+        user.properties.name = name;
+        await user.save();
+    }
+
     return {
         user: user.toResponseObject(),
+        stats: await user.stats(),
         token: user.getJWTToken()
     };
 }

@@ -17,9 +17,10 @@ describe('POST /users/{userId}:verify', () => {
         userId = response.userId;
     });
 
-    it('should return user and token on success', async () => {
+    it('should return user, token, and stats on success', async () => {
         const verifyResponse = await userResources.verifyUser(userId);
         expect(verifyResponse.user).toBeTruthy('The user was not returned from the verify call');
+        expect(verifyResponse.stats).toBeTruthy('The stats for the user were not returned');
         expect(verifyResponse.token).toBeTruthy('Verification did not return token');
     });
 
@@ -31,10 +32,16 @@ describe('POST /users/{userId}:verify', () => {
         await expectHttpError(userResources.verifyUser(userId, 'bad'), 400);
     });
 
-    it('should update username if username is provided', async () => {
+    it('should set username if username is provided', async () => {
         const username = Randomstring.generate(7);
-        const verifyResponse = await userResources.verifyUser(userId, DevVerificationCode, username);
+        const verifyResponse = await userResources.verifyUser(userId, DevVerificationCode, { username });
         expect(verifyResponse.user.username).toBe(username, 'Username was not updated');
+    });
+
+    it('should set name if name is provided', async () => {
+        const name = Randomstring.generate(7);
+        const verifyResponse = await userResources.verifyUser(userId, DevVerificationCode, { username: Randomstring.generate(7), name });
+        expect(verifyResponse.user.name).toBe(name, 'Name was not updated');
     });
 
     xit('should be able to verify existing user', async () => {
