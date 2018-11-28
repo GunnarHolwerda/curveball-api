@@ -2,11 +2,11 @@ import * as Hapi from 'hapi';
 import * as socketio from 'socket.io';
 import * as fs from 'fs';
 import * as redisAdapter from 'socket.io-redis';
-import { goodOptions } from './src/middleware/good-options';
 import { IoServer } from './src/models/io-server';
 import { registerRoutes } from './src/routes/register-routes';
 import { ApplicationConfig } from './src/config';
 import { Database } from './src/handlers/quiz/models/database';
+import Plugins from './src/plugins/plugin';
 
 require('dotenv').config();
 
@@ -38,29 +38,9 @@ const server = new Hapi.Server({
 });
 let ioServer: IoServer;
 
-const validate = function (decoded: object): { isValid: boolean } {
-    return { isValid: !!decoded };
-};
-
 async function start() {
     try {
-        await server.register({
-            plugin: require('good'),
-            options: goodOptions,
-        });
-        await server.register(require('hapi-auth-jwt2'));
-        server.auth.strategy('jwt', 'jwt', {
-            key: ApplicationConfig.jwtSecret,
-            validate: validate,
-            verifyOptions: { algorithms: ['HS256'] },
-        });
-        server.auth.strategy('internalJwt', 'jwt',
-            {
-                key: ApplicationConfig.internalSecret,
-                validate: validate,
-                verifyOptions: { algorithms: ['HS256'] },
-            });
-        server.auth.default('jwt');
+        await Plugins.registerAll(server);
         const io = socketio(server.listener, { pingInterval: 5000, pingTimeout: 25000 });
         io.adapter(redisAdapter({ host: ApplicationConfig.redisHost, port: ApplicationConfig.redisPort }));
         ioServer = new IoServer(io);

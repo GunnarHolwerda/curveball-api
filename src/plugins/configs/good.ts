@@ -1,4 +1,4 @@
-export const goodOptions = {
+export const GoodConfig = {
     ops: {
         interval: 100
     },

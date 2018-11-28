@@ -22,6 +22,9 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
         method: 'POST',
         options: {
             auth: 'internalJwt',
+            tags: ['api', 'internal'],
+            description: 'Create a quizroom',
+            notes: 'Creates a quiz namespace to host all events for the quiz',
             validate: {
                 payload: Joi.object().required().keys({
                     quiz: Joi.object()
@@ -60,7 +63,12 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
     server.route({
         path: '/realtime/quizzes/{quizId}',
         method: 'GET',
-        options: { auth: 'internalJwt' },
+        options: {
+            auth: 'internalJwt',
+            tags: ['api', 'internal'],
+            description: 'Get a quizroom',
+            notes: 'Returns quizId of quiz room if it exists 404 if it does not',
+        },
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
             const quizNamespace = await QuizCache.getQuiz(quizId);
@@ -74,7 +82,12 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
     server.route({
         path: '/realtime/quizzes/{quizId}:connected',
         method: 'GET',
-        options: { auth: 'internalJwt' },
+        options: {
+            auth: 'internalJwt',
+            tags: ['api', 'internal'],
+            description: 'Get number of connected users to a quiz room',
+            notes: 'Returns the number of users that are currently connected to the quiz room',
+        },
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
             const quizNamespace = await getNamespace(quizId, ioServer);
@@ -108,14 +121,22 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
                     quizId: Joi.string().required().description('The id for the quiz to emit to'),
                     eventType: Joi.string().allow(['question', 'results', 'winners', 'complete']).required()
                 }
-            }
+            },
+            tags: ['api', 'internal'],
+            description: 'Emit event to a quizroom',
+            notes: 'Sends an event of eventType to the quizroom, the payload will be sent as the event data',
         }
     });
 
     server.route({
         path: '/realtime/quizzes/{quizId}',
         method: 'DELETE',
-        options: { auth: 'internalJwt' },
+        options: {
+            auth: 'internalJwt',
+            tags: ['api', 'internal'],
+            description: 'Delete a quizroom',
+            notes: 'Removes a quizroom and disconnects all users',
+        },
         handler: async (req) => {
             const quizId: string = req.params['quizId'];
             const quizNamespace = await getNamespace(quizId, ioServer);
