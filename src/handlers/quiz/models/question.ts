@@ -90,12 +90,12 @@ export class Question {
         const correctAnswer = choices.find(c => c.properties.is_answer);
         const result: QuestionResults = {
             totalAnswers: results.reduce((carry, value) => carry + Number.parseInt(value.count, 10), 0),
-            results: choices.reduce((carry, value) => {
+            results: choices.reduce((carry, value): { [choiceId: string]: number } => {
                 const choiceId = value.properties.choice_id;
                 const choice = results.find(r => r.choice_id === choiceId);
-                carry[choiceId] = choice ? choice.count : 0;
+                carry[choiceId] = choice ? Number.parseInt(choice.count, 10) : 0;
                 return carry;
-            }, {})
+            }, {} as { [choiceId: string]: number })
         };
         if (correctAnswer !== undefined) {
             result.correctAnswer = correctAnswer!.properties.choice_id;
