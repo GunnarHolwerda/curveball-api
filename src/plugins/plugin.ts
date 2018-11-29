@@ -3,7 +3,7 @@ import * as hapi from 'hapi';
 import { SwaggerConfig } from './configs/swagger';
 import { GoodConfig } from './configs/good';
 import { ApplicationConfig } from '../config';
-import { Environment } from '../../dist/src/handlers/quiz/types/environments';
+import { Environment } from '../handlers/quiz/types/environments';
 
 function Plugin() {
     return function (_: any, propertyKey: string, descriptor: PropertyDescriptor) {
