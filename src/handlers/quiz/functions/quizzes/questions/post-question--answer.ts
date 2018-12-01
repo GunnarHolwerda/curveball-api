@@ -5,6 +5,9 @@ import { Answer } from '../../../models/answer';
 import { createQt } from '../../../models/qt';
 import { QuizFactory } from '../../../models/factories/quiz-factory';
 import { UserJwtClaims, AllQtClaims } from '../../../lambda/lambda';
+import { Analytics } from '../../../../../models/analytics';
+import { UserFactory } from '../../../models/factories/user-factory';
+import { AnalyticsEvents } from '../../../../../events';
 
 export const questionsAnswerSchema = Joi.object().keys({
     choice: Joi.string().required()
@@ -53,6 +56,14 @@ export async function answerQuestion(event: hapi.Request): Promise<object> {
     }
 
     const nextQuestion = allQuestions.find(q => q.properties.question_num === (question!.properties.question_num + 1));
+
+    const user = (await UserFactory.load(userId))!;
+    Analytics.instance.track(user, AnalyticsEvents.answeredQuestion, {
+        question: {
+            ...question.analyticsProperties(),
+            choices: (await question.choices()).map(c => c.analyticsProperties())
+        }
+    }, [quiz]);
 
     if (!nextQuestion) {
         return { token: null };

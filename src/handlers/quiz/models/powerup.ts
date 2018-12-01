@@ -1,5 +1,6 @@
 import { Postgres } from '../postgres';
 import { Database } from './database';
+import { Analyticize, AnalyticsProperties } from '../interfaces/analyticize';
 
 export interface IPowerup {
     id: number;
@@ -9,7 +10,7 @@ export interface IPowerup {
 
 export const POWERUP_TABLE_NAME = 'powerup';
 
-export class Powerup {
+export class Powerup implements Analyticize {
     public properties: IPowerup;
     constructor(private _powerup: IPowerup) {
         this.properties = { ..._powerup };
@@ -35,5 +36,12 @@ export class Powerup {
                 WHERE id = $1;
             `, [this._powerup.id]);
         }
+    }
+
+    public analyticsProperties(): AnalyticsProperties {
+        return {
+            id: this.properties.id,
+            type: 'life'
+        };
     }
 }

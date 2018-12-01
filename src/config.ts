@@ -35,4 +35,8 @@ export class ApplicationConfig {
     public static get twilioKey(): string {
         return process.env.TWILIO_KEY!;
     }
+
+    public static get mixpanelKey(): string {
+        return process.env.MIXPANEL_TOKEN!;
+    }
 }

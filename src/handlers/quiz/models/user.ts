@@ -10,6 +10,8 @@ import { PowerupFactory } from './factories/lives-factory';
 import { omit } from '../util/omit';
 import { camelizeKeys } from '../util/camelize-keys';
 import { PhoneVerifier } from '../../../handlers/quiz/models/phone-verifier';
+import { Analytics } from '../../../models/analytics';
+import { Analyticize, AnalyticsProperties } from '../interfaces/analyticize';
 
 export interface IUser {
     user_id: string;
@@ -40,7 +42,7 @@ const getAvatarUrl = (): string => {
 
 export const DevVerificationCode = '0000000';
 
-export class User {
+export class User implements Analyticize {
     public properties: IUser;
 
     constructor(private _user: IUser) {
@@ -59,7 +61,9 @@ export class User {
             RETURNING user_id;
         `, [formattedPhoneNumber, getAvatarUrl()]);
         const userId = result!.rows[0].user_id;
-        return (await UserFactory.load(userId))!;
+        const user = (await UserFactory.load(userId))!;
+        Analytics.instance.trackUser(user);
+        return user;
     }
 
     public getJWTToken(): string {
@@ -84,6 +88,7 @@ export class User {
                 WHERE user_id = $1;
             `, [this._user.user_id]);
         }
+        Analytics.instance.trackUser(this);
     }
 
     public async lives(): Promise<Array<Powerup>> {
@@ -109,5 +114,14 @@ export class User {
             ...(omit(this.properties, ['password', 'phone']))
         };
         return camelizeKeys(response) as Partial<IUser>;
+    }
+
+    public analyticsProperties(): AnalyticsProperties {
+        const {
+            name,
+            username,
+            created
+        } = this.properties;
+        return { name, username, created };
     }
 }

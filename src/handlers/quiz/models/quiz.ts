@@ -12,6 +12,7 @@ import { ANSWER_TABLE_NAME } from '../../../handlers/quiz/models/answer';
 import { USER_TABLE_NAME } from '../../../handlers/quiz/models/user';
 import { CHOICES_TABLE_NAME } from './question-choice';
 import { POWERUP_TABLE_NAME } from './powerup';
+import { Analyticize, AnalyticsProperties } from '../interfaces/analyticize';
 
 export interface IQuiz {
     quiz_id: string;
@@ -35,7 +36,7 @@ export interface IQuizResponse {
 
 export const QUIZZES_TABLE_NAME = 'quizzes';
 
-export class Quiz implements Cacheable {
+export class Quiz implements Cacheable, Analyticize {
     public properties: IQuiz;
     public static events: EventEmitter = new EventEmitter();
 
@@ -128,5 +129,15 @@ export class Quiz implements Cacheable {
         const keys = [...wrongAnswers, ...cachedAnswers];
         keys.forEach(wa => redisPromises.push(CbRedis.instance.client.del(wa)));
         await Promise.all(redisPromises);
+    }
+
+    public analyticsProperties(): AnalyticsProperties {
+        return {
+            title: this.properties.title,
+            id: this.properties.quiz_id,
+            pot_amount: this.properties.pot_amount,
+            created: this.properties.created,
+            auth: this.properties.auth,
+        };
     }
 }

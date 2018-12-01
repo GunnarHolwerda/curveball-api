@@ -4,6 +4,7 @@ import { ChoiceFactory } from './factories/choice-factory';
 import { Database } from './database';
 import { snakifyKeys } from '../util/snakify-keys';
 import { camelizeKeys } from '../util/camelize-keys';
+import { Analyticize, AnalyticsProperties } from '../interfaces/analyticize';
 
 export interface IChoice {
     choice_id: string;
@@ -21,7 +22,7 @@ export interface IChoiceResponse {
 
 export const CHOICES_TABLE_NAME = 'questions_choices';
 
-export class Choice {
+export class Choice implements Analyticize {
     public properties: IChoice;
 
     constructor(private _choice: IChoice) {
@@ -52,5 +53,13 @@ export class Choice {
             ...omit(this.properties, ['is_answer']),
         };
         return camelizeKeys(response);
+    }
+
+    public analyticsProperties(): AnalyticsProperties {
+        return {
+            choice_id: this.properties.choice_id,
+            text: this.properties.text,
+            is_answer: this.properties.is_answer
+        };
     }
 }

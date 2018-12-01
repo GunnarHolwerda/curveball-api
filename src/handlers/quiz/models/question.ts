@@ -6,6 +6,7 @@ import { AnswerFactory } from './factories/answer-factory';
 import { ChoiceFactory } from './factories/choice-factory';
 import { snakifyKeys } from '../util/snakify-keys';
 import { camelizeKeys } from '../util/camelize-keys';
+import { Analyticize, AnalyticsProperties } from '../interfaces/analyticize';
 
 export interface IQuestion {
     question_id: string;
@@ -42,7 +43,7 @@ export interface QuestionResults {
 
 export const QUESTION_TABLE_NAME = 'questions';
 
-export class Question {
+export class Question implements Analyticize {
     private expirationPeriod = 60000; // one minute
     public properties: IQuestion;
 
@@ -116,5 +117,19 @@ export class Question {
 
     public isExpired(): boolean {
         return !!this.properties.expired && this.properties.expired <= (new Date());
+    }
+
+    public analyticsProperties(): AnalyticsProperties {
+        return {
+            question_id: this.properties.question_id,
+            created: this.properties.created,
+            text: this.properties.question,
+            question_num: this.properties.question_num,
+            sport: this.properties.sport,
+            ticker: this.properties.ticker,
+            sent: this.properties.sent,
+            expired: this.properties.expired,
+            quiz_id: this.properties.quiz_id
+        };
     }
 }

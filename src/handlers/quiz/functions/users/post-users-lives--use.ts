@@ -6,6 +6,10 @@ import { AnswerFactory } from '../../models/factories/answer-factory';
 import { UserJwtClaims, AllQtClaims } from '../../lambda/lambda';
 import { QuestionFactory } from '../../models/factories/question-factory';
 
+/**
+ * TODO: Fix this up so that it depends on what type of power up instead of it relying on just lives
+ * @param event hapi.Request
+ */
 export async function useLife(event: hapi.Request): Promise<object> {
     const userClaims = event.auth.credentials as UserJwtClaims;
     const { qtClaims } = event.pre as { qtClaims: AllQtClaims };
@@ -36,6 +40,11 @@ export async function useLife(event: hapi.Request): Promise<object> {
         isLastQuestion,
         lifeUsed: true
     }, user.properties.user_id);
+
+    // const quiz = await QuizFactory.load(quizId);
+    // Analytics.instance.track(user, AnalyticsEvents.usedPowerup, {
+
+    // }, [lifeToUse, question, quiz]);
 
     return { token: newQt };
 }

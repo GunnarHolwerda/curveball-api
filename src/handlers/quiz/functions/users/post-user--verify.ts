@@ -3,6 +3,8 @@ import * as Boom from 'boom';
 import * as hapi from 'hapi';
 import { UserFactory } from '../../models/factories/user-factory';
 import { PhoneVerifier } from '../../models/phone-verifier';
+import { Analytics } from '../../../../models/analytics';
+import { AnalyticsEvents } from '../../../../events';
 
 export const postUserVerifySchema = Joi.object().keys({
     code: Joi.string().min(4).required().description('The verification code for the user'),
@@ -33,6 +35,8 @@ export async function postUserVerify(event: hapi.Request): Promise<object> {
         user.properties.name = name;
         await user.save();
     }
+
+    Analytics.instance.track(user, AnalyticsEvents.login);
 
     return {
         user: user.toResponseObject(),

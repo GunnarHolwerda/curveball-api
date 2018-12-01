@@ -10,3 +10,13 @@ export enum QuizEvents {
 export enum ServerEvents {
     quizStart = 'start'
 }
+
+export enum AnalyticsEvents {
+    login = 'Login',
+    signup = 'Sign up',
+    usedPowerup = 'Used Powerup',
+    answeredQuestion = 'Answered Question',
+    joinedShow = 'Joined Show',
+    leftShow = 'Left Show',
+    reachedEndOfShow = 'Reached End of Show'
+}
