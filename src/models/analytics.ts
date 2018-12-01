@@ -33,12 +33,15 @@ export class Analytics {
         trackableObjects: Array<Analyticize> = [],
     ): void {
         const analyticsProperties = { distinct_id: user.properties.user_id, ...properties };
+        trackableObjects.push(user);
         trackableObjects.forEach(o => {
-            let highLevelPropertyName = o.constructor.name.toLowerCase();
-            if (analyticsProperties.hasOwnProperty(highLevelPropertyName)) {
-                highLevelPropertyName += '_default';
+            const props = o.analyticsProperties();
+            const propertyPrefix = o.constructor.name.toLowerCase();
+            for (const property in props) {
+                if (props.hasOwnProperty(property)) {
+                    analyticsProperties[`${propertyPrefix}_${property}`] = props[property];
+                }
             }
-            analyticsProperties[highLevelPropertyName] = o.analyticsProperties();
         });
         this.analytics.track(eventName, analyticsProperties);
     }

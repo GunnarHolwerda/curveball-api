@@ -19,7 +19,7 @@ export class QuizSocketHandlers extends BaseSocketHandler {
         });
         socket.on('complete', () => {
             UserFactory.load(socket.user.userId).then((user) => {
-                Analytics.instance.track(user!, AnalyticsEvents.watchedFullShow, {}, [this.quiz]);
+                Analytics.instance.track(user!, AnalyticsEvents.reachedEndOfShow, {}, [this.quiz]);
             });
         });
     }
