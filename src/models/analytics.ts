@@ -1,9 +1,9 @@
 import * as Mixpanel from 'mixpanel';
-import { ApplicationConfig } from '../config';
-import { User } from '../handlers/quiz/models/user';
-import { AnalyticsProperties, Analyticize } from '../handlers/quiz/interfaces/analyticize';
-import { AnalyticsEvents } from '../events';
+import { ApplicationConfig } from './config';
+import { AnalyticsEvents } from '../types/events';
 import * as flatten from 'flat';
+import { User } from './entities/user';
+import { AnalyticsProperties, Analyticize } from '../interfaces/analyticize';
 
 export type IncrementalUserProperties = 'showsJoined';
 

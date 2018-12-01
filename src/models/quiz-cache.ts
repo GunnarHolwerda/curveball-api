@@ -1,5 +1,4 @@
 import { CbRedis } from './cb-redis';
-import { Quiz } from '../handlers/quiz/models/quiz';
 import { IQuizRoom } from '../interfaces/quiz';
 
 export class QuizCache {
@@ -11,7 +10,7 @@ export class QuizCache {
 
     public static async getQuizzes(): Promise<Array<IQuizRoom>> {
         const result = await CbRedis.instance.client.smembers(QuizCache.key);
-        return result.map((r: string) => new Quiz(JSON.parse(r))) as Array<IQuizRoom>;
+        return result.map((r: string) => JSON.parse(r)) as Array<IQuizRoom>;
     }
 
     public static async getQuiz(quizId: string): Promise<IQuizRoom | undefined> {

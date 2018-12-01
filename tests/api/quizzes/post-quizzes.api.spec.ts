@@ -1,13 +1,13 @@
 import * as uuid from 'uuid';
 
-import { Test } from '../resources/quiz-resources';
 import { expectHttpError } from '../resources/test-helpers';
+import { QuizResources } from '../resources/quiz-resources';
 
 describe('POST /quizzes', () => {
-    let quizResources: Test.QuizResources;
+    let quizResources: QuizResources;
 
     beforeAll(async () => {
-        quizResources = new Test.QuizResources();
+        quizResources = new QuizResources();
     });
 
     it('should create a quiz', async () => {

@@ -1,16 +1,16 @@
 import * as uuid from 'uuid';
 
 import { mockQuestionsPayload } from '../mock-data';
-import { Test } from '../resources/quiz-resources';
 import { expectHttpError } from '../resources/test-helpers';
+import { QuizResources, QuestionResponse, QuizStartResponse } from '../resources/quiz-resources';
 
 describe('POST /quizzes/{quizId}/questions/{questionId}:start', () => {
-    let quizResources: Test.QuizResources;
-    let questions: Test.QuestionResponse;
-    let startResponse: Test.QuizStartResponse;
+    let quizResources: QuizResources;
+    let questions: QuestionResponse;
+    let startResponse: QuizStartResponse;
 
     beforeAll(async () => {
-        quizResources = new Test.QuizResources();
+        quizResources = new QuizResources();
         const response = await quizResources.createQuiz({
             title: uuid(),
             potAmount: 500,

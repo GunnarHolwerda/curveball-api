@@ -1,17 +1,17 @@
 import * as uuid from 'uuid';
 
-import { Test } from '../resources/quiz-resources';
-import { IQuizResponse } from '../../../src/handlers/quiz/models/quiz';
 import { mockQuestionsPayload } from '../mock-data';
-import { Test as UserTest } from '../resources/user-resources';
+import { QuizResources } from '../resources/quiz-resources';
+import { IQuizResponse } from '../../../src/models/entities/quiz';
+import { UserResources } from '../resources/user-resources';
 
 describe('GET /quizzes/{quizId}/access', () => {
-    let quizResources: Test.QuizResources;
+    let quizResources: QuizResources;
     let quiz: IQuizResponse;
 
     beforeAll(async () => {
-        quizResources = new Test.QuizResources();
-        const userResources = new UserTest.UserResources();
+        quizResources = new QuizResources();
+        const userResources = new UserResources();
         const userResponse = await userResources.getNewUser();
         quizResources.token = userResponse.token;
     });

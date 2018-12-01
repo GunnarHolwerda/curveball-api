@@ -4,94 +4,92 @@ import { trustOwnCa } from './test-helpers';
 const jasmineSettings: { config: { [key: string]: string } } = require('../../jasmine-api.json');
 
 trustOwnCa();
-export namespace Test {
 
-    export class ApiResources {
-        protected config: AxiosRequestConfig | undefined = undefined;
+export class ApiResources {
+    protected config: AxiosRequestConfig | undefined = undefined;
 
-        public constructor(private _token?: string) {
-            this.initializeConfig(this._token);
+    public constructor(private _token?: string) {
+        this.initializeConfig(this._token);
+    }
+
+    // @ts-ignore
+    protected async put<T>(apiPath: string, payload: object = {}): Promise<T> {
+        try {
+            return (await axios.put(this.baseUrl + apiPath, payload, this.config)).data;
+        } catch (err) {
+            this.handleError(err);
         }
+    }
 
-        // @ts-ignore
-        protected async put<T>(apiPath: string, payload: object = {}): Promise<T> {
-            try {
-                return (await axios.put(this.baseUrl + apiPath, payload, this.config)).data;
-            } catch (err) {
-                this.handleError(err);
-            }
+    // @ts-ignore
+    protected async get<T>(apiPath: string): Promise<T> {
+        try {
+            return (await axios.get(this.baseUrl + apiPath, this.config)).data;
+        } catch (err) {
+            this.handleError(err);
         }
+    }
 
-        // @ts-ignore
-        protected async get<T>(apiPath: string): Promise<T> {
-            try {
-                return (await axios.get(this.baseUrl + apiPath, this.config)).data;
-            } catch (err) {
-                this.handleError(err);
-            }
+    // @ts-ignore
+    protected async post<T>(apiPath: string, payload: object = {}, config?: AxiosRequestConfig): Promise<T> {
+        try {
+            return (await axios.post(this.baseUrl + apiPath, payload, config || this.config)).data;
+        } catch (err) {
+            this.handleError(err);
         }
+    }
 
-        // @ts-ignore
-        protected async post<T>(apiPath: string, payload: object = {}, config?: AxiosRequestConfig): Promise<T> {
-            try {
-                return (await axios.post(this.baseUrl + apiPath, payload, config || this.config)).data;
-            } catch (err) {
-                this.handleError(err);
-            }
+    protected async delete(apiPath: string): Promise<void> {
+        try {
+            return (await axios.delete(this.baseUrl + apiPath, this.config)).data;
+        } catch (err) {
+            this.handleError(err);
         }
+    }
 
-        protected async delete(apiPath: string): Promise<void> {
-            try {
-                return (await axios.delete(this.baseUrl + apiPath, this.config)).data;
-            } catch (err) {
-                this.handleError(err);
-            }
+    protected handleError(err: any): void {
+        if (err.statusCode) {
+            console.error('An error occured', JSON.stringify(err));
         }
+        throw err;
+    }
 
-        protected handleError(err: any): void {
-            if (err.statusCode) {
-                console.error('An error occured', JSON.stringify(err));
-            }
-            throw err;
+    protected initializeConfig(token?: string): void {
+        if (!token) {
+            return;
         }
+        this.config = {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        };
+    }
 
-        protected initializeConfig(token?: string): void {
-            if (!token) {
-                return;
-            }
-            this.config = {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            };
-        }
+    protected async makeInternalRequest<T>(request: () => Promise<T>): Promise<T> {
+        const originalToken = this.token;
+        this.token = jasmineSettings.config.testInternalToken;
+        const result = await request();
+        this.token = originalToken;
+        return result;
+    }
 
-        protected async makeInternalRequest<T>(request: () => Promise<T>): Promise<T> {
-            const originalToken = this.token;
-            this.token = jasmineSettings.config.testInternalToken;
-            const result = await request();
-            this.token = originalToken;
-            return result;
-        }
+    public set token(value: string | undefined) {
+        this._token = value;
+        this.initializeConfig(value);
+    }
 
-        public set token(value: string | undefined) {
-            this._token = value;
-            this.initializeConfig(value);
-        }
+    public get token(): string | undefined {
+        return this._token;
+    }
 
-        public get token(): string | undefined {
-            return this._token;
-        }
+    public set headers(headers: object) {
+        this.config!.headers = {
+            ...this.config!.headers,
+            ...headers
+        };
+    }
 
-        public set headers(headers: object) {
-            this.config!.headers = {
-                ...this.config!.headers,
-                ...headers
-            };
-        }
-
-        protected get baseUrl(): string {
-            return jasmineSettings.config.baseUrl;
-        }
+    protected get baseUrl(): string {
+        return jasmineSettings.config.baseUrl;
     }
 }

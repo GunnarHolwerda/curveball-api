@@ -1,17 +1,17 @@
 import * as uuid from 'uuid';
 
 import { mockQuestionsPayload } from '../mock-data';
-import { Test } from '../resources/quiz-resources';
-import { Test as UserTest } from '../resources/user-resources';
-import { IQuizResponse } from '../../../src/handlers/quiz/models/quiz';
+import { QuizResources, QuizResponse } from '../resources/quiz-resources';
+import { IQuizResponse } from '../../../src/models/entities/quiz';
+import { UserResources } from '../resources/user-resources';
 
 describe('POST /quizzes/{quizId}/reset', () => {
-    let quizResources: Test.QuizResources;
-    let quizResponse: Test.QuizResponse;
+    let quizResources: QuizResources;
+    let quizResponse: QuizResponse;
     let quiz: IQuizResponse;
 
     beforeAll(async () => {
-        quizResources = new Test.QuizResources();
+        quizResources = new QuizResources();
         quizResponse = await quizResources.createQuiz({
             title: uuid(),
             potAmount: 500,
@@ -19,7 +19,7 @@ describe('POST /quizzes/{quizId}/reset', () => {
         quiz = quizResponse.quiz;
         await quizResources.addQuestions(quiz.quizId, mockQuestionsPayload);
         const startResponse = await quizResources.startQuiz(quiz.quizId);
-        const userResources = new UserTest.UserResources();
+        const userResources = new UserResources();
         const userResponse = await userResources.getNewUser();
         quizResources.token = userResponse.token;
         const { firstQuestion } = startResponse;

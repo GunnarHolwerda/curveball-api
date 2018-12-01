@@ -1,9 +1,9 @@
 import { RouteOptionsPreObject, Request, ResponseToolkit } from 'hapi';
 import * as Boom from 'boom';
-import { QuizFactory } from '../../handlers/quiz/models/factories/quiz-factory';
-import { verifyQt } from '../../handlers/quiz/authorizers/helpers/verify-qt';
-import { UserJwtClaims } from '../../handlers/quiz/lambda/lambda';
 import { getQtTokenFromHeader } from './extract-quiz-claims';
+import { UserJwtClaims } from '../../interfaces/user-jwt-claims';
+import { QuizFactory } from '../../models/factories/quiz-factory';
+import { verifyQt } from '../../util/verify-qt';
 
 export const qtPreRouteHandler: RouteOptionsPreObject = {
     method: async (request: Request, _: ResponseToolkit): Promise<any> => {

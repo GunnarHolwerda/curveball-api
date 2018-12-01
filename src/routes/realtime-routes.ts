@@ -2,10 +2,10 @@ import * as Boom from 'boom';
 import * as hapi from 'hapi';
 import * as Joi from 'joi';
 
-import { IoServer } from '../models/io-server';
-import { QuizNamespace } from '../models/quiz-namespace';
+import { IoServer } from '../models/namespaces/io-server';
+import { QuizNamespace } from '../models/namespaces/quiz-namespace';
 import { QuizCache } from '../models/quiz-cache';
-import { ServerEvents } from '../events';
+import { ServerEvents } from '../types/events';
 import { IQuizRoom } from '../interfaces/quiz';
 
 async function getNamespace(quizId: string, ioServer: IoServer): Promise<QuizNamespace | null> {

@@ -1,26 +1,26 @@
 import * as uuid from 'uuid';
 
-import { Test } from '../resources/quiz-resources';
-import { Test as UserTest } from '../resources/user-resources';
-import { expectHttpError } from '../resources/test-helpers';
-import { IQuizResponse } from '../../../src/handlers/quiz/models/quiz';
 import { mockQuestionsPayload } from '../mock-data';
-import { IUserResponse } from '../../../src/handlers/quiz/models/user';
-import { IQuestionResponse } from '../../../src/handlers/quiz/models/question';
+import { QuizResources, QuizStartResponse } from '../resources/quiz-resources';
+import { IQuizResponse } from '../../../src/models/entities/quiz';
+import { IQuestionResponse } from '../../../src/models/entities/question';
+import { IUserResponse } from '../../../src/models/entities/user';
+import { UserTokenResponse, UserResources } from '../resources/user-resources';
+import { expectHttpError } from '../resources/test-helpers';
 
 describe('GET /quizzes/{quizId}/users', () => {
-    let quizResources: Test.QuizResources;
+    let quizResources: QuizResources;
     let quiz: IQuizResponse;
     let questions: Array<IQuestionResponse>;
     let rightUser: IUserResponse;
     let wrongUser: IUserResponse;
-    let wrongUserResponse: UserTest.UserTokenResponse;
-    let userResources: UserTest.UserResources;
-    let startResponse: Test.QuizStartResponse;
+    let wrongUserResponse: UserTokenResponse;
+    let userResources: UserResources;
+    let startResponse: QuizStartResponse;
     let wrongUserQt: string;
 
     beforeEach(async () => {
-        quizResources = new Test.QuizResources();
+        quizResources = new QuizResources();
         const response = await quizResources.createQuiz({
             title: uuid(),
             potAmount: 500,
@@ -45,7 +45,7 @@ describe('GET /quizzes/{quizId}/users', () => {
         questions = (await quizResources.addQuestions(response.quiz.quizId, qPayload)).questions;
         startResponse = await quizResources.startQuiz(response.quiz.quizId);
         const { firstQuestion } = startResponse;
-        userResources = new UserTest.UserResources();
+        userResources = new UserResources();
         wrongUserResponse = await userResources.getNewUser();
         wrongUser = wrongUserResponse.user;
         const rightUserResponse = await userResources.getNewUser();

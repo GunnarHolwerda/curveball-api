@@ -16,7 +16,7 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
-        "baseUrl": "./tests",
+        "baseUrl": "./",
         "inlineSourceMap": false,
         "inlineSources": false,
         "experimentalDecorators": true,
@@ -30,12 +30,10 @@
     "include": [
         "api/**/*",
         "unit/**/*",
-        "src/**/*"
+        "../src/**/*"
     ],
     "exclude": [
         "node_modules",
-        ".serverless",
-        ".build",
         "dist",
     ]
 }

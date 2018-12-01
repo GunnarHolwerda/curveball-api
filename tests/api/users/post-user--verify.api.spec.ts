@@ -1,15 +1,15 @@
 import * as Randomstring from 'randomstring';
 
 import { expectHttpError } from '../resources/test-helpers';
-import { Test } from '../resources/user-resources';
-import { DevVerificationCode } from '../../../src/handlers/quiz/models/user';
+import { DevVerificationCode } from '../../../src/models/entities/user';
+import { UserResources } from '../resources/user-resources';
 
 describe('POST /users/{userId}:verify', () => {
-    let userResources: Test.UserResources;
+    let userResources: UserResources;
     let userId: string;
 
     beforeAll(async () => {
-        userResources = new Test.UserResources();
+        userResources = new UserResources();
     });
 
     beforeEach(async () => {

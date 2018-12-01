@@ -2,18 +2,18 @@ import * as jwt from 'jsonwebtoken';
 import * as uuid from 'uuid';
 
 import { mockQuestionsPayload } from '../mock-data';
-import { Test } from '../resources/quiz-resources';
+import { QuestionPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
+import { QTClaims, BaseClaims } from '../../../src/types/qt';
+import { QuizResources, QuestionResponse, QuizStartResponse } from '../resources/quiz-resources';
+import { UserResources, UserTokenResponse } from '../resources/user-resources';
 import { expectHttpError } from '../resources/test-helpers';
-import { Test as UserTest } from '../resources/user-resources';
-import { BaseClaims, QTClaims } from '../../../src/handlers/quiz/models/qt';
-import { QuestionPayload } from '../../../src/handlers/quiz/functions/quizzes/questions/post-questions';
 
 describe('POST /users/{userId}/lives:use', () => {
-    let quizResources: Test.QuizResources;
-    let userResources: UserTest.UserResources;
-    let questions: Test.QuestionResponse;
-    let userResponse: UserTest.UserTokenResponse;
-    let startResponse: Test.QuizStartResponse;
+    let quizResources: QuizResources;
+    let userResources: UserResources;
+    let questions: QuestionResponse;
+    let userResponse: UserTokenResponse;
+    let startResponse: QuizStartResponse;
     let qt: string;
     const quizQuestions: Array<QuestionPayload> = [
         ...mockQuestionsPayload.questions,
@@ -31,7 +31,7 @@ describe('POST /users/{userId}/lives:use', () => {
     ];
 
     beforeEach(async () => {
-        quizResources = new Test.QuizResources();
+        quizResources = new QuizResources();
         const response = await quizResources.createQuiz({
             title: uuid(),
             potAmount: 500,
@@ -41,7 +41,7 @@ describe('POST /users/{userId}/lives:use', () => {
         };
         questions = await quizResources.addQuestions(response.quiz.quizId, qPayload);
         startResponse = await quizResources.startQuiz(response.quiz.quizId);
-        userResources = new UserTest.UserResources();
+        userResources = new UserResources();
         userResponse = await userResources.getNewUser();
         await userResources.getNewUser(userResponse.user.username);
         userResources.token = userResponse.token;
@@ -72,7 +72,7 @@ describe('POST /users/{userId}/lives:use', () => {
     });
 
     describe('Authorization', () => {
-        // TODO: Removing this test until we are sure we want this functionality back
+        // TODO: Removing this until we are sure we want this functionality back
         xit('should return 403 if user has not failed a question', async () => {
             const { quiz, firstQuestion } = startResponse;
             const { user, token } = await userResources.getNewUser();

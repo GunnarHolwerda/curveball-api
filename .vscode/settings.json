@@ -1,0 +1,6 @@
+{
+    "files.exclude": {
+        "**/dist": true
+    },
+    "javascript.preferences.quoteStyle": "single"
+}
