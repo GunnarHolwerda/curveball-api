@@ -1,15 +1,15 @@
 import * as uuid from 'uuid';
 
-import { Test } from '../resources/quiz-resources';
 import { expectHttpError } from '../resources/test-helpers';
-import { IQuizResponse } from '../../../src/handlers/quiz/models/quiz';
+import { QuizResources } from '../resources/quiz-resources';
+import { IQuizResponse } from '../../../src/models/entities/quiz';
 
 describe('GET /quizzes/{quizId}', () => {
-    let quizResources: Test.QuizResources;
+    let quizResources: QuizResources;
     let quiz: IQuizResponse;
 
     beforeAll(async () => {
-        quizResources = new Test.QuizResources();
+        quizResources = new QuizResources();
         const response = await quizResources.createQuiz({
             title: uuid(),
             potAmount: 500,

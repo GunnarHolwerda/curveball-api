@@ -1,9 +1,9 @@
 import * as socketio from 'socket.io';
 import * as socketioJwt from 'socketio-jwt';
-import { BaseSocketHandler } from '../models/base-socket-handler';
+import { BaseSocketHandler } from '../models/socket-handlers/base-socket-handler';
 import { Socket } from './socket';
-import { ApplicationConfig } from '../config';
-import { QuizEvents } from '../events';
+import { ApplicationConfig } from '../models/config';
+import { QuizEvents } from '../types/events';
 
 export abstract class Room {
     constructor(protected _namespace: socketio.Namespace, protected socketHandlers: BaseSocketHandler) { }

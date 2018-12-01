@@ -1,14 +1,14 @@
 import { expectHttpError } from '../resources/test-helpers';
-import { Test } from '../resources/user-resources';
+import { UserResources, UserTokenResponse, generatePhone } from '../resources/user-resources';
 
 describe('POST /users_force_login', () => {
-    let userResources: Test.UserResources;
-    let testUser: Test.UserTokenResponse;
+    let userResources: UserResources;
+    let testUser: UserTokenResponse;
     let testPhone: string;
 
     beforeAll(async () => {
-        userResources = new Test.UserResources();
-        testPhone = Test.generatePhone();
+        userResources = new UserResources();
+        testPhone = generatePhone();
         const { userId } = await userResources.createUser(testPhone);
         testUser = await userResources.verifyUser(userId);
     });
@@ -20,6 +20,6 @@ describe('POST /users_force_login', () => {
     });
 
     it('should return 404 if phone does not exist', async () => {
-        await expectHttpError(userResources.forceLogin(Test.generatePhone()), 404);
+        await expectHttpError(userResources.forceLogin(generatePhone()), 404);
     });
 });

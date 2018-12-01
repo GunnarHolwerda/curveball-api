@@ -1,6 +1,6 @@
 import { RouteOptionsPreObject, Request, ResponseToolkit } from 'hapi';
 import * as Boom from 'boom';
-import { UserJwtClaims } from '../../handlers/quiz/lambda/lambda';
+import { UserJwtClaims } from '../../interfaces/user-jwt-claims';
 
 export const onlyCurrentUser: RouteOptionsPreObject = {
     method: async (request: Request, _: ResponseToolkit): Promise<any> => {

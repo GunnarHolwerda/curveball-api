@@ -2,18 +2,18 @@ import * as jwt from 'jsonwebtoken';
 import * as uuid from 'uuid';
 
 import { mockQuestionsPayload } from '../mock-data';
-import { Test as TestQuestion } from '../resources/question-resources';
-import { Test } from '../resources/quiz-resources';
+import { QuizResources, QuestionResponse, QuizStartResponse } from '../resources/quiz-resources';
+import { UserTokenResponse, UserResources } from '../resources/user-resources';
+import { QuestionPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
+import { QTClaims, BaseClaims } from '../../../src/types/qt';
 import { expectHttpError } from '../resources/test-helpers';
-import { Test as UserTest } from '../resources/user-resources';
-import { BaseClaims, QTClaims } from '../../../src/handlers/quiz/models/qt';
-import { QuestionPayload } from '../../../src/handlers/quiz/functions/quizzes/questions/post-questions';
+import { QuestionResources } from '../resources/question-resources';
 
 describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
-    let quizResources: Test.QuizResources;
-    let questions: Test.QuestionResponse;
-    let userResponse: UserTest.UserTokenResponse;
-    let startResponse: Test.QuizStartResponse;
+    let quizResources: QuizResources;
+    let questions: QuestionResponse;
+    let userResponse: UserTokenResponse;
+    let startResponse: QuizStartResponse;
     const quizQuestions: Array<QuestionPayload> = [
         ...mockQuestionsPayload.questions,
         {
@@ -30,14 +30,14 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
     ];
 
     beforeEach(async () => {
-        quizResources = new Test.QuizResources();
+        quizResources = new QuizResources();
         const response = await quizResources.createQuiz({
             title: uuid(),
             potAmount: 500,
         });
         questions = await quizResources.addQuestions(response.quiz.quizId, { questions: quizQuestions });
         startResponse = await quizResources.startQuiz(response.quiz.quizId);
-        const userResources = new UserTest.UserResources();
+        const userResources = new UserResources();
         userResponse = await userResources.getNewUser();
         quizResources.token = userResponse.token;
     });
@@ -93,7 +93,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
             });
             questions = await quizResources.addQuestions(response.quiz.quizId, { questions: quizQuestions });
             startResponse = await quizResources.startQuiz(response.quiz.quizId);
-            const userResources = new UserTest.UserResources();
+            const userResources = new UserResources();
             userResponse = await userResources.getNewUser();
             quizResources.token = userResponse.token;
         });
@@ -206,7 +206,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
         it('should return 403 if question is expired', async () => {
             const { quiz, firstQuestion } = startResponse;
             const originalDate = firstQuestion.expired;
-            const questionResources = new TestQuestion.QuestionResources();
+            const questionResources = new QuestionResources();
             const oldDate = new Date();
             oldDate.setDate(oldDate.getDate() - 1);
             const quizToken = (await quizResources.getQuizAccess(quiz.quizId)).token!;

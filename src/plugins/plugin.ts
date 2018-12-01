@@ -2,8 +2,8 @@ import * as hapi from 'hapi';
 
 import { SwaggerConfig } from './configs/swagger';
 import { GoodConfig } from './configs/good';
-import { ApplicationConfig } from '../config';
-import { Environment } from '../handlers/quiz/types/environments';
+import { Environment } from '../types/environments';
+import { ApplicationConfig } from '../models/config';
 
 function Plugin() {
     return function (_: any, propertyKey: string, descriptor: PropertyDescriptor) {

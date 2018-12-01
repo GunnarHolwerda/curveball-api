@@ -1,8 +1,8 @@
 import { RouteOptionsPreObject, Request, ResponseToolkit } from 'hapi';
 import * as Boom from 'boom';
-import { AllQtClaims } from '../../handlers/quiz/lambda/lambda';
 import * as jwt from 'jsonwebtoken';
-import { ApplicationConfig } from '../../config';
+import { ApplicationConfig } from '../../models/config';
+import { AllQtClaims } from '../../types/qt';
 
 export const getQtTokenFromHeader = (req: Request): string | false => {
     const header = req.headers['QT'] || req.headers['qt'];

@@ -1,5 +1,5 @@
 import * as hapi from 'hapi';
-import { IoServer } from '../models/io-server';
+import { IoServer } from '../models/namespaces/io-server';
 import { quizRoutes } from './quiz-routes';
 import { realtimeRoutes } from './realtime-routes';
 

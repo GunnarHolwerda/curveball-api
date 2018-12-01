@@ -1,16 +1,16 @@
 import * as uuid from 'uuid';
 
-import { Test } from '../resources/quiz-resources';
-import { expectHttpError } from '../resources/test-helpers';
 import { mockQuestionsPayload } from '../mock-data';
-import { IQuizResponse } from '../../../src/handlers/quiz/models/quiz';
+import { IQuizResponse } from '../../../src/models/entities/quiz';
+import { QuizResources } from '../resources/quiz-resources';
+import { expectHttpError } from '../resources/test-helpers';
 
 describe('POST /quizzes/{quizId}/questions', () => {
-    let quizResources: Test.QuizResources;
+    let quizResources: QuizResources;
     let quiz: IQuizResponse;
 
     beforeAll(async () => {
-        quizResources = new Test.QuizResources();
+        quizResources = new QuizResources();
         const response = await quizResources.createQuiz({
             title: uuid(),
             potAmount: 500,
@@ -24,8 +24,8 @@ describe('POST /quizzes/{quizId}/questions', () => {
                 {
                     question: 'What is your favorite color?',
                     questionNum: 1,
-                    sport: 'test',
-                    ticker: 'test',
+                    sport: 'nba',
+                    ticker: 'woo',
                     choices: [
                         { text: 'Blue', isAnswer: true }
                     ]
@@ -33,8 +33,8 @@ describe('POST /quizzes/{quizId}/questions', () => {
                 {
                     question: 'What is your favorite animal?',
                     questionNum: 2,
-                    sport: 'test',
-                    ticker: 'test',
+                    sport: 'nba',
+                    ticker: 'doo',
                     choices: [
                         { text: 'Cat', isAnswer: true },
                     ]
@@ -53,10 +53,11 @@ describe('POST /quizzes/{quizId}/questions', () => {
         // @ts-ignore
         await expectHttpError(quizResources.addQuestions(quiz.quizId, {
             questions: [
+                // @ts-ignore
                 {
                     question: 'What is your favorite color?',
                     questionNum: 1,
-                    sport: 'test',
+                    sport: 'nba',
                     choices: [
                         { text: 'Blue', isAnswer: true }
                     ]

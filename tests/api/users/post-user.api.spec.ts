@@ -1,10 +1,11 @@
+
+import { UserResources, generatePhone } from '../resources/user-resources';
 import { expectHttpError } from '../resources/test-helpers';
-import { Test } from '../resources/user-resources';
 
 describe('POST /users', () => {
-    let userResources: Test.UserResources;
+    let userResources: UserResources;
     beforeAll(async () => {
-        userResources = new Test.UserResources();
+        userResources = new UserResources();
     });
 
     it('should return userId', async () => {
@@ -13,7 +14,7 @@ describe('POST /users', () => {
     });
 
     it('should return a userId if the user for a phone already exists', async () => {
-        const phone = Test.generatePhone();
+        const phone = generatePhone();
         const firstUser = await userResources.createUser(phone);
         const sameUser = await userResources.createUser(phone);
         expect(firstUser.userId).toBe(sameUser.userId, 'Did not return same user for same phone number');
@@ -30,7 +31,7 @@ describe('POST /users', () => {
     });
 
     it('should return the same userId when submitting the same phone number', async () => {
-        const phone = Test.generatePhone();
+        const phone = generatePhone();
         const { userId } = await userResources.createUser(phone);
         expect((await userResources.createUser(phone)).userId).toBe(userId);
     });
@@ -38,7 +39,7 @@ describe('POST /users', () => {
     describe('Referrals', () => {
         it('should create a life for a user if referred validly', async () => {
             const referrer = await userResources.getNewUser();
-            await userResources.createUser(Test.generatePhone(), referrer.user.username);
+            await userResources.createUser(generatePhone(), referrer.user.username);
             userResources.token = referrer.token;
 
             const lives = await userResources.getLives(referrer.user.userId);
@@ -46,7 +47,7 @@ describe('POST /users', () => {
         });
 
         it('should return 400 if providing a bad referral code', async () => {
-            await expectHttpError(userResources.createUser(Test.generatePhone(), 'bad'), 400, 'Invalid referral code');
+            await expectHttpError(userResources.createUser(generatePhone(), 'bad'), 400, 'Invalid referral code');
         });
     });
 });

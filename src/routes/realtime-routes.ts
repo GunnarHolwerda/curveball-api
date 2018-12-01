@@ -2,10 +2,11 @@ import * as Boom from 'boom';
 import * as hapi from 'hapi';
 import * as Joi from 'joi';
 
-import { IoServer } from '../models/io-server';
-import { QuizNamespace } from '../models/quiz-namespace';
+import { IoServer } from '../models/namespaces/io-server';
+import { QuizNamespace } from '../models/namespaces/quiz-namespace';
 import { QuizCache } from '../models/quiz-cache';
-import { ServerEvents } from '../events';
+import { ServerEvents } from '../types/events';
+import { IQuizRoom } from '../interfaces/quiz';
 
 async function getNamespace(quizId: string, ioServer: IoServer): Promise<QuizNamespace | null> {
     const quiz = await QuizCache.getQuiz(quizId);
@@ -48,7 +49,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
             }
         },
         handler: async (req) => {
-            const quiz = req.payload['quiz'];
+            const quiz: IQuizRoom = req.payload['quiz'];
             const ticker = req.payload['ticker'];
             const { quizId } = quiz;
             const quizNamespace = new QuizNamespace(ioServer.getNamespace(quizId), quiz);

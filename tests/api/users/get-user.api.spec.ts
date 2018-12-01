@@ -1,16 +1,16 @@
 import { expectHttpError } from '../resources/test-helpers';
-import { Test } from '../resources/user-resources';
-import { IUserResponse } from '../../../src/handlers/quiz/models/user';
+import { IUserResponse } from '../../../src/models/entities/user';
+import { UserResources } from '../resources/user-resources';
 
 describe('GET /users/{userId}', () => {
     let user: IUserResponse;
-    let userResources: Test.UserResources;
+    let userResources: UserResources;
 
     beforeAll(async () => {
-        userResources = new Test.UserResources();
+        userResources = new UserResources();
         const response = await userResources.getNewUser();
         user = response.user;
-        userResources = new Test.UserResources(response.token);
+        userResources = new UserResources(response.token);
     });
 
     it('should retrieve user info', async () => {
@@ -27,7 +27,7 @@ describe('GET /users/{userId}', () => {
     });
 
     it('should return 401 if token not provided', async () => {
-        const noTokenUserResources = new Test.UserResources();
+        const noTokenUserResources = new UserResources();
         await expectHttpError(noTokenUserResources.getUser(user.userId), 401);
     });
 });

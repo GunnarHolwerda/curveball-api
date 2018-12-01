@@ -1,7 +1,7 @@
 import * as Redis from 'ioredis';
-import { ApplicationConfig } from '../config';
+import { ApplicationConfig } from './config';
 
-const CurveballRedisKeyPrefix = 'CB-Realtime-';
+const CurveballRedisKeyPrefix = 'CB-QuizInfra-';
 
 export class CbRedis {
     private redisClient: Redis.Redis;
@@ -10,11 +10,6 @@ export class CbRedis {
     private constructor() {
         this.redisClient = new Redis(ApplicationConfig.redisPort, ApplicationConfig.redisHost, {
             keyPrefix: CurveballRedisKeyPrefix
-        });
-        this.redisClient.on('error', async (err) => {
-            console.log('REDIS ERROR', err);
-            await this.redisClient.disconnect();
-            await this.redisClient.connect();
         });
     }
 
@@ -27,5 +22,9 @@ export class CbRedis {
 
     public get client(): Redis.Redis {
         return this.redisClient;
+    }
+
+    public async keys(prefix: string): Promise<Array<string>> {
+        return (await CbRedis.instance.client.keys(`${CurveballRedisKeyPrefix}${prefix}`)).map(k => k.replace(CurveballRedisKeyPrefix, ''));
     }
 }

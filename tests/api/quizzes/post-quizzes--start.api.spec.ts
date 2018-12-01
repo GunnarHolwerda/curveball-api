@@ -1,18 +1,18 @@
 import * as uuid from 'uuid';
 
 import { mockQuestionsPayload } from '../mock-data';
-import { Test } from '../resources/quiz-resources';
 import { expectHttpError } from '../resources/test-helpers';
-import { IQuizResponse } from '../../../src/handlers/quiz/models/quiz';
+import { QuizResources, QuizResponse, QuizStartResponse } from '../resources/quiz-resources';
+import { IQuizResponse } from '../../../src/models/entities/quiz';
 
 describe('POST /quizzes/{quizId}:start', () => {
-    let quizResources: Test.QuizResources;
-    let quizResponse: Test.QuizResponse;
+    let quizResources: QuizResources;
+    let quizResponse: QuizResponse;
     let quiz: IQuizResponse;
-    let startedQuiz: Test.QuizStartResponse;
+    let startedQuiz: QuizStartResponse;
 
     beforeAll(async () => {
-        quizResources = new Test.QuizResources();
+        quizResources = new QuizResources();
         const quizTitle = uuid();
         quizResponse = await quizResources.createQuiz({
             title: quizTitle,
