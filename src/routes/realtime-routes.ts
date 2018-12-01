@@ -5,8 +5,10 @@ import * as Joi from 'joi';
 import { IoServer } from '../models/namespaces/io-server';
 import { QuizNamespace } from '../models/namespaces/quiz-namespace';
 import { QuizCache } from '../models/quiz-cache';
-import { ServerEvents } from '../types/events';
+import { ServerEvents, AnalyticsEvents } from '../types/events';
 import { IQuizRoom } from '../interfaces/quiz';
+import { UserFactory } from '../models/factories/user-factory';
+import { Analytics } from '../models/analytics';
 
 async function getNamespace(quizId: string, ioServer: IoServer): Promise<QuizNamespace | null> {
     const quiz = await QuizCache.getQuiz(quizId);

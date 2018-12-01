@@ -15,12 +15,6 @@ export class QuizSocketHandlers extends BaseSocketHandler {
         super.register(socket);
         UserFactory.load(socket.user.userId).then((user) => {
             Analytics.instance.track(user!, AnalyticsEvents.joinedShow, { quiz: this.quiz });
-            Analytics.instance.incrementProperty(user!, 'showsJoined', 1);
-        });
-        socket.on('complete', () => {
-            UserFactory.load(socket.user.userId).then((user) => {
-                Analytics.instance.track(user!, AnalyticsEvents.reachedEndOfShow, { quiz: this.quiz });
-            });
         });
     }
 

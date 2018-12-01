@@ -120,8 +120,9 @@ export class User implements Analyticize {
         const {
             name,
             username,
-            created
+            created,
+            user_id
         } = this.properties;
-        return { name, username, created };
+        return { name, username, created, userId: user_id };
     }
 }
