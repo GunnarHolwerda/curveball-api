@@ -11,6 +11,7 @@ ENV PGHOST curveball-db
 ENV PGPASSWORD password
 ENV PGDATABASE curveball
 ENV QT_SECRET ExtraSecret
+ENV MIXPANEL_TOKEN 948d03478fe4f2bf1527edb7f2c9a2c9
 COPY package*.json ./
 RUN npm install
 COPY . .

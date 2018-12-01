@@ -1,10 +1,11 @@
-import { Test } from '../resources/quiz-resources';
+import { QuizResources } from '../resources/quiz-resources';
+
 
 describe('GET /quizzes', () => {
-    let quizResources: Test.QuizResources;
+    let quizResources: QuizResources;
 
     beforeAll(async () => {
-        quizResources = new Test.QuizResources();
+        quizResources = new QuizResources();
     });
 
     it('should retrieve all quizzes', async () => {

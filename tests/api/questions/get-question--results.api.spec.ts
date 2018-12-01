@@ -1,20 +1,19 @@
 import * as uuid from 'uuid';
-
 import { mockQuestionsPayload } from '../mock-data';
-import { Test } from '../resources/quiz-resources';
 import { expectHttpError } from '../resources/test-helpers';
-import { Test as TestUser } from '../resources/user-resources';
-import { IChoiceResponse } from '../../../src/handlers/quiz/models/question-choice';
-import { QuestionsPayload } from '../../../src/handlers/quiz/functions/quizzes/questions/post-questions';
+import { IChoiceResponse } from '../../../src/models/entities/question-choice';
+import { QuizResources, QuizStartResponse } from '../resources/quiz-resources';
+import { QuestionsPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
+import { UserResources } from '../resources/user-resources';
 
 describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
     const TotalAnswers = 15;
-    let quizResources: Test.QuizResources;
-    let startedQuiz: Test.QuizStartResponse;
+    let quizResources: QuizResources;
+    let startedQuiz: QuizStartResponse;
 
     beforeAll(async () => {
-        quizResources = new Test.QuizResources();
-        const userResources = new TestUser.UserResources();
+        quizResources = new QuizResources();
+        const userResources = new UserResources();
         const response = await quizResources.createQuiz({
             title: uuid(),
             potAmount: 500,
@@ -26,7 +25,7 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
         for (let i = 0; i < TotalAnswers; i++) {
             answerPromises.push(new Promise((resolve, reject) => {
                 return userResources.getNewUser().then((res) => {
-                    const specialQuizResources = new Test.QuizResources(res.token);
+                    const specialQuizResources = new QuizResources(res.token);
                     const randomChoice = getRandomChoice(firstQuestion.choices);
                     specialQuizResources.answerQuestion(
                         quiz.quizId, firstQuestion.questionId, randomChoice
@@ -77,7 +76,7 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
         let questionsPayload: QuestionsPayload;
 
         beforeAll(async () => {
-            const userResources = new TestUser.UserResources();
+            const userResources = new UserResources();
             const response = await quizResources.createQuiz({
                 title: uuid(),
                 potAmount: 500,
@@ -94,7 +93,7 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
             for (let i = 0; i < TotalAnswers; i++) {
                 answerPromises.push(new Promise((resolve, reject) => {
                     return userResources.getNewUser().then((res) => {
-                        const specialQuizResources = new Test.QuizResources(res.token);
+                        const specialQuizResources = new QuizResources(res.token);
                         const randomChoice = getRandomChoice(firstQuestion.choices);
                         specialQuizResources.answerQuestion(
                             quiz.quizId, firstQuestion.questionId, randomChoice

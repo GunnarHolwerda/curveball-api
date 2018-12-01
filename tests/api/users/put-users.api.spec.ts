@@ -1,17 +1,17 @@
 import { expectHttpError } from '../resources/test-helpers';
-import { Test } from '../resources/user-resources';
-import { IUserResponse } from '../../../src/handlers/quiz/models/user';
 import uuid = require('uuid');
+import { IUserResponse } from '../../../src/models/entities/user';
+import { UserResources } from '../resources/user-resources';
 
 describe('PUT /users/{userId}', () => {
     let user: IUserResponse;
-    let userResources: Test.UserResources;
+    let userResources: UserResources;
 
     beforeAll(async () => {
-        userResources = new Test.UserResources();
+        userResources = new UserResources();
         const response = await userResources.getNewUser();
         user = response.user;
-        userResources = new Test.UserResources(response.token);
+        userResources = new UserResources(response.token);
     });
 
     it('should update user properties properly', async () => {
@@ -24,7 +24,7 @@ describe('PUT /users/{userId}', () => {
     });
 
     it('should return 401 if no token is provided', async () => {
-        const myResources = new Test.UserResources();
+        const myResources = new UserResources();
         await expectHttpError(myResources.updateUser(user.userId!, { name: '' }), 401);
     });
 

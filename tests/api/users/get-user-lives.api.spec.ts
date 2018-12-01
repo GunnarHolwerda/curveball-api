@@ -1,14 +1,14 @@
-import { IUserResponse } from '../../../src/handlers/quiz/models/user';
-import { Test } from '../resources/user-resources';
 import { expectHttpError } from '../resources/test-helpers';
+import { IUserResponse } from '../../../src/models/entities/user';
+import { UserResources } from '../resources/user-resources';
 
 describe('GET /users/{userId}/lives', () => {
     let referrer: IUserResponse;
     let referred: IUserResponse;
-    let userResources: Test.UserResources;
+    let userResources: UserResources;
 
     beforeAll(async () => {
-        userResources = new Test.UserResources();
+        userResources = new UserResources();
         const { user, token: referrerToken } = await userResources.getNewUser();
         referrer = user;
 

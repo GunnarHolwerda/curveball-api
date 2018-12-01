@@ -1,4 +1,4 @@
-import { QuestionsPayload } from '../../../src/handlers/quiz/functions/quizzes/questions/post-questions';
+import { QuestionsPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
 
 export const mockQuestionsPayload: QuestionsPayload = {
     questions: [
