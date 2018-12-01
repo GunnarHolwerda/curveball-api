@@ -3,6 +3,7 @@ import { ApplicationConfig } from '../config';
 import { User } from '../handlers/quiz/models/user';
 import { AnalyticsProperties, Analyticize } from '../handlers/quiz/interfaces/analyticize';
 import { AnalyticsEvents } from '../events';
+import * as flatten from 'flat';
 
 export type IncrementalUserProperties = 'showsJoined';
 
@@ -35,15 +36,13 @@ export class Analytics {
         const analyticsProperties = { distinct_id: user.properties.user_id, ...properties };
         trackableObjects.push(user);
         trackableObjects.forEach(o => {
-            const props = o.analyticsProperties();
-            const propertyPrefix = o.constructor.name.toLowerCase();
-            for (const property in props) {
-                if (props.hasOwnProperty(property)) {
-                    analyticsProperties[`${propertyPrefix}_${property}`] = props[property];
-                }
+            let propertyPrefix = o.constructor.name.toLowerCase();
+            if (analyticsProperties.hasOwnProperty(propertyPrefix)) {
+                propertyPrefix += '_default';
             }
+            analyticsProperties[propertyPrefix] = o.analyticsProperties();
         });
-        this.analytics.track(eventName, analyticsProperties);
+        this.analytics.track(eventName, flatten(analyticsProperties));
     }
 
     incrementProperty(user: User, propertyName: IncrementalUserProperties, amount: number): void {

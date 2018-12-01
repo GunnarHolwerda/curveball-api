@@ -60,7 +60,7 @@ export async function answerQuestion(event: hapi.Request): Promise<object> {
     const user = (await UserFactory.load(userId))!;
     Analytics.instance.track(user, AnalyticsEvents.answeredQuestion, {
         selectedChoice: selectedChoice.properties.text,
-        choices: (await question.choices()).map(c => c.properties.text)
+        choices: (await question.choices()).map(c => c.analyticsProperties())
     }, [quiz, question]);
 
     if (!nextQuestion) {

@@ -6,6 +6,7 @@ import { IoServer } from '../models/io-server';
 import { QuizNamespace } from '../models/quiz-namespace';
 import { QuizCache } from '../models/quiz-cache';
 import { ServerEvents } from '../events';
+import { IQuizRoom } from '../interfaces/quiz';
 
 async function getNamespace(quizId: string, ioServer: IoServer): Promise<QuizNamespace | null> {
     const quiz = await QuizCache.getQuiz(quizId);
@@ -45,7 +46,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
             }
         },
         handler: async (req) => {
-            const quiz = req.payload['quiz'];
+            const quiz: IQuizRoom = req.payload['quiz'];
             const ticker = req.payload['ticker'];
             const { quizId } = quiz;
             const quizNamespace = new QuizNamespace(ioServer.getNamespace(quizId), quiz);

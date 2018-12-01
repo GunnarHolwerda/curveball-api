@@ -3,11 +3,11 @@ import * as socketio from 'socket.io';
 import { Room } from '../interfaces/room';
 import { QuizSocketHandlers } from './quiz-socket-handlers';
 import { QuizCache } from './quiz-cache';
-import { Quiz } from '../handlers/quiz/models/quiz';
+import { IQuizRoom } from '../interfaces/quiz';
 
 export class QuizNamespace extends Room {
 
-    constructor(_namespace: socketio.Namespace, private quiz: Quiz) {
+    constructor(_namespace: socketio.Namespace, private quiz: IQuizRoom) {
         super(_namespace, new QuizSocketHandlers(quiz));
     }
 
@@ -17,7 +17,7 @@ export class QuizNamespace extends Room {
     }
 
     public get quizId(): string {
-        return this.quiz.properties.quiz_id;
+        return this.quiz.quizId;
     }
 
     public get numConnected(): Promise<number> {

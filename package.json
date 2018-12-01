@@ -18,6 +18,7 @@
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/boom": "^7.2.0",
+    "@types/flat": "0.0.28",
     "@types/hapi": "^17.0.12",
     "@types/ioredis": "^3.2.9",
     "@types/jasmine": "^2.8.8",
@@ -50,6 +51,7 @@
     "awesome-phonenumber": "^2.2.6",
     "boom": "^7.2.0",
     "dotenv": "^6.0.0",
+    "flat": "^4.1.0",
     "good": "^8.1.1",
     "good-console": "^7.1.0",
     "good-squeeze": "^5.1.0",
