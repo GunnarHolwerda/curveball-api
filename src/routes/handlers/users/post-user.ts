@@ -36,6 +36,9 @@ export async function postUser(event: hapi.Request): Promise<object> {
                 throw Boom.badRequest('Invalid referral code');
             }
         }
+        Analytics.instance.track(user, AnalyticsEvents.signup, {
+            referrer: referrer ? referrer.analyticsProperties() : null
+        });
     }
     const verifier = new PhoneVerifier(user.properties.phone);
     const response = await verifier.sendCode();
@@ -43,10 +46,6 @@ export async function postUser(event: hapi.Request): Promise<object> {
         console.log('Error from Twilio', response);
         throw Boom.internal('Unable to send verification code');
     }
-
-    Analytics.instance.track(user, AnalyticsEvents.signup, {
-        referrer: referrer ? referrer.analyticsProperties() : null
-    });
 
     return {
         userId: user.properties.user_id
