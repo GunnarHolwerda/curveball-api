@@ -20,7 +20,7 @@ export class PhoneVerifier {
     constructor(private phoneNumber: string) { }
 
     public async sendCode(): Promise<ISendCodeResponse> {
-        if (ApplicationConfig.nodeEnv === Environment.local) {
+        if (this.isLocallyVerified()) {
             return MockSendCodeResponse;
         }
         const params = new URLSearchParams();
@@ -39,7 +39,7 @@ export class PhoneVerifier {
     }
 
     public async verifyCode(code: string): Promise<IVerifyCodeResponse> {
-        if (code === PhoneVerifier.LocalVerificationCode) {
+        if (this.isLocallyVerified()) {
             return { success: true, message: 'You did it!' };
         }
         const queryParams = `?phone_number=${this.phoneNumber}&verification_code=${code}&country_code=${1}`;
@@ -47,6 +47,13 @@ export class PhoneVerifier {
             headers: { 'X-Authy-API-Key': ApplicationConfig.twilioKey }
         }).then(res => res.json());
         return response as IVerifyCodeResponse;
+    }
+
+    private isLocallyVerified(): boolean {
+        if (ApplicationConfig.nodeEnv !== Environment.local) {
+            return false;
+        }
+        return true;
     }
 
     /**
