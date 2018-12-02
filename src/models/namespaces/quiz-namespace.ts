@@ -3,7 +3,7 @@ import * as socketio from 'socket.io';
 import { Room } from '../../interfaces/room';
 import { QuizSocketHandlers } from '../socket-handlers/quiz-socket-handlers';
 import { QuizCache } from '../quiz-cache';
-import { IQuizRoom } from '../../interfaces/quiz';
+import { IQuizRoom } from '../../interfaces/quiz-room';
 
 export class QuizNamespace extends Room {
 
