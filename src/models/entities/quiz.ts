@@ -21,6 +21,7 @@ export interface IQuiz {
     completed: boolean;
     created: Date;
     auth: boolean;
+    deleted: boolean;
 }
 
 export interface IQuizResponse {
@@ -59,6 +60,11 @@ export class Quiz implements Cacheable, Analyticize {
 
     public async hasAnsweredIncorrectly(userId: string): Promise<boolean> {
         return +(await CbRedis.instance.client.exists(`wrong-answer-${this.properties.quiz_id}-${userId}`)) === 1;
+    }
+
+    public async delete(): Promise<void> {
+        this.properties.deleted = true;
+        await this.save();
     }
 
     public async save(): Promise<void> {

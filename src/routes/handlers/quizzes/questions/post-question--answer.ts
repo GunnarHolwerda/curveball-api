@@ -5,9 +5,6 @@ import { UserJwtClaims } from '../../../../interfaces/user-jwt-claims';
 import { AllQtClaims } from '../../../../types/qt';
 import { QuizFactory } from '../../../../models/factories/quiz-factory';
 import { Answer } from '../../../../models/entities/answer';
-import { UserFactory } from '../../../../models/factories/user-factory';
-import { Analytics } from '../../../../models/analytics';
-import { AnalyticsEvents } from '../../../../types/events';
 import { createQt } from '../../../../util/create-qt';
 
 export const questionsAnswerSchema = Joi.object().keys({
@@ -58,11 +55,12 @@ export async function answerQuestion(event: hapi.Request): Promise<object> {
 
     const nextQuestion = allQuestions.find(q => q.properties.question_num === (question!.properties.question_num + 1));
 
-    const user = (await UserFactory.load(userId))!;
-    Analytics.instance.track(user, AnalyticsEvents.answeredQuestion, {
-        selectedChoice: selectedChoice.properties.text,
-        choices: (await question.choices()).map(c => c.analyticsProperties())
-    }, [quiz, question]);
+    // const user = (await UserFactory.load(userId))!;
+    // Removed in favor of client side event
+    // Analytics.instance.track(user, AnalyticsEvents.answeredQuestion, {
+    //     selectedChoice: selectedChoice.properties.text,
+    //     choices: (await question.choices()).map(c => c.analyticsProperties())
+    // }, [quiz, question]);
 
     if (!nextQuestion) {
         return { token: null };

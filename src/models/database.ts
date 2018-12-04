@@ -1,16 +1,20 @@
-import { Client, types } from 'pg';
+import * as pg from 'pg';
+import sqorn = require('sqorn-pg');
+import { SQF } from 'sqorn-pg/types/sq';
 
-types.setTypeParser(20, function (val): number {
+pg.types.setTypeParser(20, function (val): number {
     return parseInt(val, 10);
 });
 
 export class Database {
     private activeSchema = '';
-    private _client: Client;
+    private _client: pg.Pool;
+    private _sq: SQF;
     private static _instance: Database;
 
     private constructor() {
-        this._client = new Client();
+        this._client = new pg.Pool();
+        this._sq = sqorn({ pg, pool: this.client });
         this.client.on('error', (err) => {
             console.log('DB ERROR', err);
         });
@@ -42,7 +46,11 @@ export class Database {
         await this.client.end();
     }
 
-    public get client(): Client {
+    public get client(): pg.Pool {
         return this._client;
+    }
+
+    public get sq(): SQF {
+        return this._sq;
     }
 }

@@ -1,5 +1,5 @@
 import { ISendCodeResponse } from '../interfaces/ISendCodeResponse';
-import * as fetch from 'node-fetch';
+import axios from 'axios';
 import PhoneNumber from 'awesome-phonenumber';
 import { URLSearchParams } from 'url';
 import { IVerifyCodeResponse } from '../interfaces/IVerifyCodeResponse';
@@ -15,7 +15,6 @@ const MockSendCodeResponse: ISendCodeResponse = {
 
 export class PhoneVerifier {
     private readonly endpoint: string = 'https://api.authy.com/protected/json';
-    public static readonly LocalVerificationCode = '0000000';
 
     constructor(private phoneNumber: string) { }
 
@@ -30,23 +29,25 @@ export class PhoneVerifier {
         params.append('code_length', '4');
         params.append('locale', 'en');
 
-        const response = await fetch(`${this.endpoint}/phones/verification/start`, {
-            method: 'post',
-            headers: { 'X-Authy-API-Key': ApplicationConfig.twilioKey },
-            body: params
-        }).then(res => res.json());
-        return response as ISendCodeResponse;
+        const response = await axios.post<ISendCodeResponse>(`${this.endpoint}/phones/verification/start`, params, {
+            headers: { 'X-Authy-API-Key': ApplicationConfig.twilioKey }
+        }).then(res => res.data);
+        return response;
     }
 
     public async verifyCode(code: string): Promise<IVerifyCodeResponse> {
         if (this.isLocallyVerified()) {
             return { success: true, message: 'You did it!' };
         }
-        const queryParams = `?phone_number=${this.phoneNumber}&verification_code=${code}&country_code=${1}`;
-        const response = await fetch(`${this.endpoint}/phones/verification/check${queryParams}`, {
-            headers: { 'X-Authy-API-Key': ApplicationConfig.twilioKey }
-        }).then(res => res.json());
-        return response as IVerifyCodeResponse;
+        const response = await axios.get<IVerifyCodeResponse>(`${this.endpoint}/phones/verification/check`, {
+            headers: { 'X-Authy-API-Key': ApplicationConfig.twilioKey },
+            params: {
+                'phone_number': this.phoneNumber,
+                'verification_code': code,
+                'country_code': 1
+            }
+        }).then(res => res.data);
+        return response;
     }
 
     private isLocallyVerified(): boolean {

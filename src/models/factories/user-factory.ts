@@ -44,18 +44,16 @@ export class UserFactory {
 
     public static async loadByPhone(phone: string): Promise<User | null> {
         const formattedPhoneNumber = PhoneVerifier.getValidPhoneNumber(phone);
-        console.log(formattedPhoneNumber);
         if (formattedPhoneNumber === null) {
             throw new Error('Invalid phone number');
         }
-        const result = await Database.instance.client.query(`
-                                        SELECT *
-                                        FROM ${USER_TABLE_NAME}
-                                        WHERE phone = $1;
-                                    `, [formattedPhoneNumber]);
-        if (result.rows.length === 0) {
+        const sq = Database.instance.sq;
+        const query = await sq.from`${USER_TABLE_NAME}`.where`phone = ${formattedPhoneNumber}`;
+
+        const result = await query;
+        if (result.length === 0) {
             return null;
         }
-        return new User(result.rows[0] as IUser);
+        return new User(result[0] as IUser);
     }
 }
