@@ -65,7 +65,6 @@ export async function answerQuestion(event: hapi.Request): Promise<object> {
     if (!nextQuestion) {
         return { token: null };
     }
-
     const newQt = createQt(quizId, nextQuestion!.properties.question_id, {
         isLastQuestion: !allQuestions.find(q => q.properties.question_num > nextQuestion!.properties.question_num),
         lifeUsed

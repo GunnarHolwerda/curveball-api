@@ -4,20 +4,17 @@ import { Database } from '../database';
 export class QuizFactory {
 
     public static async load(quizId: string): Promise<Quiz | null> {
-        const result = await Database.instance.client.query(`
-                                            SELECT *
-                                            FROM ${QUIZZES_TABLE_NAME}
-                                            WHERE quiz_id = $1;
-                                        `, [quizId]);
-        if (result.rows.length === 0) {
+        const q = Database.instance.sq;
+        const result = await q.from(QUIZZES_TABLE_NAME).where`quiz_id = ${quizId}`;
+        if (result.length === 0) {
             return null;
         }
-        return new Quiz(result.rows[0] as IQuiz);
+        return new Quiz(result[0] as IQuiz);
     }
 
     public static async loadAll(includeDeleted: boolean = false): Promise<Array<Quiz>> {
         const q = Database.instance.sq;
-        let query = q.from`quizzes`.where`deleted = ${false}`;
+        let query = q.from(QUIZZES_TABLE_NAME).where`deleted = ${false}`;
         if (includeDeleted) {
             query = query.or`deleted = ${true}`;
         }

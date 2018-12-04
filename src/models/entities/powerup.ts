@@ -1,6 +1,6 @@
 import { Database } from '../database';
 import { Analyticize, AnalyticsProperties } from '../../interfaces/analyticize';
-import { buildUpatePropertyString } from '../../util/build-update-property-string';
+import { omit } from '../../util/omit';
 
 export interface IPowerup {
     id: number;
@@ -17,8 +17,9 @@ export class Powerup implements Analyticize {
     }
 
     public static async create(userId: string): Promise<boolean> {
-        const result = await Database.instance.client.query(`INSERT INTO ${POWERUP_TABLE_NAME} (user_id) VALUES ($1);`, [userId]);
-        return result.rowCount === 1;
+        const sq = Database.instance.sq;
+        const result = await sq.from(POWERUP_TABLE_NAME).insert({ user_id: userId });
+        return result.length === 1;
     }
 
     public async use(questionId: string): Promise<void> {
@@ -27,15 +28,8 @@ export class Powerup implements Analyticize {
     }
 
     public async save(): Promise<void> {
-        const updateString: string = buildUpatePropertyString(this._powerup, this.properties);
-        if (updateString) {
-            await Database.instance.client.query(`
-                UPDATE ${POWERUP_TABLE_NAME}
-                SET
-                    ${updateString}
-                WHERE id = $1;
-            `, [this._powerup.id]);
-        }
+        const sq = Database.instance.sq;
+        await sq.from(POWERUP_TABLE_NAME).set({ ...omit(this.properties, ['id']) }).where`id = ${this._powerup.id}`;
     }
 
     public analyticsProperties(): AnalyticsProperties {

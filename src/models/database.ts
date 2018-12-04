@@ -14,9 +14,12 @@ export class Database {
 
     private constructor() {
         this._client = new pg.Pool();
-        this._sq = sqorn({ pg, pool: this.client });
-        this.client.on('error', (err) => {
-            console.log('DB ERROR', err);
+        this._sq = sqorn({ pg, pool: this._client, mapInputKeys: k => k, mapOutputKeys: k => k });
+        this._client.on('connect', (c) => {
+            c.query(`SET SCHEMA '${this.activeSchema}';`);
+        });
+        this._client.on('error', (err) => {
+            console.error(err);
         });
     }
 
@@ -31,23 +34,13 @@ export class Database {
         if (schema !== this.activeSchema) {
             this.activeSchema = schema;
         }
-        try {
-            console.log('Connecting to database');
-            await this.client.connect();
-            console.log('Connected to DB');
-            await this.client.query(`SET SCHEMA '${schema}';`);
-        } catch (e) {
-            await this.connect(schema);
-        }
+        console.log('Connected to DB');
+        await this._client.connect();
     }
 
     public async disconnect(): Promise<void> {
         console.log('disconnecting from database');
-        await this.client.end();
-    }
-
-    public get client(): pg.Pool {
-        return this._client;
+        await this.sq.end();
     }
 
     public get sq(): SQF {

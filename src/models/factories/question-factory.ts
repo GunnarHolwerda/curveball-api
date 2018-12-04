@@ -4,39 +4,29 @@ import { Question, QUESTION_TABLE_NAME, IQuestion } from '../entities/question';
 
 export class QuestionFactory {
     public static async load(questionId: string): Promise<Question | null> {
-        const result = await Database.instance.client.query(`
-            SELECT * FROM ${QUESTION_TABLE_NAME} where question_id = $1;
-        `, [questionId]);
+        const sq = Database.instance.sq;
+        const result = await sq.from(QUESTION_TABLE_NAME).where`question_id = ${questionId}`;
 
-        if (result.rowCount === 0) {
+        if (result.length === 0) {
             return null;
         }
-        return new Question(result.rows[0]);
+        return new Question(result[0] as IQuestion);
     }
 
     public static async loadAllForQuiz(quizId: string): Promise<Array<Question>> {
-        const result = await Database.instance.client.query(`
-                                        SELECT *
-                                        FROM ${QUESTION_TABLE_NAME}
-                                        WHERE quiz_id = $1
-                                        ORDER BY question_num ASC;
-                                    `, [quizId]);
-        return result.rows.map((r: IQuestion) => {
-            return new Question(r);
+        const sq = Database.instance.sq;
+        const result = await sq.from(QUESTION_TABLE_NAME).where`quiz_id = ${quizId}`.order`question_num ASC`;
+        return result.map((r) => {
+            return new Question(r as IQuestion);
         });
     }
 
     public static async loadLastSentForQuiz(quizId: string): Promise<Question | null> {
-        const result = await Database.instance.client.query(`
-                                        SELECT *
-                                        FROM ${QUESTION_TABLE_NAME}
-                                        WHERE quiz_id = $1 AND sent IS NOT NULL
-                                        ORDER BY question_num ASC;
-                                    `, [quizId]);
-
-        if (result.rowCount === 0) {
+        const sq = Database.instance.sq;
+        const result = await sq.from(QUESTION_TABLE_NAME).where`quiz_id = ${quizId}`.and`sent IS NOT NULL`.order`question_num ASC`;
+        if (result.length === 0) {
             return null;
         }
-        return new Question(result.rows[0]);
+        return new Question(result[0] as IQuestion);
     }
 }

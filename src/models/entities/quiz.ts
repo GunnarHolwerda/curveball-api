@@ -1,4 +1,3 @@
-import { QuizFactory } from '../factories/quiz-factory';
 import { Question, QUESTION_TABLE_NAME } from './question';
 import { IUser, User, USER_TABLE_NAME } from './user';
 import { CbRedis } from '../cb-redis';
@@ -9,9 +8,10 @@ import { EventEmitter } from 'events';
 import { CHOICES_TABLE_NAME } from './question-choice';
 import { POWERUP_TABLE_NAME } from './powerup';
 import { Analyticize, AnalyticsProperties } from '../../interfaces/analyticize';
-import { buildUpatePropertyString } from '../../util/build-update-property-string';
 import { camelizeKeys } from '../../util/camelize-keys';
 import { ANSWER_TABLE_NAME } from './answer';
+import { QuizFactory } from '../factories/quiz-factory';
+import { omit } from '../../util/omit';
 
 export interface IQuiz {
     quiz_id: string;
@@ -45,12 +45,14 @@ export class Quiz implements Cacheable, Analyticize {
     }
 
     public static async create(quiz: Partial<IQuiz>): Promise<Quiz> {
-        const result = await Database.instance.client.query(`
-            INSERT INTO ${QUIZZES_TABLE_NAME} (title, pot_amount, auth)
-            VALUES ($1, $2, $3)
-            RETURNING quiz_id;
-        `, [quiz.title, quiz.pot_amount, quiz.auth]);
-        return (await QuizFactory.load(result!.rows[0].quiz_id))!;
+        const sq = Database.instance.sq;
+        const result = await sq.from(QUIZZES_TABLE_NAME).insert({ ...quiz }).return`quiz_id`;
+        // const result = await Database.instance.client.query(`
+        //     INSERT INTO ${QUIZZES_TABLE_NAME} (title, pot_amount, auth)
+        //     VALUES ($1, $2, $3)
+        //     RETURNING quiz_id;
+        // `, [quiz.title, quiz.pot_amount, quiz.auth]);
+        return (await QuizFactory.load(result[0].quiz_id as string))!;
     }
 
     public async markUserAsIncorrect(userId: string): Promise<boolean> {
@@ -68,15 +70,8 @@ export class Quiz implements Cacheable, Analyticize {
     }
 
     public async save(): Promise<void> {
-        const updateString = buildUpatePropertyString(this._quiz, this.properties);
-        if (updateString !== '') {
-            await Database.instance.client.query(`
-                    UPDATE ${QUIZZES_TABLE_NAME}
-                    SET
-                        ${updateString}
-                    WHERE quiz_id = $1;
-                `, [this._quiz.quiz_id]);
-        }
+        const sq = Database.instance.sq;
+        await sq.from(QUIZZES_TABLE_NAME).set({ ...omit(this.properties, ['quiz_id']) }).where`quiz_id = ${this._quiz.quiz_id}`;
         this._quiz = { ...this.properties };
         Quiz.events.emit('save', this);
     }
@@ -106,24 +101,36 @@ export class Quiz implements Cacheable, Analyticize {
     }
 
     public async activeParticipants(): Promise<Array<User>> {
-        const result = await Database.instance.client.query(`
-        SELECT u.*
-            from ${QUIZZES_TABLE_NAME} qz
-                JOIN ${QUESTION_TABLE_NAME} q ON q.quiz_id = qz.quiz_id
-                JOIN ${CHOICES_TABLE_NAME} c ON q.question_id = c.question_id
-                JOIN ${ANSWER_TABLE_NAME} a ON a.choice_id = c.choice_id
-                JOIN ${USER_TABLE_NAME} u ON u.user_id = a.user_id
-                LEFT JOIN ${POWERUP_TABLE_NAME} l ON l.user_id = u.user_id
-            WHERE
-                qz.quiz_id = $1
-                AND (c.is_answer = TRUE OR l.question IS NOT NULL)
-                AND q.question_num = (
-                    select max(question_num)
-                    from questions q
-                    WHERE q.quiz_id = $1 and q.sent IS NOT NULL);
-            `, [this._quiz.quiz_id]);
-        return result.rows.map((u: IUser) => {
-            return new User(u);
+        const quizId = this._quiz.quiz_id;
+        const sq = Database.instance.sq;
+        const result = await sq.from({ qz: QUIZZES_TABLE_NAME })
+            .join({ q: QUESTION_TABLE_NAME }).on`q.quiz_id = qz.quiz_id`
+            .join({ c: CHOICES_TABLE_NAME }).on`q.question_id = c.question_id`
+            .join({ a: ANSWER_TABLE_NAME }).on`a.choice_id = c.choice_id`
+            .join({ u: USER_TABLE_NAME }).on`a.user_id = u.user_id`
+            .left.join({ l: POWERUP_TABLE_NAME }).on`l.user_id = u.user_id`
+            .where`qz.quiz_id = ${quizId}`
+            .and`c.is_answer = ${true} OR l.question IS NOT NULL`
+            .and`q.question_num = (SELECT max(question_num) FROM questions q WHERE q.quiz_id = ${quizId} and q.sent IS NOT NULL)`
+            .return`u.*`;
+        // const result = await Database.instance.client.query(`
+        // SELECT u.*
+        //     from ${QUIZZES_TABLE_NAME} qz
+        //         JOIN ${QUESTION_TABLE_NAME} q ON q.quiz_id = qz.quiz_id
+        //         JOIN ${CHOICES_TABLE_NAME} c ON q.question_id = c.question_id
+        //         JOIN ${ANSWER_TABLE_NAME} a ON a.choice_id = c.choice_id
+        //         JOIN ${USER_TABLE_NAME} u ON u.user_id = a.user_id
+        //         LEFT JOIN ${POWERUP_TABLE_NAME} l ON l.user_id = u.user_id
+        //     WHERE
+        //         qz.quiz_id = $1
+        //         AND (c.is_answer = TRUE OR l.question IS NOT NULL)
+        //         AND q.question_num = (
+        //             select max(question_num)
+        //             from questions q
+        //             WHERE q.quiz_id = $1 and q.sent IS NOT NULL);
+        //     `, [this._quiz.quiz_id]);
+        return result.map((u) => {
+            return new User(u as IUser);
         });
     }
 
