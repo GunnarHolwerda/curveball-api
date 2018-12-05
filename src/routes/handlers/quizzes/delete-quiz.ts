@@ -12,6 +12,6 @@ export async function deleteQuiz(event: hapi.Request): Promise<object> {
     await quiz.delete();
 
     return {
-        quiz: await quiz.toResponseObject(true)
+        success: 'ok'
     };
 }

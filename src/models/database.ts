@@ -15,11 +15,13 @@ export class Database {
     private constructor() {
         this._client = new pg.Pool();
         this._sq = sqorn({ pg, pool: this._client, mapInputKeys: k => k, mapOutputKeys: k => k });
-        this._client.on('connect', (c) => {
-            c.query(`SET SCHEMA '${this.activeSchema}';`);
+        this._client.on('connect', async (c) => {
+            await c.query(`SET SCHEMA '${this.activeSchema}';`);
+            const afterReslts = await c.query('SELECT current_schema()');
+            console.log('after', afterReslts.rows[0]);
         });
         this._client.on('error', (err) => {
-            console.error(err);
+            console.error(err.message);
         });
     }
 
