@@ -5,7 +5,6 @@ import { Environment } from '../../types/environments';
 
 export const onlyLocalPreHandler: RouteOptionsPreObject = {
     method: async (_: Request, _1: ResponseToolkit): Promise<any> => {
-        console.log('checking environment');
         if (ApplicationConfig.nodeEnv !== Environment.local) {
             throw Boom.notFound();
         }
