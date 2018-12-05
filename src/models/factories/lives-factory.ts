@@ -3,9 +3,8 @@ import { Database } from '../database';
 
 export class PowerupFactory {
     public static async loadAvailableForUser(userId: string): Promise<Array<Powerup>> {
-        const result = await Database.instance.client.query(`
-            SELECT * FROM ${POWERUP_TABLE_NAME} WHERE user_id = $1 AND question IS NULL;
-        `, [userId]);
-        return result.rows.map(r => new Powerup(r as IPowerup));
+        const sq = Database.instance.sq;
+        const result = await sq.from(POWERUP_TABLE_NAME).where`user_id = ${userId}`.and`question IS NULL`;
+        return result.map(r => new Powerup(r as IPowerup));
     }
 }

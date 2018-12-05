@@ -1,4 +1,3 @@
-import { QueryResult } from 'pg';
 import * as Randomstring from 'randomstring';
 import { createUserJWT } from '../jwt';
 import { Powerup } from './powerup';
@@ -11,7 +10,7 @@ import { PhoneVerifier } from '../phone-verifier';
 import { Analytics } from '../analytics';
 import { omit } from '../../util/omit';
 import { camelizeKeys } from '../../util/camelize-keys';
-import { buildUpatePropertyString } from '../../util/build-update-property-string';
+import { WINNER_TABLE_NAME } from '../../models/entities/winner';
 
 export interface IUser {
     user_id: string;
@@ -54,13 +53,9 @@ export class User implements Analyticize {
         if (formattedPhoneNumber === null) {
             throw new Error('Invalid phone number');
         }
-        let result: QueryResult;
-        result = await Database.instance.client.query(`
-            INSERT INTO ${USER_TABLE_NAME} (phone, photo)
-            VALUES ($1, $2)
-            RETURNING user_id;
-        `, [formattedPhoneNumber, getAvatarUrl()]);
-        const userId = result!.rows[0].user_id;
+        const sq = Database.instance.sq;
+        const result = await sq.from(USER_TABLE_NAME).insert({ phone: phoneNumber, photo: getAvatarUrl() }).return`user_id`;
+        const userId = result[0].user_id;
         const user = (await UserFactory.load(userId))!;
         Analytics.instance.trackUser(user);
         return user;
@@ -79,15 +74,8 @@ export class User implements Analyticize {
             throw new Error('Invalid phone number');
         }
 
-        const updateString: string = buildUpatePropertyString(this._user, this.properties);
-        if (updateString) {
-            await Database.instance.client.query(`
-                UPDATE ${USER_TABLE_NAME}
-                SET
-                    ${updateString}
-                WHERE user_id = $1;
-            `, [this._user.user_id]);
-        }
+        const sq = Database.instance.sq;
+        await sq.from(USER_TABLE_NAME).set({ ...omit(this.properties, ['user_id']) }).where`user_id = ${this._user.user_id}`;
         Analytics.instance.trackUser(this);
     }
 
@@ -96,12 +84,12 @@ export class User implements Analyticize {
     }
 
     public async stats(): Promise<{ wins: number, winnings: string }> {
-        let result = await Database.instance.client.query(`
-            SELECT SUM(amount_won) as winnings, COUNT(*) as wins
-            FROM winners WHERE user_id = $1;
-        `, [this.properties.user_id]);
+        const sq = Database.instance.sq;
+        const queryResult = await sq.from(WINNER_TABLE_NAME)
+            .where`user_id = ${this.properties.user_id}`
+            .return({ winnings: 'SUM(amount_won)', wins: 'COUNT(*)' });
 
-        result = result.rows[0];
+        const result = queryResult[0];
 
         return {
             wins: Number.parseInt(result['wins'], 10),

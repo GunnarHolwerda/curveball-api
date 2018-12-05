@@ -6,7 +6,7 @@ import { ChoiceFactory } from '../factories/choice-factory';
 import { Analyticize, AnalyticsProperties } from '../../interfaces/analyticize';
 import { snakifyKeys } from '../../util/snakify-keys';
 import { camelizeKeys } from '../../util/camelize-keys';
-import { buildUpatePropertyString } from '../../util/build-update-property-string';
+import { omit } from '../../util/omit';
 
 export interface IQuestion {
     question_id: string;
@@ -53,25 +53,16 @@ export class Question implements Analyticize {
 
     public static async create(question: Partial<IQuestion>): Promise<Question> {
         const params = snakifyKeys(question);
-        const result = await Database.instance.client.query(`
-            INSERT INTO ${QUESTION_TABLE_NAME} (quiz_id, question, question_num, sport, ticker)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING question_id;
-        `, [params.quiz_id, params.question, params.question_num, params.sport, params.ticker]);
-        return (await QuestionFactory.load(result!.rows[0].question_id))!;
+        const sq = Database.instance.sq;
+        const result = await sq.from(QUESTION_TABLE_NAME).insert(params).return`question_id`;
+        return (await QuestionFactory.load(result![0].question_id))!;
     }
 
     public async save(): Promise<void> {
-        const updateString = buildUpatePropertyString(this._question, this.properties);
-        if (!updateString) {
-            return;
-        }
-        await Database.instance.client.query(`
-            UPDATE ${QUESTION_TABLE_NAME}
-            SET
-                ${updateString}
-            WHERE question_id = $1;
-        `, [this._question.question_id]);
+        const sq = Database.instance.sq;
+        await sq.from(QUESTION_TABLE_NAME)
+            .set({ ...omit(this.properties, ['question_id']) })
+            .where`question_id = ${this._question.question_id}`;
     }
 
     public async choices(): Promise<Array<Choice>> {

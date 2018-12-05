@@ -1,18 +1,27 @@
-import { Client, types } from 'pg';
+import * as pg from 'pg';
+import sqorn = require('sqorn-pg');
+import { SQF } from 'sqorn-pg/types/sq';
 
-types.setTypeParser(20, function (val): number {
+pg.types.setTypeParser(20, function (val): number {
     return parseInt(val, 10);
 });
 
 export class Database {
     private activeSchema = '';
-    private _client: Client;
+    private _client: pg.Pool;
+    private _sq: SQF;
     private static _instance: Database;
 
     private constructor() {
-        this._client = new Client();
-        this.client.on('error', (err) => {
-            console.log('DB ERROR', err);
+        this._client = new pg.Pool();
+        this._sq = sqorn({ pg, pool: this._client, mapInputKeys: k => k, mapOutputKeys: k => k });
+        this._client.on('connect', async (c) => {
+            await c.query(`SET SCHEMA '${this.activeSchema}';`);
+            const afterReslts = await c.query('SELECT current_schema()');
+            console.log('after', afterReslts.rows[0]);
+        });
+        this._client.on('error', (err) => {
+            console.error(err.message);
         });
     }
 
@@ -27,22 +36,16 @@ export class Database {
         if (schema !== this.activeSchema) {
             this.activeSchema = schema;
         }
-        try {
-            console.log('Connecting to database');
-            await this.client.connect();
-            console.log('Connected to DB');
-            await this.client.query(`SET SCHEMA '${schema}';`);
-        } catch (e) {
-            await this.connect(schema);
-        }
+        console.log('Connected to DB');
+        await this._client.connect();
     }
 
     public async disconnect(): Promise<void> {
         console.log('disconnecting from database');
-        await this.client.end();
+        await this.sq.end();
     }
 
-    public get client(): Client {
-        return this._client;
+    public get sq(): SQF {
+        return this._sq;
     }
 }

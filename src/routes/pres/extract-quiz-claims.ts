@@ -24,7 +24,6 @@ export const extractQtClaims: RouteOptionsPreObject = {
 
         try {
             const verifiedToken: AllQtClaims = jwt.verify(token, ApplicationConfig.qtSecret) as AllQtClaims;
-
             return verifiedToken;
         } catch (e) {
             console.error(e);

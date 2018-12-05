@@ -25,6 +25,7 @@ import { useLife } from './handlers/users/post-users-lives--use';
 import { postQuizReset } from './handlers/quizzes/post-quiz--reset';
 import { postQuizComplete } from './handlers/quizzes/post-quiz--complete';
 import { getQuizAccess } from './handlers/quizzes/get-quiz--access';
+import { deleteQuiz } from './handlers/quizzes/delete-quiz';
 
 export function quizRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -112,6 +113,17 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
                 notes: 'Updates the metadata for a quiz'
             },
             handler: putQuiz
+        },
+        {
+            path: '/quizzes/{quizId}',
+            method: 'delete',
+            options: {
+                auth: 'internalJwt',
+                description: 'Delete a quiz',
+                notes: 'Marks the quiz as deleted, will no longer be returned by ' +
+                    'endpoints to retrieve lists of quizzes, but can still be accessed'
+            },
+            handler: deleteQuiz
         },
         {
             path: '/quizzes/{quizId}',

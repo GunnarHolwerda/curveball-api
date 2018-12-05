@@ -28,7 +28,7 @@ describe('POST /users/{userId}:verify', () => {
         await expectHttpError(userResources.verifyUser(userId, 'badcode'), 400, 'Invalid verification code');
     });
 
-    it('should return 400 if code is not 7 characters long', async () => {
+    it('should return 400 if code is not 4 characters long', async () => {
         await expectHttpError(userResources.verifyUser(userId, 'bad'), 400);
     });
 

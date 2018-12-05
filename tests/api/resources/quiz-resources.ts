@@ -18,11 +18,13 @@ export interface SingleQuestionResponse {
 }
 
 export interface FullQuizResponse {
-    quiz: IQuizResponse & QuestionResponse;
+    quiz: QuizAndQuestion;
 }
 
+export type QuizAndQuestion = IQuizResponse & QuestionResponse;
+
 export interface AllQuizzesResponse {
-    quizzes: Array<FullQuizResponse>;
+    quizzes: Array<QuizAndQuestion>;
 }
 
 export interface QuizStartResponse {
@@ -101,5 +103,9 @@ export class QuizResources extends ApiResources {
 
     public async completeQuiz(quizId: string): Promise<QuizCompleteResponse> {
         return this.makeInternalRequest(() => this.post<QuizCompleteResponse>(`/quizzes/${quizId}/complete`));
+    }
+
+    public async deleteQuiz(quizId: string): Promise<void> {
+        return this.makeInternalRequest<void>(() => this.delete(`/quizzes/${quizId}`));
     }
 }

@@ -48,13 +48,12 @@ async function start() {
         registerRoutes(server, ioServer);
         await Database.instance.connect();
         await server.start();
+        console.log('Server running at:', server.info.uri);
     } catch (err) {
         await Database.instance.disconnect();
         console.log(err);
         process.exit(1);
     }
-
-    console.log('Server running at:', server.info.uri);
 }
 
 start();
