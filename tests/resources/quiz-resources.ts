@@ -1,9 +1,10 @@
-import { IQuizResponse } from '../../../src/models/entities/quiz';
-import { IQuestionResponse, QuestionResults } from '../../../src/models/entities/question';
-import { IUserResponse } from '../../../src/models/entities/user';
-import { PostQuizPayload } from '../../../src/routes/handlers/quizzes/post-quizzes';
-import { QuestionsPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
+
 import { ApiResources } from './test-resources';
+import { IQuizResponse } from '../../src/models/entities/quiz';
+import { IQuestionResponse, QuestionResults } from '../../src/models/entities/question';
+import { IUserResponse } from '../../src/models/entities/user';
+import { PostQuizPayload } from '../../src/routes/handlers/quizzes/post-quizzes';
+import { QuestionsPayload } from '../../src/routes/handlers/quizzes/questions/post-questions';
 
 export interface QuizResponse {
     quiz: IQuizResponse;

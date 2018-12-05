@@ -1,9 +1,9 @@
 import * as uuid from 'uuid';
 
 import { mockQuestionsPayload } from '../mock-data';
-import { QuizResources, QuizResponse } from '../resources/quiz-resources';
+import { QuizResources, QuizResponse } from '../../resources/quiz-resources';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
-import { UserResources } from '../resources/user-resources';
+import { UserResources } from '../../resources/user-resources';
 
 describe('POST /quizzes/{quizId}/reset', () => {
     let quizResources: QuizResources;

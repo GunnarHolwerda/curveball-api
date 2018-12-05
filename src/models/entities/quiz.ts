@@ -88,7 +88,7 @@ export class Quiz implements Cacheable, Analyticize {
         if (withQuestions) {
             const questions = await this.getQuestions();
             const questionResponses = await Promise.all(questions.map((q) => {
-                return new Promise((res) => q.toResponseObject().then(c => res(c)));
+                return new Promise((res) => q.toResponseObject(true).then(c => res(c)));
             }));
             response['questions'] = questionResponses;
         }

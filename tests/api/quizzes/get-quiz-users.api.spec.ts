@@ -1,12 +1,12 @@
 import * as uuid from 'uuid';
 
 import { mockQuestionsPayload } from '../mock-data';
-import { QuizResources, QuizStartResponse } from '../resources/quiz-resources';
+import { QuizResources, QuizStartResponse } from '../../resources/quiz-resources';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
 import { IQuestionResponse } from '../../../src/models/entities/question';
 import { IUserResponse } from '../../../src/models/entities/user';
-import { UserTokenResponse, UserResources } from '../resources/user-resources';
-import { expectHttpError } from '../resources/test-helpers';
+import { UserTokenResponse, UserResources } from '../../resources/user-resources';
+import { expectHttpError } from '../../resources/test-helpers';
 
 describe('GET /quizzes/{quizId}/users', () => {
     let quizResources: QuizResources;

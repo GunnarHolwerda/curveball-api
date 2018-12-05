@@ -1,7 +1,7 @@
-import { expectHttpError } from '../resources/test-helpers';
+import { expectHttpError } from '../../resources/test-helpers';
 import uuid = require('uuid');
 import { IUserResponse } from '../../../src/models/entities/user';
-import { UserResources } from '../resources/user-resources';
+import { UserResources } from '../../resources/user-resources';
 
 describe('PUT /users/{userId}', () => {
     let user: IUserResponse;

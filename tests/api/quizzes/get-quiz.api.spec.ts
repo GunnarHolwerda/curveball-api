@@ -1,7 +1,7 @@
 import * as uuid from 'uuid';
 
-import { expectHttpError } from '../resources/test-helpers';
-import { QuizResources } from '../resources/quiz-resources';
+import { expectHttpError } from '../../resources/test-helpers';
+import { QuizResources } from '../../resources/quiz-resources';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
 
 describe('GET /quizzes/{quizId}', () => {

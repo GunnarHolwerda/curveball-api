@@ -4,9 +4,11 @@ import * as uuid from 'uuid';
 import { mockQuestionsPayload } from '../mock-data';
 import { QuestionPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
 import { QTClaims, BaseClaims } from '../../../src/types/qt';
-import { QuizResources, QuestionResponse, QuizStartResponse } from '../resources/quiz-resources';
-import { UserResources, UserTokenResponse } from '../resources/user-resources';
-import { expectHttpError } from '../resources/test-helpers';
+import { UserResources, UserTokenResponse } from '../../resources/user-resources';
+import { expectHttpError } from '../../resources/test-helpers';
+import { QuestionResponse } from '../../resources/quiz-resources';
+import { QuizResources } from '../../resources/quiz-resources';
+import { QuizStartResponse } from '../../resources/quiz-resources';
 
 describe('POST /users/{userId}/lives:use', () => {
     let quizResources: QuizResources;

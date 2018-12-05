@@ -1,6 +1,7 @@
 import * as Randomstring from 'randomstring';
-import { IUserResponse, DevVerificationCode } from '../../../src/models/entities/user';
+import { IUserResponse, DevVerificationCode } from '../../src/models/entities/user';
 import { ApiResources } from './test-resources';
+import { generatePhone } from '../../src/util/generate-phone';
 
 
 export interface TokenResponse {
@@ -30,13 +31,6 @@ export interface UpdateUserPayload {
 }
 
 export type UserTokenResponse = UserResponse & TokenResponse & StatsPayload;
-
-export function generatePhone(): string {
-    const getDigit = () => Math.round(Math.random() * 9);
-    // tslint:disable-next-line
-    const phone = `+1${getDigit()}${getDigit()}${getDigit()}${getDigit()}${getDigit()}${getDigit()}${getDigit()}${getDigit()}${getDigit()}${getDigit()}`;
-    return phone;
-}
 
 export class UserResources extends ApiResources {
     constructor(token?: string) {

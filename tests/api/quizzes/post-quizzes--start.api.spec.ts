@@ -1,8 +1,8 @@
 import * as uuid from 'uuid';
 
 import { mockQuestionsPayload } from '../mock-data';
-import { expectHttpError } from '../resources/test-helpers';
-import { QuizResources, QuizResponse, QuizStartResponse } from '../resources/quiz-resources';
+import { expectHttpError } from '../../resources/test-helpers';
+import { QuizResources, QuizResponse, QuizStartResponse } from '../../resources/quiz-resources';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
 
 describe('POST /quizzes/{quizId}:start', () => {

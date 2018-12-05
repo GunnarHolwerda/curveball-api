@@ -1,8 +1,8 @@
 import * as Randomstring from 'randomstring';
 
-import { expectHttpError } from '../resources/test-helpers';
+import { expectHttpError } from '../../resources/test-helpers';
 import { DevVerificationCode } from '../../../src/models/entities/user';
-import { UserResources } from '../resources/user-resources';
+import { UserResources } from '../../resources/user-resources';
 
 describe('POST /users/{userId}:verify', () => {
     let userResources: UserResources;
