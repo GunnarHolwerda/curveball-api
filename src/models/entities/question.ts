@@ -55,11 +55,6 @@ export class Question implements Analyticize {
         const params = snakifyKeys(question);
         const sq = Database.instance.sq;
         const result = await sq.from(QUESTION_TABLE_NAME).insert(params).return`question_id`;
-        // const result = await Database.instance.client.query(`
-        //     INSERT INTO ${QUESTION_TABLE_NAME} (quiz_id, question, question_num, sport, ticker)
-        //     VALUES ($1, $2, $3, $4, $5)
-        //     RETURNING question_id;
-        // `, [params.quiz_id, params.question, params.question_num, params.sport, params.ticker]);
         return (await QuestionFactory.load(result![0].question_id))!;
     }
 
