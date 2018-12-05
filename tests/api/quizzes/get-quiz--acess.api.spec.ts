@@ -1,9 +1,9 @@
 import * as uuid from 'uuid';
 
 import { mockQuestionsPayload } from '../mock-data';
-import { QuizResources } from '../resources/quiz-resources';
+import { QuizResources } from '../../resources/quiz-resources';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
-import { UserResources } from '../resources/user-resources';
+import { UserResources } from '../../resources/user-resources';
 
 describe('GET /quizzes/{quizId}/access', () => {
     let quizResources: QuizResources;

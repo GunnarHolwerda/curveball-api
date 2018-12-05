@@ -2,12 +2,12 @@ import * as jwt from 'jsonwebtoken';
 import * as uuid from 'uuid';
 
 import { mockQuestionsPayload } from '../mock-data';
-import { QuizResources, QuestionResponse, QuizStartResponse } from '../resources/quiz-resources';
-import { UserTokenResponse, UserResources } from '../resources/user-resources';
+import { QuizResources, QuestionResponse, QuizStartResponse } from '../../resources/quiz-resources';
+import { UserTokenResponse, UserResources } from '../../resources/user-resources';
 import { QuestionPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
 import { QTClaims, BaseClaims } from '../../../src/types/qt';
-import { expectHttpError } from '../resources/test-helpers';
-import { QuestionResources } from '../resources/question-resources';
+import { expectHttpError } from '../../resources/test-helpers';
+import { QuestionResources } from '../../resources/question-resources';
 
 describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
     let quizResources: QuizResources;

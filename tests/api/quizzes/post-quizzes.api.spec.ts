@@ -1,7 +1,7 @@
 import * as uuid from 'uuid';
 
-import { expectHttpError } from '../resources/test-helpers';
-import { QuizResources } from '../resources/quiz-resources';
+import { expectHttpError } from '../../resources/test-helpers';
+import { QuizResources } from '../../resources/quiz-resources';
 
 describe('POST /quizzes', () => {
     let quizResources: QuizResources;

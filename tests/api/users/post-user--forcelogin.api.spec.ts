@@ -1,5 +1,5 @@
-import { expectHttpError } from '../resources/test-helpers';
-import { UserResources, UserTokenResponse, generatePhone } from '../resources/user-resources';
+import { expectHttpError } from '../../resources/test-helpers';
+import { UserResources, UserTokenResponse, generatePhone } from '../../resources/user-resources';
 
 describe('POST /users_force_login', () => {
     let userResources: UserResources;

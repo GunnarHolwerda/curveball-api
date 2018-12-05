@@ -1,6 +1,6 @@
-import { expectHttpError } from '../resources/test-helpers';
+import { expectHttpError } from '../../resources/test-helpers';
 import { IUserResponse } from '../../../src/models/entities/user';
-import { UserResources } from '../resources/user-resources';
+import { UserResources } from '../../resources/user-resources';
 
 describe('GET /users/{userId}', () => {
     let user: IUserResponse;

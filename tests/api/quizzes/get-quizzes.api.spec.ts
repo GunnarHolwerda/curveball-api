@@ -1,4 +1,4 @@
-import { QuizResources } from '../resources/quiz-resources';
+import { QuizResources } from '../../resources/quiz-resources';
 import uuid = require('uuid');
 
 

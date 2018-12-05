@@ -4,9 +4,9 @@ import { mockQuestionsPayload } from '../mock-data';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
 import { IQuestionResponse } from '../../../src/models/entities/question';
 import { IUserResponse } from '../../../src/models/entities/user';
-import { QuizResources, QuizStartResponse } from '../resources/quiz-resources';
-import { UserTokenResponse, UserResources } from '../resources/user-resources';
-import { expectHttpError } from '../resources/test-helpers';
+import { QuizResources, QuizStartResponse } from '../../resources/quiz-resources';
+import { UserTokenResponse, UserResources } from '../../resources/user-resources';
+import { expectHttpError } from '../../resources/test-helpers';
 
 describe('POST /quizzes/{quizId}/complete', () => {
     let quizResources: QuizResources;

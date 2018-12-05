@@ -1,5 +1,5 @@
 import * as Randomstring from 'randomstring';
-import { IUserResponse, DevVerificationCode } from '../../../src/models/entities/user';
+import { IUserResponse, DevVerificationCode } from '../../src/models/entities/user';
 import { ApiResources } from './test-resources';
 
 

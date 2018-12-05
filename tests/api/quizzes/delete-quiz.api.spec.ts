@@ -1,6 +1,6 @@
-import { QuizResources } from '../resources/quiz-resources';
+import { QuizResources } from '../../resources/quiz-resources';
 import * as uuid from 'uuid';
-import { expectHttpError } from '../resources/test-helpers';
+import { expectHttpError } from '../../resources/test-helpers';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
 
 describe('DELETE /quizes/{quizId}', () => {

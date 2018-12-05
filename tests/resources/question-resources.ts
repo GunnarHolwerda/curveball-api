@@ -1,4 +1,4 @@
-import { IQuestionResponse } from '../../../src/models/entities/question';
+import { IQuestionResponse } from '../../src/models/entities/question';
 import { ApiResources } from './test-resources';
 
 

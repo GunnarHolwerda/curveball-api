@@ -1,10 +1,11 @@
 import * as uuid from 'uuid';
 import { mockQuestionsPayload } from '../mock-data';
-import { expectHttpError } from '../resources/test-helpers';
-import { IChoiceResponse } from '../../../src/models/entities/question-choice';
-import { QuizResources, QuizStartResponse } from '../resources/quiz-resources';
+import { QuizResources, QuizStartResponse } from '../../resources/quiz-resources';
+import { UserResources } from '../../resources/user-resources';
+import { expectHttpError } from '../../resources/test-helpers';
 import { QuestionsPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
-import { UserResources } from '../resources/user-resources';
+import { IChoiceResponse } from '../../../src/models/entities/question-choice';
+
 
 describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
     const TotalAnswers = 15;
