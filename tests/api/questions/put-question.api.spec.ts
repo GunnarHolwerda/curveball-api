@@ -1,5 +1,5 @@
 import * as uuid from 'uuid';
-import { QuizResources, QuestionResponse } from '../resources/quiz-resources';
+import { QuizResources, QuestionResponse } from '../../resources/quiz-resources';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
 import { QuestionResources } from '../../resources/question-resources';
 

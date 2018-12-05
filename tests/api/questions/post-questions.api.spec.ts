@@ -2,7 +2,7 @@ import * as uuid from 'uuid';
 
 import { mockQuestionsPayload } from '../mock-data';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
-import { QuizResources } from '../resources/quiz-resources';
+import { QuizResources } from '../../resources/quiz-resources';
 import { expectHttpError } from '../../resources/test-helpers';
 
 describe('POST /quizzes/{quizId}/questions', () => {

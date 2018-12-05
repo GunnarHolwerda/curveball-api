@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { trustOwnCa } from './test-helpers';
 
-const jasmineSettings: { config: { [key: string]: string } } = require('../../jasmine-api.json');
+const jasmineSettings: { config: { [key: string]: string } } = require('../jasmine-api.json');
 
 trustOwnCa();
 

@@ -1,6 +1,7 @@
 
-import { UserResources, generatePhone } from '../../resources/user-resources';
+import { UserResources } from '../../resources/user-resources';
 import { expectHttpError } from '../../resources/test-helpers';
+import { generatePhone } from '../../../src/util/generate-phone';
 
 describe('POST /users', () => {
     let userResources: UserResources;
