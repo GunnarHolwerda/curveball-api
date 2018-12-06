@@ -1,7 +1,6 @@
 import { ISendCodeResponse } from '../interfaces/ISendCodeResponse';
 import axios from 'axios';
 import PhoneNumber from 'awesome-phonenumber';
-import { URLSearchParams } from 'url';
 import { IVerifyCodeResponse } from '../interfaces/IVerifyCodeResponse';
 import { Environment } from '../types/environments';
 import { ApplicationConfig } from './config';
@@ -22,17 +21,16 @@ export class PhoneVerifier {
         if (ApplicationConfig.nodeEnv === Environment.local) {
             return MockSendCodeResponse;
         }
-        const params = new URLSearchParams();
-        params.append('via', 'sms');
-        params.append('phone_number', this.phoneNumber);
-        params.append('country_code', '1');
-        params.append('code_length', '4');
-        params.append('locale', 'en');
 
-        const response = await axios.post<ISendCodeResponse>(`${this.endpoint}/phones/verification/start`, null, {
-            headers: { 'X-Authy-API-Key': ApplicationConfig.twilioKey },
-            params: params
-        }).then(res => res.data);
+        const response = await axios.post<ISendCodeResponse>(`${this.endpoint}/phones/verification/start`, {
+            via: 'sms',
+            phone_number: this.phoneNumber,
+            country_code: '1',
+            code_length: '4',
+            locale: 'en'
+        }, {
+                headers: { 'X-Authy-API-Key': ApplicationConfig.twilioKey },
+            }).then(res => res.data);
         return response;
     }
 
