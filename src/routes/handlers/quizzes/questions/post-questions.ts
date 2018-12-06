@@ -22,12 +22,12 @@ interface SnakifiedQuestionsPayload {
 
 export const postQuestionsSchema = Joi.object().keys({
     questions: Joi.array().required().items(Joi.object().keys({
-        question: Joi.string().required(),
-        questionNum: Joi.number().required(),
+        question: Joi.string().max(64).required(),
+        questionNum: Joi.number().min(1).required(),
         sport: Joi.string().max(64).required().description('The sport the question relates to'),
         ticker: Joi.string().max(64).required().description('Ticker text for the question'),
         choices: Joi.array().optional().items(Joi.object().keys({
-            text: Joi.string().required(),
+            text: Joi.string().max(64).required(),
             isAnswer: Joi.boolean().required()
         }).unknown(false))
     }).unknown(false).required())

@@ -3,6 +3,9 @@ import * as socketio from 'socket.io';
 
 import { Room } from '../../interfaces/room';
 import { ServerHandler } from '../socket-handlers/server-handlers';
+import { ApplicationConfig } from '../config';
+import { Environment } from '../../types/environments';
+import { QuizCache } from '../quiz-cache';
 
 export class IoServer extends Room {
     constructor(private _server: socketio.Server) {
@@ -10,6 +13,9 @@ export class IoServer extends Room {
     }
 
     public start(): void {
+        if (ApplicationConfig.nodeEnv !== Environment.prod) {
+            QuizCache.clear();
+        }
         super.start();
     }
 
