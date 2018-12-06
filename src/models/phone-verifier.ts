@@ -29,8 +29,9 @@ export class PhoneVerifier {
         params.append('code_length', '4');
         params.append('locale', 'en');
 
-        const response = await axios.post<ISendCodeResponse>(`${this.endpoint}/phones/verification/start`, params, {
-            headers: { 'X-Authy-API-Key': ApplicationConfig.twilioKey }
+        const response = await axios.post<ISendCodeResponse>(`${this.endpoint}/phones/verification/start`, null, {
+            headers: { 'X-Authy-API-Key': ApplicationConfig.twilioKey },
+            params: params
         }).then(res => res.data);
         return response;
     }
