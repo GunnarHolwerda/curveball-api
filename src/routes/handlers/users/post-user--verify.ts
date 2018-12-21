@@ -8,6 +8,7 @@ import { AnalyticsEvents } from '../../../types/events';
 
 export const postUserVerifySchema = Joi.object().keys({
     code: Joi.string().min(4).required().description('The verification code for the user'),
+    // TODO: Prevent whitespace
     username: Joi.string().min(1).max(15).optional().description('Username for the user'),
     name: Joi.string().min(1).optional().description('Name of the user')
 });

@@ -7,7 +7,8 @@ import { UserFactory } from '../../../models/factories/user-factory';
 
 export const putUserSchema = Joi.object().keys({
     name: Joi.string().optional(),
-    username: Joi.string().optional(),
+    // TODO: Prevent whitespace
+    username: Joi.string().min(1).max(15).optional(),
     // referral: Joi.string().optional(),
     photo: Joi.string().uri().optional()
 });
