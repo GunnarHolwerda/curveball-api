@@ -6,7 +6,8 @@ export class FriendFactory {
         const sq = Database.instance.sq;
         const result = await sq.from(FRIEND_TABLE_NAME)
             .where`account_user_id = ${accountUserId}`
-            .and`friend_user_id = ${friendUserId}`;
+            .and`friend_user_id = ${friendUserId}`
+            .and`deleted = false`;
         if (result.length === 0) {
             return null;
         }
@@ -16,7 +17,8 @@ export class FriendFactory {
     public static async loadAll(accountUserId: string): Promise<Array<Friend>> {
         const sq = Database.instance.sq;
         const result = await sq.from(FRIEND_TABLE_NAME)
-            .where`account_user_id = ${accountUserId}`;
+            .where`account_user_id = ${accountUserId}`
+            .and`deleted = false`;
 
         return result.map(r => new Friend(r as IFriend));
     }

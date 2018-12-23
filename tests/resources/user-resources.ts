@@ -87,4 +87,8 @@ export class UserResources extends ApiResources {
     public async getFriends(userId: string): Promise<{ friends: Array<IFriendResponse> }> {
         return this.get<{ friends: Array<IFriendResponse> }>(`/users/${userId}/friends`);
     }
+
+    public async removeFriend(userId: string, friendUserId: string): Promise<void> {
+        return this.delete(`/users/${userId}/friends/${friendUserId}`);
+    }
 }

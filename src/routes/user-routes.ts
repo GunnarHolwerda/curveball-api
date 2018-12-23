@@ -13,6 +13,7 @@ import { postUserFriends } from './handlers/users/friends/post-user-friends';
 import { postUserFriendsInvite } from './handlers/users/friends/post-user-friends--invite';
 import { getUserFriends } from './handlers/users/friends/get-user-friends';
 import { deleteUserFriend } from './handlers/users/friends/delete-user-friend';
+import { postUserFriendsAccept } from './handlers/users/friends/post-user-friend--accept';
 
 export function userRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -98,6 +99,17 @@ export function userRoutes(server: hapi.Server, _: IoServer): void {
                     'users. When an invited user registers, they will automatically be added as friends'
             },
             handler: postUserFriendsInvite
+        },
+        {
+            path: '/users/{userId}/friends/${requestingUserId}/actions:accept',
+            method: 'post',
+            options: {
+                pre: [onlyCurrentUser],
+                description: 'Accepts a friend request from another user',
+                notes: 'When a user adds another as a friend, it creates a "request" for the receiving user'
+                    + ' which they can accept, which will add the user who initiated the request as a friend'
+            },
+            handler: postUserFriendsAccept
         },
         {
             path: '/users/{userId}/friends',

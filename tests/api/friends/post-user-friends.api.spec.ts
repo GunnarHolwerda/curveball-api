@@ -3,7 +3,7 @@ import { IUserResponse } from '../../../src/models/entities/user';
 import { UserResources } from '../../resources/user-resources';
 import * as uuid from 'uuid';
 
-fdescribe('POST /users/{userId}/friends/{friendUserId}', () => {
+describe('POST /users/{userId}/friends/{friendUserId}', () => {
     let currentUser: IUserResponse;
     let userResources: UserResources;
     let friendUser: IUserResponse;

@@ -2,6 +2,7 @@ import { User, IUserResponse } from './user';
 import { Database } from '../database';
 import { FriendFactory } from '../factories/friend-factory';
 import { UserFactory } from '../factories/user-factory';
+import { omit } from '../../util/omit';
 
 export interface IFriend {
     id: string;
@@ -47,5 +48,15 @@ export class Friend {
             created: this.properties.created,
             friend: (await this.user).toResponseObject()
         };
+    }
+
+    public async delete(): Promise<void> {
+        this.properties.deleted = true;
+        await this.save();
+    }
+
+    public async save(): Promise<void> {
+        const sq = Database.instance.sq;
+        await sq.from(FRIEND_TABLE_NAME).set({ ...omit(this.properties, ['id']) }).where`id = ${this._friend.id}`;
     }
 }
