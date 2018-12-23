@@ -5,6 +5,7 @@ import { realtimeRoutes } from './realtime-routes';
 import { ApplicationConfig } from '../models/config';
 import { Environment } from '../types/environments';
 import { testingRoutes } from './testing-routes';
+import { userRoutes } from './user-routes';
 
 export function registerRoutes(server: hapi.Server, ioServer: IoServer): void {
     server.route({
@@ -28,6 +29,7 @@ export function registerRoutes(server: hapi.Server, ioServer: IoServer): void {
 
     quizRoutes(server, ioServer);
     realtimeRoutes(server, ioServer);
+    userRoutes(server, ioServer);
 
     if (ApplicationConfig.nodeEnv === Environment.local) {
         testingRoutes(server, ioServer);

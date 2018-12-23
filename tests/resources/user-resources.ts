@@ -2,6 +2,7 @@ import * as Randomstring from 'randomstring';
 import { IUserResponse, DevVerificationCode } from '../../src/models/entities/user';
 import { ApiResources } from './test-resources';
 import { generatePhone } from '../../src/util/generate-phone';
+import { IFriendResponse } from '../../src/models/entities/friend';
 
 
 export interface TokenResponse {
@@ -77,5 +78,13 @@ export class UserResources extends ApiResources {
 
     public async forceLogin(phone: string): Promise<UserTokenResponse> {
         return this.makeInternalRequest(() => this.post<UserTokenResponse>(`/users_force_login`, { phone }, this.config));
+    }
+
+    public async addFriend(userId: string, friendUserId: string): Promise<{ friend: IFriendResponse }> {
+        return this.post<{ friend: IFriendResponse }>(`/users/${userId}/friends/${friendUserId}`);
+    }
+
+    public async getFriends(userId: string): Promise<{ friends: Array<IFriendResponse> }> {
+        return this.get<{ friends: Array<IFriendResponse> }>(`/users/${userId}/friends`);
     }
 }

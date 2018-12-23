@@ -26,7 +26,6 @@ export interface IUserResponse {
     userId: string;
     username: string;
     name: string;
-    phone: string;
     photo: string;
     lastAccessed: string;
     created: string;
@@ -97,11 +96,11 @@ export class User implements Analyticize {
         };
     }
 
-    public toResponseObject(): Partial<IUser> {
+    public toResponseObject(): IUserResponse {
         const response = {
             ...(omit(this.properties, ['password', 'phone']))
         };
-        return camelizeKeys(response) as Partial<IUser>;
+        return camelizeKeys(response) as IUserResponse;
     }
 
     public analyticsProperties(): AnalyticsProperties {
