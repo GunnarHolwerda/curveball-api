@@ -52,6 +52,10 @@ export class Friend {
 
     public async delete(): Promise<void> {
         this.properties.deleted = true;
+        const reverseFriendship = await FriendFactory.load(this.properties.friend_user_id, this.properties.account_user_id);
+        if (reverseFriendship) {
+            await reverseFriendship.delete();
+        }
         await this.save();
     }
 

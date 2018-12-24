@@ -31,6 +31,14 @@ export interface UpdateUserPayload {
     photo?: string;
 }
 
+export interface GetFriendsResponse {
+    requests: {
+        outgoing: Array<IFriendResponse>;
+        incoming: Array<IFriendResponse>;
+    };
+    friends: Array<IFriendResponse>;
+}
+
 export type UserTokenResponse = UserResponse & TokenResponse & StatsPayload;
 
 export class UserResources extends ApiResources {
@@ -84,8 +92,8 @@ export class UserResources extends ApiResources {
         return this.post<{ friend: IFriendResponse }>(`/users/${userId}/friends/${friendUserId}`);
     }
 
-    public async getFriends(userId: string): Promise<{ friends: Array<IFriendResponse> }> {
-        return this.get<{ friends: Array<IFriendResponse> }>(`/users/${userId}/friends`);
+    public async getFriends(userId: string): Promise<GetFriendsResponse> {
+        return this.get<GetFriendsResponse>(`/users/${userId}/friends`);
     }
 
     public async removeFriend(userId: string, friendUserId: string): Promise<void> {

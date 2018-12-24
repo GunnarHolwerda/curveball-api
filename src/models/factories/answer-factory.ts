@@ -1,5 +1,6 @@
 import { Database } from '../database';
 import { ANSWER_TABLE_NAME, Answer, IAnswer } from '../entities/answer';
+import { QUESTION_TABLE_NAME } from '../entities/question';
 
 export interface AnswerStats {
     count: string;
@@ -30,7 +31,7 @@ export class AnswerFactory {
     public static async loadMostRecentForQuiz(quizId: string, userId: string): Promise<Answer | null> {
         const sq = Database.instance.sq;
         const result = await sq.from({ a: ANSWER_TABLE_NAME })
-            .join({ q: 'questions' }).on`q.question_id = a.question_id`
+            .join({ q: QUESTION_TABLE_NAME }).on`q.question_id = a.question_id`
             .where`q.quiz_id = ${quizId}`.and`a.user_id = ${userId}`
             .order`q.sent DESC`
             .limit(1);

@@ -7,9 +7,13 @@ export async function deleteUserFriend(event: hapi.Request): Promise<object> {
     const { friendUserId } = event.params as { friendUserId: string };
     const userClaims = event.auth.credentials as UserJwtClaims;
 
-    const friend = await FriendFactory.load(userClaims.userId, friendUserId);
+    let friend = await FriendFactory.load(userClaims.userId, friendUserId);
     if (friend === null) {
-        throw Boom.notFound();
+        // See if there is an incoming request;
+        friend = await FriendFactory.load(friendUserId, userClaims.userId);
+        if (friend === null) {
+            throw Boom.notFound();
+        }
     }
 
     await friend.delete();
