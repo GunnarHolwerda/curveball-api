@@ -51,4 +51,22 @@ describe('POST /users', () => {
             await expectHttpError(userResources.createUser(generatePhone(), 'bad'), 400, 'Invalid referral code');
         });
     });
+
+    describe('Friend Invites', () => {
+        it('should create incoming friend requests for all outstanding invites', async () => {
+            const phoneNumber = generatePhone();
+            const invitingUsers = await Promise.all([userResources.getNewUser(), userResources.getNewUser(), userResources.getNewUser()]);
+            for (const newUser of invitingUsers) {
+                const newUserResources = new UserResources(newUser.token);
+                await newUserResources.invitePhone(newUser.user.userId, phoneNumber);
+            }
+
+            const { userId } = await userResources.createUser(phoneNumber);
+            const invitedUser = await userResources.verifyUser(userId);
+            const invitedUserResources = new UserResources(invitedUser.token);
+            const { requests } = await invitedUserResources.getFriends(invitedUser.user.userId);
+            expect(requests.incoming.map(i => i.friend.userId).sort())
+                .toEqual(invitingUsers.map(u => u.user.userId).sort(), 'Did not create incoming friend request for all invites');
+        });
+    });
 });

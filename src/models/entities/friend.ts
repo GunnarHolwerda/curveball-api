@@ -27,13 +27,13 @@ export class Friend {
         this.properties = { ...this._friend };
     }
 
-    public static async create(inviter: User, invitee: User): Promise<Friend> {
+    public static async create(inviterUserId: string, inviteeUserId: string): Promise<Friend> {
         const sq = Database.instance.sq;
         await sq.from(FRIEND_TABLE_NAME).insert({
-            account_user_id: inviter.properties.user_id,
-            friend_user_id: invitee.properties.user_id,
+            account_user_id: inviterUserId,
+            friend_user_id: inviteeUserId,
         });
-        return (await FriendFactory.load(inviter.properties.user_id, invitee.properties.user_id))!;
+        return (await FriendFactory.load(inviterUserId, inviteeUserId))!;
     }
 
     public get user(): Promise<User> {
@@ -61,6 +61,6 @@ export class Friend {
 
     public async save(): Promise<void> {
         const sq = Database.instance.sq;
-        await sq.from(FRIEND_TABLE_NAME).set({ ...omit(this.properties, ['id']) }).where`id = ${this._friend.id}`;
+        await sq.from(FRIEND_TABLE_NAME).set({ ...omit(this.properties, ['id', 'created']) }).where`id = ${this._friend.id}`;
     }
 }

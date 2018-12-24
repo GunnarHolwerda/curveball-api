@@ -11,6 +11,8 @@ import { Analytics } from '../analytics';
 import { omit } from '../../util/omit';
 import { camelizeKeys } from '../../util/camelize-keys';
 import { WINNER_TABLE_NAME } from '../../models/entities/winner';
+import { FriendInviteFactory } from '../factories/friend-invite-factory';
+import { Friend } from './friend';
 
 export interface IUser {
     user_id: string;
@@ -111,5 +113,15 @@ export class User implements Analyticize {
             user_id
         } = this.properties;
         return { name, username, created, userId: user_id };
+    }
+
+    public async convertInvitesToFriendRequests(): Promise<void> {
+        const invites = await FriendInviteFactory.loadByPhone(this.properties.phone);
+        const conversionPromises = invites.map(async (invite) => {
+            invite.properties.accepted = true;
+            await invite.save();
+            await Friend.create(invite.properties.inviter_user_id, this.properties.user_id);
+        });
+        await Promise.all(conversionPromises);
     }
 }

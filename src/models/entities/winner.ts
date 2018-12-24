@@ -16,7 +16,6 @@ export class Winner {
     static async batchCreate(participants: Array<User>, quiz: Quiz, amountWon: number): Promise<void> {
         const sq = Database.instance.sq;
         const inserts = participants.map(p => {
-            console.log('participant', p.properties);
             return { quiz_id: quiz.properties.quiz_id, user_id: p.properties.user_id, amount_won: amountWon };
         });
         await sq.from(WINNER_TABLE_NAME).insert(inserts);

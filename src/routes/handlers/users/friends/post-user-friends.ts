@@ -9,16 +9,13 @@ export async function postUserFriends(event: hapi.Request): Promise<object> {
     const { friendUserId } = event.params as { friendUserId: string };
     const userClaims = event.auth.credentials as UserJwtClaims;
 
-    const resolveUser = UserFactory.load(userClaims.userId);
-    const resolveFriendToAdd = UserFactory.load(friendUserId);
-
-    const [currentUser, friendToAdd] = await Promise.all([resolveUser, resolveFriendToAdd]);
+    const friendToAdd = await UserFactory.load(friendUserId);
 
     if (friendToAdd === null) {
         throw Boom.notFound();
     }
 
-    const friend = await Friend.create(currentUser!, friendToAdd);
+    const friend = await Friend.create(userClaims.userId!, friendUserId);
     return {
         friend: friend.toResponseObject()
     };

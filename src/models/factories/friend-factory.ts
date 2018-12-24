@@ -28,8 +28,6 @@ export class FriendFactory {
                 friend_user_id: 'outgoing.friend_user_id'
             });
 
-        console.log(result);
-
         return result.map(r => new Friend(r as IFriend));
     }
 
@@ -48,8 +46,6 @@ export class FriendFactory {
                 friend_user_id: 'incoming.account_user_id'
             });
 
-        console.log(result);
-
         return result.map(r => new Friend(r as IFriend));
     }
 
@@ -67,8 +63,6 @@ export class FriendFactory {
                 created: 'outgoing.created',
                 friend_user_id: 'outgoing.friend_user_id'
             });
-
-        console.log(result);
 
         return result.map(r => new Friend(r as IFriend));
     }

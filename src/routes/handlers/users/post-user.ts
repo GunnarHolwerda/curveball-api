@@ -25,6 +25,7 @@ export async function postUser(event: hapi.Request): Promise<object> {
     }
     if (user === null) {
         user = await User.create(phone);
+        await user.convertInvitesToFriendRequests();
         if (referral) {
             try {
                 referrer = await UserFactory.loadByUsername(referral);

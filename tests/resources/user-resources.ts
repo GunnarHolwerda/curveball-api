@@ -99,4 +99,8 @@ export class UserResources extends ApiResources {
     public async removeFriend(userId: string, friendUserId: string): Promise<void> {
         return this.delete(`/users/${userId}/friends/${friendUserId}`);
     }
+
+    public async invitePhone(userId: string, phone: string): Promise<void> {
+        return this.post<void>(`/users/${userId}/friends:invite`, { phone });
+    }
 }
