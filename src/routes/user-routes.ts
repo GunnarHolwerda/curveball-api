@@ -13,6 +13,7 @@ import { postUserFriends } from './handlers/users/friends/post-user-friends';
 import { postUserFriendsInvite } from './handlers/users/friends/post-user-friends--invite';
 import { getUserFriends } from './handlers/users/friends/get-user-friends';
 import { deleteUserFriend } from './handlers/users/friends/delete-user-friend';
+import { postUserFriendsRecommended } from './handlers/users/friends/post-user-friends--recommended';
 
 export function userRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -108,6 +109,17 @@ export function userRoutes(server: hapi.Server, _: IoServer): void {
                 notes: 'Retrieves all of the friends for a particular user'
             },
             handler: getUserFriends
+        },
+        {
+            path: '/users/{userId}/friends:recommended',
+            method: 'post',
+            options: {
+                pre: [onlyCurrentUser],
+                description: 'Request list of user\'s recommended friends',
+                notes: 'Supply a set of phone numbers to see if user accounts exist' +
+                    ' for those numbers and will return the recommended friends'
+            },
+            handler: postUserFriendsRecommended
         },
         {
             path: '/users/{userId}/friends/{friendUserId}',

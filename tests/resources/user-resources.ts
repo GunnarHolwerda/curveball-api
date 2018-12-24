@@ -103,4 +103,8 @@ export class UserResources extends ApiResources {
     public async invitePhone(userId: string, phone: string): Promise<void> {
         return this.post<void>(`/users/${userId}/friends:invite`, { phone });
     }
+
+    public async getFriendRecommendations(userId: string, phones: Array<string>): Promise<{ recommendations: Array<IUserResponse> }> {
+        return this.post<{ recommendations: Array<IUserResponse> }>(`/users/${userId}/friends:recommended`, { phones });
+    }
 }
