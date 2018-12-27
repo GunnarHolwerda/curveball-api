@@ -15,9 +15,9 @@ export async function postUserFriendsRecommended(event: hapi.Request): Promise<o
     const user = await UserFactory.load(userId);
 
     const recommender = new FriendRecommender(user!);
-    await recommender.getRecommendedFriends(phones);
+    const friendRecommendations = await recommender.getRecommendedFriends(phones);
     return {
-        recommendations: phones
+        recommendations: await Promise.all(friendRecommendations.map(async (f) => await f.toResponseObject()))
     };
 }
 

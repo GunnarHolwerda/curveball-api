@@ -1,27 +1,24 @@
-import { User, USER_TABLE_NAME, IUser } from './entities/user';
+import { User, IUser, USER_TABLE_NAME } from './entities/user';
 import { PhoneVerifier } from './phone-verifier';
 import { Database } from './database';
 import { FRIEND_TABLE_NAME } from './entities/friend';
 
 export class FriendRecommender {
-    constructor(private user: User) { }
+    constructor(_user: User) {
+        console.log('current user', _user.properties.user_id);
+    }
 
     public async getRecommendedFriends(phones: Array<string>): Promise<Array<User>> {
         const formattedPhoneNumbers = phones
             .map(p => PhoneVerifier.getValidPhoneNumber(p))
             .filter(p => p !== null) as Array<string>;
-        console.log(formattedPhoneNumbers);
-        const sq = Database.instance.sq;
-        const query = sq.from({ 'u': USER_TABLE_NAME })
-            .left.join({ 'f': FRIEND_TABLE_NAME }).on`u.user_id = f.account_user_id`
-            .and`f.friend_user_id != ${this.user.properties.user_id}`
-            .where({ 'u.phone': formattedPhoneNumbers })
-            .and`f.account_user_id IS NULL`;
-        console.log(query.query);
-        const result = await query;
 
-        console.log('Recommendation results', result);
+        // TODO: Replace with sqorn once we upgrade to 0.0.45
+        const result = await Database.instance.pool.query(`select * from ${USER_TABLE_NAME} as u
+        left join ${FRIEND_TABLE_NAME} as f on (u.user_id = f.friend_user_id)
+        where (u.phone IN (${formattedPhoneNumbers.map(p => `'${p}'`).join(',')}))
+        and (f.account_user_id IS NULL);`);
 
-        return result.map(r => new User(r as IUser));
+        return result.rows.map(r => new User(r as IUser));
     }
 }
