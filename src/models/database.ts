@@ -46,4 +46,8 @@ export class Database {
     public get sq(): SQF {
         return this._sq;
     }
+
+    public get pool(): pg.Pool {
+        return this._client;
+    }
 }
