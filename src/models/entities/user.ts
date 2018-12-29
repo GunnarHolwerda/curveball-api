@@ -36,8 +36,22 @@ export interface IUserResponse {
 export const USER_TABLE_NAME = 'users';
 
 const getAvatarUrl = (): string => {
+    const avatarColorThemes = [
+        'frogideas',
+        'sugarsweets',
+        'heatwave',
+        'daisygarden',
+        'seascape',
+        'summerwarmth',
+        'bythepool',
+        'duskfalling',
+        'berrypie',
+        'base',
+    ];
+
     const randString = Randomstring.generate(15);
-    return `https://www.tinygraphs.com/spaceinvaders/${randString}?theme=duskfalling&numcolors=4&size=220&fmt=svg`;
+    const colorTheme = avatarColorThemes[Math.floor(Math.random() * avatarColorThemes.length)];
+    return `https://www.tinygraphs.com/squares/${randString}?theme=${colorTheme}&numcolors=4&size=220&fmt=jpeg`;
 };
 
 export const DevVerificationCode = '0000000';
@@ -98,9 +112,9 @@ export class User implements Analyticize {
         };
     }
 
-    public toResponseObject(): IUserResponse {
+    public toResponseObject(fieldsToOmit: Array<string> = ['password', 'phone']): IUserResponse {
         const response = {
-            ...(omit(this.properties, ['password', 'phone']))
+            ...(omit(this.properties, fieldsToOmit))
         };
         return camelizeKeys(response) as IUserResponse;
     }

@@ -14,10 +14,12 @@ export async function postUserFriendsRecommended(event: hapi.Request): Promise<o
     const { userId } = event.auth.credentials as UserJwtClaims;
     const user = await UserFactory.load(userId);
 
+    console.log('Recommending friends for', phones);
+
     const recommender = new FriendRecommender(user!);
     const friendRecommendations = await recommender.getRecommendedFriends(phones);
     return {
-        recommendations: await Promise.all(friendRecommendations.map(async (f) => await f.toResponseObject()))
+        recommendations: friendRecommendations.map(f => f.toResponseObject([]))
     };
 }
 
