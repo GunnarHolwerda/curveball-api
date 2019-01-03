@@ -2,7 +2,6 @@ import { omit } from '../../util/omit';
 import { Database } from '../database';
 import { FriendInviteFactory } from '../factories/friend-invite-factory';
 
-
 export interface IFriendInvite {
     created: Date;
     id: number;
