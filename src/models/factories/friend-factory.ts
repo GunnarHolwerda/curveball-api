@@ -39,7 +39,7 @@ export class FriendFactory {
             WHERE friend_user_id = $1 AND deleted = FALSE
             AND account_user_id NOT IN (
                 SELECT outgoing.friend_user_id FROM friends outgoing
-                WHERE outgoing.account_user_id = $2
+                WHERE outgoing.account_user_id = $2 AND outgoing.deleted = FALSE
             )
         `, [accountUserId, accountUserId]);
 
@@ -56,7 +56,7 @@ export class FriendFactory {
             WHERE account_user_id = $1 AND deleted = FALSE
             AND account_user_id NOT IN (
                 SELECT incoming.account_user_id FROM friends incoming
-                WHERE incoming.friend_user_id = $2
+                WHERE incoming.friend_user_id = $2 AND outgoing.deleted = FALSE
             )
         `, [accountUserId, accountUserId]);
 
