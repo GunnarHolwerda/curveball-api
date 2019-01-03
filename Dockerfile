@@ -19,4 +19,4 @@ RUN npm install --no-save
 COPY . .
 RUN chmod +x ./wait-for-db.sh
 EXPOSE 3001
-CMD ["./wait-for-db.sh", "npm", "run", "start"]
+CMD ["./wait-for-db.sh", "npm", "run", "start:debug"]

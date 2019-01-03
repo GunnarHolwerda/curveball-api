@@ -18,6 +18,11 @@ export async function deleteUserFriend(event: hapi.Request): Promise<object> {
 
     await friend.delete();
 
+    const reverseFriendship = await FriendFactory.load(friend.properties.friend_user_id, friend.properties.account_user_id);
+    if (reverseFriendship) {
+        await reverseFriendship.delete();
+    }
+
     return {
         message: 'ok'
     };

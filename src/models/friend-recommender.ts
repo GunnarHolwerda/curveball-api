@@ -5,7 +5,6 @@ import { FRIEND_TABLE_NAME } from './entities/friend';
 
 export class FriendRecommender {
     constructor(_user: User) {
-        console.log('current user', _user.properties.user_id);
     }
 
     public async getRecommendedFriends(phones: Array<string>): Promise<Array<User>> {
