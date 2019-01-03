@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jasmine-ts --config=tests/jasmine-api.json",
     "start": "nodemon --watch . --exec ts-node src/server.ts",
-    "start:debug": "nodemon --delay 80ms --watch . --exec 'fuser -k 9229/tcp; node -r ts-node/register --inspect=0.0.0.0:9229 src/server.ts'",
+    "start:debug": "nodemon --watch . --exec node -r ts-node/register --inspect=0.0.0.0:9229 src/server.ts",
     "start:prod": "ts-node src/server.ts",
     "clean:images": "docker rmi $(docker images -qa -f 'dangling=true') || true ",
     "build:image": "npm run clean:images && docker build -t curveball/realtime .",
