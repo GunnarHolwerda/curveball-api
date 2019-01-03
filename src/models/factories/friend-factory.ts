@@ -2,12 +2,12 @@ import { Friend, FRIEND_TABLE_NAME, IFriend } from '../entities/friend';
 import { Database } from '../database';
 
 export class FriendFactory {
-    public static async load(accountUserId: string, friendUserId: string): Promise<Friend | null> {
+    public static async load(accountUserId: string, friendUserId: string, allowDeleted: boolean = false): Promise<Friend | null> {
         const sq = Database.instance.sq;
         const result = await sq.from(FRIEND_TABLE_NAME)
             .where`account_user_id = ${accountUserId}`
             .and`friend_user_id = ${friendUserId}`
-            .and`deleted = false`;
+            .and`deleted = ${allowDeleted}`;
         if (result.length === 0) {
             return null;
         }
@@ -17,10 +17,11 @@ export class FriendFactory {
     public static async loadAll(accountUserId: string): Promise<Array<Friend>> {
         const sq = Database.instance.sq;
         const query = sq.from({ 'outgoing': FRIEND_TABLE_NAME })
-            .join({ 'incoming': FRIEND_TABLE_NAME }).on`incoming.friend_user_id = outgoing.account_user_id`
+            .join({ 'incoming': FRIEND_TABLE_NAME }).on`outgoing.friend_user_id = incoming.account_user_id`
             .where`outgoing.account_user_id = ${accountUserId}`
             .and`outgoing.deleted = false`
-            .group`outgoing.id`
+            .and`incoming.deleted = false`
+            .group`outgoing.id, incoming.id`
             .return({
                 account_user_id: 'outgoing.account_user_id',
                 id: 'outgoing.id',
