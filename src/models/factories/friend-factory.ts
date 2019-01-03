@@ -21,7 +21,7 @@ export class FriendFactory {
             .where`outgoing.account_user_id = ${accountUserId}`
             .and`outgoing.deleted = false`
             .and`incoming.deleted = false`
-            .group`outgoing.id, incoming.id`
+            .group`outgoing.id`
             .return({
                 account_user_id: 'outgoing.account_user_id',
                 id: 'outgoing.id',
