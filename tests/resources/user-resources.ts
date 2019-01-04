@@ -3,6 +3,7 @@ import { IUserResponse, DevVerificationCode } from '../../src/models/entities/us
 import { ApiResources } from './test-resources';
 import { generatePhone } from '../../src/util/generate-phone';
 import { IFriendResponse } from '../../src/models/entities/friend';
+import { IFriendInviteResponse } from '../../src/models/entities/friend-invite';
 
 
 export interface TokenResponse {
@@ -36,6 +37,7 @@ export interface GetFriendsResponse {
         outgoing: Array<IFriendResponse>;
         incoming: Array<IFriendResponse>;
     };
+    invites: Array<IFriendInviteResponse>;
     friends: Array<IFriendResponse>;
 }
 

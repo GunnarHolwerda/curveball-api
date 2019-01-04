@@ -1,5 +1,6 @@
 import { IUserResponse } from '../../../src/models/entities/user';
 import { UserResources, UserTokenResponse } from '../../resources/user-resources';
+import { generatePhone } from '../../../src/util/generate-phone';
 
 describe('GET /users/{userId}/friends', () => {
     let currentUserResponse: UserTokenResponse;
@@ -48,6 +49,28 @@ describe('GET /users/{userId}/friends', () => {
             const { requests } = await friendUserResources.getFriends(friendUser.userId);
             const incomingRequests = requests.incoming.filter(f => f.friend.userId === currentUser.userId);
             await expect(incomingRequests.length).toBe(1, 'Incoming friend requests from the same user was returned more than once');
+        });
+    });
+
+    describe('Invites', () => {
+        let invitePhone: string;
+        beforeEach(async () => {
+            invitePhone = generatePhone();
+            await currentUserResources.invitePhone(currentUser.userId, invitePhone);
+        });
+
+        it('should return any invite a user has sent', async () => {
+            const { invites } = await currentUserResources.getFriends(currentUser.userId);
+            const invite = invites.filter(i => i.invitePhone === invitePhone);
+            await expect(invite.length).toBe(1, 'Invite was not properly returned');
+        });
+
+        it('should not return accepted invites', async () => {
+            const userResources = new UserResources();
+            await userResources.createUser(invitePhone);
+            const { invites } = await currentUserResources.getFriends(currentUser.userId);
+            const invite = invites.filter(i => i.invitePhone === invitePhone);
+            await expect(invite.length).toBe(0, 'Invite was not properly excluded');
         });
     });
 
