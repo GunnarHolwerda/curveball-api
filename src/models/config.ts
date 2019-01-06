@@ -41,4 +41,12 @@ export class ApplicationConfig {
     public static get mixpanelKey(): string {
         return process.env.MIXPANEL_TOKEN!;
     }
+
+    public static get nbaKey(): string {
+        return process.env.NBA_API_KEY!;
+    }
+
+    public static get nflKey(): string {
+        return process.env.NFL_API_KEY!;
+    }
 }
