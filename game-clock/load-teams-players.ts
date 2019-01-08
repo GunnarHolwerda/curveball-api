@@ -8,6 +8,7 @@ import { NFLResponse } from '../src/interfaces/sports-api-responses/nfl';
 import { NBAResponse } from '../src/interfaces/sports-api-responses/nba';
 import { NBAResponseParser } from '../src/models/data-parser/nba-response-parser';
 import { Database } from '../src/models/database';
+import { Row } from 'sqorn-pg/types/methods';
 
 function getApi(sport: Sport): SportsApi {
     switch (sport) {
@@ -35,6 +36,42 @@ function getParser(sport: Sport, schedule: Schedule): ResponseParser<any> {
         default:
             throw new Error('Unsupported sport');
     }
+}
+
+async function createTeam(teamId: string, sport: Sport, seasonId: string, data: Team): Promise<Array<Row>> {
+    const sq = Database.instance.sq;
+    const result = await sq.from`choice_reference`.insert({ reference_type: 'sport_team' }).return('reference_id');
+    return await sq.from`sport_team`.insert({
+        id: teamId,
+        reference_id: result[0].reference_id,
+        sport: sport,
+        season: seasonId,
+        json: data
+    });
+}
+
+async function createPlayer(playerId: string, sport: Sport, teamId: string, data: Player): Promise<Array<Row>> {
+    const sq = Database.instance.sq;
+    const result = await sq.from`choice_reference`.insert({ reference_type: 'sport_player' }).return('reference_id');
+    return await sq.from`sport_player`.insert({
+        id: playerId,
+        reference_id: result[0].reference_id,
+        sport: sport,
+        team: teamId,
+        json: data
+    });
+}
+
+async function createGame(gameId: string, sport: Sport, seasonId: string, data: Game): Promise<Array<Row>> {
+    const sq = Database.instance.sq;
+    const result = await sq.from`choice_reference`.insert({ reference_type: 'sport_game' }).return('reference_id');
+    return await sq.from`sport_game`.insert({
+        id: gameId,
+        sport: sport,
+        reference_id: result[0].reference_id,
+        season: seasonId,
+        json: data
+    });
 }
 
 async function preloadGamesTeamsPlayers(sport: Sport): Promise<void> {
@@ -65,28 +102,13 @@ async function preloadGamesTeamsPlayers(sport: Sport): Promise<void> {
             json: schedule
         });
 
-        await Promise.all(teams.map(t => sq.from`sport_team`.insert({
-            id: t.id,
-            sport: sport,
-            season: parser.seasonId(),
-            json: t
-        })));
+        await Promise.all(teams.map(t => createTeam(t.id, sport, parser.seasonId(), t)));
 
         const promises = [
-            ...games.map(g => sq.from`sport_game`.insert({
-                id: g.id,
-                sport: sport,
-                season: parser.seasonId(),
-                json: g
-            })),
+            ...games.map(g => createGame(g.id, sport, parser.seasonId(), g)),
             ..._.flatten(rosters.map(r => {
                 const players: Array<Player> = parser.getPlayers(r);
-                return players.map(p => sq.from`sport_player`.insert({
-                    id: p.id,
-                    sport: sport,
-                    team: r.id,
-                    json: p
-                }));
+                return players.map(p => createPlayer(p.id, sport, r.id, p));
             }))
         ];
         await Promise.all(promises);
