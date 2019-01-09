@@ -21,7 +21,8 @@ describe('GET /quizzes/{quizId}/questions', () => {
                     question: 'What is your favorite color?',
                     questionNum: 1,
                     ticker: 'sport',
-                    sport: 'ticker',
+                    topic: 1,
+                    type: 1,
                     choices: [
                         { text: 'Blue', isAnswer: true }
                     ]
@@ -30,7 +31,8 @@ describe('GET /quizzes/{quizId}/questions', () => {
                     question: 'What is your favorite animal?',
                     questionNum: 2,
                     ticker: 'sport',
-                    sport: 'ticker',
+                    topic: 1,
+                    type: 1,
                     choices: [
                         { text: 'Cat', isAnswer: true },
                     ]

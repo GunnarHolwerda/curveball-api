@@ -22,7 +22,8 @@ describe('PUT /questions/{questionId}', () => {
                 {
                     question: 'What is your favorite color?',
                     questionNum: 1,
-                    sport: 'hello',
+                    topic: 1,
+                    type: 1,
                     ticker: 'why not',
                     choices: [
                         { text: 'Blue', isAnswer: true }

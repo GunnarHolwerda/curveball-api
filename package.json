@@ -12,7 +12,7 @@
     "clean:images": "docker rmi $(docker images -qa -f 'dangling=true') || true ",
     "build:image": "npm run clean:images && docker build -t curveball/realtime .",
     "lint": "tslint -p src/tsconfig.app.json",
-    "compile": "rimraf dist && tsc -p src/tsconfig.app.json"
+    "compile": "rimraf dist && tsc -p tsconfig.json"
   },
   "pre-commit": [
     "lint",

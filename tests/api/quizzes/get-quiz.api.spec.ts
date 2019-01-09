@@ -35,7 +35,8 @@ describe('GET /quizzes/{quizId}', () => {
                         question: 'What is your favorite color?',
                         questionNum: 1,
                         ticker: 'wow',
-                        sport: 'wow',
+                        topic: 1,
+                        type: 1,
                         choices: [
                             { text: 'Blue', isAnswer: true }
                         ]
@@ -44,7 +45,8 @@ describe('GET /quizzes/{quizId}', () => {
                         question: 'What is your favorite animal?',
                         questionNum: 2,
                         ticker: 'wow',
-                        sport: 'wow',
+                        topic: 1,
+                        type: 1,
                         choices: [
                             { text: 'Cat', isAnswer: true },
                         ]

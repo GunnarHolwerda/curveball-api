@@ -7,25 +7,29 @@ import { Analyticize, AnalyticsProperties } from '../../interfaces/analyticize';
 import { snakifyKeys } from '../../util/snakify-keys';
 import { camelizeKeys } from '../../util/camelize-keys';
 import { omit } from '../../util/omit';
+import { IQuestionType } from './question-type';
 
 export interface IQuestion {
     question_id: string;
     created: Date;
     question: string;
     question_num: number;
-    sport: string;
+    topic: number;
+    type: number;
     ticker: string;
     sent: Date | null;
     expired: Date | null;
     quiz_id: string;
 }
 
+interface IQuestionTopicResponse { id: number; label: string; machineName: string; }
 export interface IQuestionResponse {
     questionId: string;
     created: string;
     question: string;
     questionNum: number;
-    sport: string;
+    topic: IQuestionTopicResponse;
+    type: IQuestionType;
     ticker: string;
     sent: boolean;
     expired: string;
@@ -111,12 +115,13 @@ export class Question implements Analyticize {
     }
 
     public analyticsProperties(): AnalyticsProperties {
+        // TODO: Get more detailed properties
         return {
             question_id: this.properties.question_id,
             created: this.properties.created,
             text: this.properties.question,
             question_num: this.properties.question_num,
-            sport: this.properties.sport,
+            topic: this.properties.topic,
             ticker: this.properties.ticker,
             sent: this.properties.sent,
             expired: this.properties.expired,

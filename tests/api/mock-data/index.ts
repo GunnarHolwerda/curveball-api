@@ -5,7 +5,8 @@ export const mockQuestionsPayload: QuestionsPayload = {
         {
             question: 'What is your favorite color?',
             questionNum: 1,
-            sport: 'nfl',
+            topic: 1, // NCAAF
+            type: 1, // Manual
             ticker: 'Deion Sander',
             choices: [
                 { text: 'Blue', isAnswer: true },
@@ -16,7 +17,8 @@ export const mockQuestionsPayload: QuestionsPayload = {
         {
             question: 'What is your favorite animal?',
             questionNum: 2,
-            sport: 'mlb',
+            topic: 1,
+            type: 1,
             ticker: 'College World Series',
             choices: [
                 { text: 'Cat', isAnswer: true },

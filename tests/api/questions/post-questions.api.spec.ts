@@ -24,7 +24,8 @@ describe('POST /quizzes/{quizId}/questions', () => {
                 {
                     question: 'What is your favorite color?',
                     questionNum: 1,
-                    sport: 'nba',
+                    topic: 1,
+                    type: 1,
                     ticker: 'woo',
                     choices: [
                         { text: 'Blue', isAnswer: true }
@@ -33,7 +34,8 @@ describe('POST /quizzes/{quizId}/questions', () => {
                 {
                     question: 'What is your favorite animal?',
                     questionNum: 2,
-                    sport: 'nba',
+                    topic: 1,
+                    type: 1,
                     ticker: 'doo',
                     choices: [
                         { text: 'Cat', isAnswer: true },
@@ -57,7 +59,8 @@ describe('POST /quizzes/{quizId}/questions', () => {
                 {
                     question: 'What is your favorite color?',
                     questionNum: 1,
-                    sport: 'nba',
+                    topic: 1,
+                    type: 1,
                     choices: [
                         { text: 'Blue', isAnswer: true }
                     ]

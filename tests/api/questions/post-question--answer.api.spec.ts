@@ -19,7 +19,8 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
         {
             question: 'What is your favorite animal?',
             questionNum: 3,
-            sport: 'mlb',
+            topic: 1,
+            type: 1,
             ticker: 'College World Series',
             choices: [
                 { text: 'Cat', isAnswer: true },

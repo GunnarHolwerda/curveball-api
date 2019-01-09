@@ -4,12 +4,14 @@ import * as hapi from 'hapi';
 import { IChoiceResponse, IChoice, Choice } from '../../../../models/entities/question-choice';
 import { IQuestion, Question } from '../../../../models/entities/question';
 import { QuizFactory } from '../../../../models/factories/quiz-factory';
+import { snakifyKeys } from '../../../../util/snakify-keys';
 
 export interface QuestionPayload {
     question: string;
     questionNum: number;
     ticker: string;
-    sport: string;
+    topic: number;
+    type: number;
     choices: Array<Partial<IChoiceResponse>>;
 }
 export interface QuestionsPayload {
@@ -24,8 +26,9 @@ export const postQuestionsSchema = Joi.object().keys({
     questions: Joi.array().required().items(Joi.object().keys({
         question: Joi.string().max(64).required(),
         questionNum: Joi.number().min(1).required(),
-        sport: Joi.string().max(64).required().description('The sport the question relates to'),
-        ticker: Joi.string().max(64).required().description('Ticker text for the question'),
+        topic: Joi.number().required().description('The id of the topic the question relates to'),
+        type: Joi.number().required().description('The id of the question type'),
+        ticker: Joi.string().max(10).required().description('Ticker text for the question'),
         choices: Joi.array().optional().items(Joi.object().keys({
             text: Joi.string().max(64).required(),
             isAnswer: Joi.boolean().required()
@@ -35,7 +38,7 @@ export const postQuestionsSchema = Joi.object().keys({
 
 export async function postQuestions(event: hapi.Request): Promise<object> {
     const quizId: string = event.params['quizId'];
-    const payload = event.payload as SnakifiedQuestionsPayload;
+    const payload = snakifyKeys(event.payload as object) as SnakifiedQuestionsPayload;
     const quiz = await QuizFactory.load(quizId);
     if (quiz === null) {
         throw Boom.notFound();
