@@ -3,6 +3,7 @@ import { IoServer } from '../models/namespaces/io-server';
 import { putQuestionSchema, putQuestions } from './handlers/questions/put-question';
 import { postQuestionTypeSchema, postQuestionType } from './handlers/questions/types/post-question-type';
 import { getQuestionTypes } from './handlers/questions/types/get-question-types';
+import { getQuestionTopics } from './handlers/questions/topics/get-question-topics';
 
 export function questionRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -16,6 +17,16 @@ export function questionRoutes(server: hapi.Server, _: IoServer): void {
                 notes: 'Updates question metadata'
             },
             handler: putQuestions
+        },
+        {
+            path: '/questions/topics',
+            method: 'get',
+            options: {
+                auth: 'internalJwt',
+                description: 'Retrieve all available topics for questions',
+                notes: 'Will return all available topics for associating with a question'
+            },
+            handler: getQuestionTopics
         },
         {
             path: '/questions/type',
