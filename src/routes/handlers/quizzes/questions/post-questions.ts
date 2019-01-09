@@ -11,7 +11,7 @@ export interface QuestionPayload {
     questionNum: number;
     ticker: string;
     topic: number;
-    type: number;
+    typeId: number;
     choices: Array<Partial<IChoiceResponse>>;
 }
 export interface QuestionsPayload {
@@ -27,8 +27,8 @@ export const postQuestionsSchema = Joi.object().keys({
         question: Joi.string().max(64).required(),
         questionNum: Joi.number().min(1).required(),
         topic: Joi.number().required().description('The id of the topic the question relates to'),
-        type: Joi.number().required().description('The id of the question type'),
-        ticker: Joi.string().max(10).required().description('Ticker text for the question'),
+        typeId: Joi.number().required().description('The id of the question type'),
+        ticker: Joi.string().max(24).required().description('Ticker text for the question'),
         choices: Joi.array().optional().items(Joi.object().keys({
             text: Joi.string().max(64).required(),
             isAnswer: Joi.boolean().required()

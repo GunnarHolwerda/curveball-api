@@ -20,7 +20,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
             question: 'What is your favorite animal?',
             questionNum: 3,
             topic: 1,
-            type: 1,
+            typeId: 1,
             ticker: 'College World Series',
             choices: [
                 { text: 'Cat', isAnswer: true },

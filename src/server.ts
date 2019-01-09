@@ -1,6 +1,7 @@
 import * as Hapi from 'hapi';
 import * as socketio from 'socket.io';
 import * as fs from 'fs';
+import * as Boom from 'boom';
 import * as redisAdapter from 'socket.io-redis';
 import { ApplicationConfig } from './models/config';
 import { IoServer } from './models/namespaces/io-server';
@@ -33,6 +34,19 @@ const server = new Hapi.Server({
     routes: {
         cors: {
             origin: 'ignore'
+        },
+        validate: {
+            failAction: async (_, _1, err) => {
+                if (process.env.NODE_ENV === 'production' && err) {
+                    // In prod, log a limited error message and throw the default Bad Request error.
+                    console.error('ValidationError:', err.message);
+                    throw Boom.badRequest(`Invalid request payload input`);
+                } else {
+                    // During development, log and respond with the full error.
+                    console.error(err);
+                    throw err;
+                }
+            }
         }
     }
 });

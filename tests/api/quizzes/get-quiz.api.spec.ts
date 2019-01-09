@@ -36,7 +36,7 @@ describe('GET /quizzes/{quizId}', () => {
                         questionNum: 1,
                         ticker: 'wow',
                         topic: 1,
-                        type: 1,
+                        typeId: 1,
                         choices: [
                             { text: 'Blue', isAnswer: true }
                         ]
@@ -46,7 +46,7 @@ describe('GET /quizzes/{quizId}', () => {
                         questionNum: 2,
                         ticker: 'wow',
                         topic: 1,
-                        type: 1,
+                        typeId: 1,
                         choices: [
                             { text: 'Cat', isAnswer: true },
                         ]

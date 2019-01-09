@@ -33,7 +33,7 @@ describe('POST /quizzes/{quizId}/complete', () => {
                 {
                     question: 'What is your favorite animal?',
                     questionNum: 3,
-                    type: 1,
+                    typeId: 1,
                     topic: 1,
                     ticker: 'College World Series',
                     choices: [
