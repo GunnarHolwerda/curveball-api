@@ -1,13 +1,13 @@
-import { Sport, SportsApi } from '../src/models/data-loader/sports-api';
-import { NFLSportsApi } from '../src/models/data-loader/nfl-sports-api';
-import { NBASportsApi } from '../src/models/data-loader/nba-sports-api';
+import { Sport, SportsApi } from '../../../models/data-loader/sports-api';
+import { NFLSportsApi } from '../../../models/data-loader/nfl-sports-api';
+import { NBASportsApi } from '../../../models/data-loader/nba-sports-api';
 import * as _ from 'lodash';
-import { ResponseParser } from '../src/models/data-parser/response-parser';
-import { NFLResponseParser } from '../src/models/data-parser/nfl-response-parser';
-import { NFLResponse } from '../src/interfaces/sports-api-responses/nfl';
-import { NBAResponse } from '../src/interfaces/sports-api-responses/nba';
-import { NBAResponseParser } from '../src/models/data-parser/nba-response-parser';
-import { Database } from '../src/models/database';
+import { ResponseParser } from '../../../models/data-parser/response-parser';
+import { NFLResponseParser } from '../../../models/data-parser/nfl-response-parser';
+import { NFLResponse } from '../../../interfaces/sports-api-responses/nfl';
+import { NBAResponse } from '../../../interfaces/sports-api-responses/nba';
+import { NBAResponseParser } from '../../../models/data-parser/nba-response-parser';
+import { Database } from '../../../models/database';
 import { Row } from 'sqorn-pg/types/methods';
 
 function getApi(sport: Sport): SportsApi {
@@ -74,7 +74,7 @@ async function createGame(gameId: string, sport: Sport, seasonId: string, data: 
     });
 }
 
-async function preloadGamesTeamsPlayers(sport: Sport): Promise<void> {
+export async function preloadGamesTeamsPlayers(sport: Sport): Promise<void> {
     const api = getApi(sport);
     console.log('Requesting schedule');
     const schedule = await api.getSeasonSchedule<Schedule>();
@@ -117,11 +117,3 @@ async function preloadGamesTeamsPlayers(sport: Sport): Promise<void> {
         throw e;
     }
 }
-
-preloadGamesTeamsPlayers(Sport.NFL).then(() => {
-    console.log('Successfully uploaded full season');
-    process.exit(0);
-}).catch((err) => {
-    console.error('An error occurred', err.message);
-    process.exit(1);
-});

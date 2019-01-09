@@ -1,6 +1,5 @@
 import * as hapi from 'hapi';
 import { IoServer } from '../models/namespaces/io-server';
-import { putQuestions, putQuestionSchema } from './handlers/questions/put-question';
 import { deleteQuiz } from './handlers/quizzes/delete-quiz';
 import { getQuiz } from './handlers/quizzes/get-quiz';
 import { getQuizAccess } from './handlers/quizzes/get-quiz--access';
@@ -126,17 +125,6 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
                 notes: 'Marks question as sent and returns it'
             },
             handler: postQuestionStart
-        },
-        {
-            path: '/questions/{questionId}',
-            method: 'put',
-            options: {
-                auth: 'internalJwt',
-                validate: { payload: putQuestionSchema },
-                description: 'Update question information',
-                notes: 'Updates question metadata'
-            },
-            handler: putQuestions
         },
         {
             path: '/quizzes/{quizId}/questions/{questionId}/results',
