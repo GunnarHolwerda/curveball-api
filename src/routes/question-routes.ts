@@ -2,8 +2,9 @@ import * as hapi from 'hapi';
 import { IoServer } from '../models/namespaces/io-server';
 import { putQuestionSchema, putQuestions } from './handlers/questions/put-question';
 import { postQuestionTypeSchema, postQuestionType } from './handlers/questions/types/post-question-type';
-import { getQuestionTypes } from './handlers/questions/types/get-question-types';
+import { getQuestionTypes, getQuestionTypesQueryParams } from './handlers/questions/types/get-question-types';
 import { getQuestionTopics } from './handlers/questions/topics/get-question-topics';
+import { postQuestionCalculatorSchema, postQuestionCalculator } from './handlers/questions/calculators/post-question-calculator';
 
 export function questionRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -29,6 +30,17 @@ export function questionRoutes(server: hapi.Server, _: IoServer): void {
             handler: getQuestionTopics
         },
         {
+            path: '/questions/calculator',
+            method: 'post',
+            options: {
+                auth: 'internalJwt',
+                validate: { payload: postQuestionCalculatorSchema },
+                description: 'Creates new question calculator',
+                notes: 'Creates a new question calculator using the function provided, and is associated with the topic and type specified.'
+            },
+            handler: postQuestionCalculator
+        },
+        {
             path: '/questions/type',
             method: 'post',
             options: {
@@ -45,7 +57,8 @@ export function questionRoutes(server: hapi.Server, _: IoServer): void {
             options: {
                 auth: 'internalJwt',
                 description: 'Retrieves all question types',
-                notes: 'Returns all currently created question types'
+                notes: 'Returns all currently created question types',
+                validate: { query: getQuestionTypesQueryParams }
             },
             handler: getQuestionTypes
         }

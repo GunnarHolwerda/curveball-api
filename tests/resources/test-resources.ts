@@ -22,9 +22,9 @@ export class ApiResources {
     }
 
     // @ts-ignore
-    protected async get<T>(apiPath: string): Promise<T> {
+    protected async get<T>(apiPath: string, config?: AxiosRequestConfig): Promise<T> {
         try {
-            return (await axios.get(this.baseUrl + apiPath, this.config)).data;
+            return (await axios.get(this.baseUrl + apiPath, { ...this.config, ...config })).data;
         } catch (err) {
             this.handleError(err);
         }
