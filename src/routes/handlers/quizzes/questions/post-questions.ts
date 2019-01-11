@@ -24,14 +24,16 @@ interface SnakifiedQuestionsPayload {
 
 export const postQuestionsSchema = Joi.object().keys({
     questions: Joi.array().required().items(Joi.object().keys({
-        question: Joi.string().max(64).required(),
-        questionNum: Joi.number().min(1).required(),
+        question: Joi.string().max(64).required().description('The actual question text'),
+        questionNum: Joi.number().min(1).required().description('Which question number this should be'),
         topic: Joi.number().required().description('The id of the topic the question relates to'),
         typeId: Joi.number().required().description('The id of the question type'),
         ticker: Joi.string().max(24).required().description('Ticker text for the question'),
+        subjectId: Joi.number().optional().description('The id of the subject this question relates to'),
         choices: Joi.array().optional().items(Joi.object().keys({
-            text: Joi.string().max(64).required(),
-            isAnswer: Joi.boolean().required()
+            text: Joi.string().max(64).required().description('Text to be displayed with the choice'),
+            isAnswer: Joi.boolean().required().description('Whether the question is the answer or not'),
+            subjectId: Joi.number().optional().description('The subject id of the subject to associate with this choice')
         }).unknown(false))
     }).unknown(false).required())
 });

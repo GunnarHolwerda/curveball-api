@@ -8,7 +8,7 @@ import { Answer } from '../../../../models/entities/answer';
 import { createQt } from '../../../../util/create-qt';
 
 export const questionsAnswerSchema = Joi.object().keys({
-    choice: Joi.string().required()
+    choice: Joi.string().required().description('The choice id of the choice being submitted')
 });
 
 export interface QuestionsAnswerPayload {

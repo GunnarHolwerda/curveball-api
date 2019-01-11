@@ -5,13 +5,14 @@ import { IQuestion } from '../../../models/entities/question';
 import { QuestionFactory } from '../../../models/factories/question-factory';
 
 export const putQuestionSchema = Joi.object().keys({
-    question: Joi.string().optional(),
-    questionNum: Joi.number().optional(),
-    ticker: Joi.string().optional(),
-    sport: Joi.string().optional(),
-    sent: Joi.boolean().optional(),
-    expired: Joi.date().optional(),
-    quizId: Joi.string().optional(),
+    question: Joi.string().optional().description('The text for the question'),
+    questionNum: Joi.number().optional().description('Which question number this is'),
+    ticker: Joi.string().optional().description('An abbreviated text for the question'),
+    topic: Joi.number().optional().description('The id of the topic the question relates to'),
+    typeId: Joi.number().optional().description('The id of the question type'),
+    sent: Joi.boolean().optional().description('Update if the question has been sent to the client or not'),
+    expired: Joi.date().optional().description('Update the expiration date of the question'),
+    quizId: Joi.string().optional().description('Update the quiz for which this question belongs to'),
 }).or('question', 'questionNum', 'sent', 'expired', 'quizId', 'ticker', 'sport');
 
 export async function putQuestions(event: hapi.Request): Promise<object> {

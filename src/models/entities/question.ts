@@ -15,7 +15,8 @@ export interface IQuestion {
     question: string;
     question_num: number;
     topic: number;
-    typeId: number;
+    type_id: number;
+    subject_id: number;
     ticker: string;
     sent: Date | null;
     expired: Date | null;

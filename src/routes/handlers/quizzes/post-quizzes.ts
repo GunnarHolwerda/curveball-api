@@ -4,9 +4,9 @@ import * as hapi from 'hapi';
 import { IQuizResponse, IQuiz, Quiz } from '../../../models/entities/quiz';
 
 export const postQuizzesSchema = Joi.object().keys({
-    title: Joi.string().required(),
-    potAmount: Joi.number().required(),
-    auth: Joi.boolean().default(true)
+    title: Joi.string().required().description('The title of the quiz'),
+    potAmount: Joi.number().required().description('The amount of money to be won for the quiz'),
+    auth: Joi.boolean().default(true).description('Whether the quiz enforces correct answers or not')
 });
 
 export interface PostQuizPayload {
