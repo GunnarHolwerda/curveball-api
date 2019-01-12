@@ -8,6 +8,8 @@ import { snakifyKeys } from '../../util/snakify-keys';
 import { camelizeKeys } from '../../util/camelize-keys';
 import { omit } from '../../util/omit';
 import { IQuestionType } from './question-type';
+import { QuestionTypeFactory } from '../factories/question-type-factory';
+import { TopicFactory, ITopicResponse } from '../factories/topic-factory';
 
 export interface IQuestion {
     question_id: string;
@@ -23,13 +25,12 @@ export interface IQuestion {
     quiz_id: string;
 }
 
-interface IQuestionTopicResponse { id: number; label: string; machineName: string; }
 export interface IQuestionResponse {
     questionId: string;
     created: string;
     question: string;
     questionNum: number;
-    topic: IQuestionTopicResponse;
+    topic: ITopicResponse;
     type: IQuestionType;
     ticker: string;
     sent: boolean;
@@ -74,6 +75,10 @@ export class Question implements Analyticize {
         return await ChoiceFactory.loadAllForQuestion(this._question.question_id);
     }
 
+    public isExpired(): boolean {
+        return !!this.properties.expired && this.properties.expired <= (new Date());
+    }
+
     public async start(): Promise<void> {
         this.properties.sent = new Date();
         this.properties.expired = new Date();
@@ -100,19 +105,33 @@ export class Question implements Analyticize {
         return result;
     }
 
-    public async toResponseObject(withChoices: boolean = false): Promise<any> {
-        const response = { ...this.properties };
+    public async toResponseObject(withChoices: boolean = false): Promise<IQuestionResponse> {
+        const {
+            question_id, created, question, question_num, topic, type_id, sent, expired, quiz_id, ticker
+        } = this.properties;
 
+        let choiceResponses: Array<IChoiceResponse> | undefined;
         if (withChoices) {
             const choices = await this.choices();
-            response['choices'] = choices.map(c => c.toResponseObject());
+            choiceResponses = await Promise.all(choices.map(c => c.toResponseObject()));
         }
 
-        return camelizeKeys(response);
-    }
+        const typeResponse = await (await QuestionTypeFactory.load(type_id))!.toResponseObject();
+        const topicResponse = await (await TopicFactory.load(topic))!;
 
-    public isExpired(): boolean {
-        return !!this.properties.expired && this.properties.expired <= (new Date());
+        return camelizeKeys({
+            created,
+            question,
+            ticker,
+            sent,
+            expired,
+            quizId: quiz_id,
+            questionId: question_id,
+            questionNum: question_num,
+            type: typeResponse,
+            topic: topicResponse,
+            choices: choiceResponses
+        });
     }
 
     public analyticsProperties(): AnalyticsProperties {

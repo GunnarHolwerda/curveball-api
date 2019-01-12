@@ -40,7 +40,7 @@ export class Choice implements Analyticize {
         await sq.from(CHOICES_TABLE_NAME).set({ ...omit(this.properties, ['choice_id']) }).where`choice_id = ${this._choice.choice_id}`;
     }
 
-    public toResponseObject(): object {
+    public toResponseObject(): Promise<IChoiceResponse> {
         const response = {
             ...omit(this.properties, ['is_answer']),
         };
