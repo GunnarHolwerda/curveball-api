@@ -1,10 +1,10 @@
 import { BaseSocketHandler } from './base-socket-handler';
 import { Socket } from '../../interfaces/socket';
-import { IQuizRoom } from '../../interfaces/quiz-room';
+import { IQuizResponse } from '../entities/quiz';
 
 export class QuizSocketHandlers extends BaseSocketHandler {
 
-    constructor(private quiz: IQuizRoom) {
+    constructor(private quiz: IQuizResponse) {
         super();
     }
 
