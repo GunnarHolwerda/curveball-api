@@ -1,6 +1,6 @@
 import { IQuestionResponse } from '../../src/models/entities/question';
 import { ApiResources } from './test-resources';
-import { IQuestionType } from '../../src/models/entities/question-type';
+import { IQuestionTypeResponse } from '../../src/models/entities/question-type';
 import { IQuestionCalculatorResponse } from '../../src/models/entities/question-calculator';
 import { ITopicResponse } from '../../src/models/factories/topic-factory';
 
@@ -10,7 +10,7 @@ export interface SingleQuestionResponse {
 }
 
 export interface TypeResponse {
-    type: IQuestionType;
+    type: IQuestionTypeResponse;
 }
 
 export interface QuestionCalculatorPayload {
@@ -40,9 +40,9 @@ export class QuestionResources extends ApiResources {
         return this.makeInternalRequest(() => this.post<TypeResponse>(`/questions/type`, { title, description }));
     }
 
-    public async getTypes(topicId?: number): Promise<{ types: Array<IQuestionType> }> {
+    public async getTypes(topicId?: number): Promise<{ types: Array<IQuestionTypeResponse> }> {
         return this.makeInternalRequest(
-            () => this.get<{ types: Array<IQuestionType> }>(`/questions/type`, { params: { forTopic: topicId } })
+            () => this.get<{ types: Array<IQuestionTypeResponse> }>(`/questions/type`, { params: { forTopic: topicId } })
         );
     }
 

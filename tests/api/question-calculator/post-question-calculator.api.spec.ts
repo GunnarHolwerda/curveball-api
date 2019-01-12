@@ -1,11 +1,11 @@
 import { expectHttpError } from '../../resources/test-helpers';
 import { QuestionResources } from '../../resources/question-resources';
 import * as uuid from 'uuid/v4';
-import { IQuestionType } from '../../../src/models/entities/question-type';
+import { IQuestionTypeResponse } from '../../../src/models/entities/question-type';
 
 describe('POST /questions/calculator', () => {
     let questionResources: QuestionResources;
-    let newType: IQuestionType;
+    let newType: IQuestionTypeResponse;
 
     beforeAll(async () => {
         questionResources = new QuestionResources();

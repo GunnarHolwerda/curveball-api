@@ -4,6 +4,9 @@ import { QUESTION_TYPE_TABLE_NAME, QuestionType, IQuestionType } from '../entiti
 import { Row } from 'sqorn-pg/types/methods';
 import { QUESTION_CALCULATOR_TABLE_NAME } from '../entities/question-calculator';
 import { TOPIC_TABLE_NAME } from './topic-factory';
+import { QuestionTypeMachineNames } from '../../types/question-type-machine-names';
+import { SpreadQuestionType } from '../question-types/spread';
+import { ManualQuestionType } from '../question-types/manual';
 
 export class QuestionTypeFactory {
     public static async load(typeId: number): Promise<QuestionType | null> {
@@ -13,7 +16,7 @@ export class QuestionTypeFactory {
         if (result.length === 0) {
             return null;
         }
-        return new QuestionType(result[0] as IQuestionType);
+        return this.instantiateTypeInstance(result[0] as IQuestionType);
     }
 
     public static async loadAll(): Promise<Array<QuestionType>> {
@@ -35,6 +38,17 @@ export class QuestionTypeFactory {
     }
 
     private static buildTypes(result: Array<Row>): Array<QuestionType> {
-        return result.map(r => new QuestionType(r as IQuestionType));
+        return result.map(r => this.instantiateTypeInstance(r as IQuestionType));
+    }
+
+    private static instantiateTypeInstance(properties: IQuestionType): QuestionType {
+        switch (properties.machine_name) {
+            case QuestionTypeMachineNames.spread:
+                return new SpreadQuestionType(properties);
+            case QuestionTypeMachineNames.manual:
+                return new ManualQuestionType(properties);
+            default:
+                return new ManualQuestionType(properties);
+        }
     }
 }

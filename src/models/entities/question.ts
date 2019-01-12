@@ -7,7 +7,7 @@ import { Analyticize, AnalyticsProperties } from '../../interfaces/analyticize';
 import { snakifyKeys } from '../../util/snakify-keys';
 import { camelizeKeys } from '../../util/camelize-keys';
 import { omit } from '../../util/omit';
-import { IQuestionType } from './question-type';
+import { IQuestionTypeResponse } from './question-type';
 import { QuestionTypeFactory } from '../factories/question-type-factory';
 import { TopicFactory, ITopicResponse } from '../factories/topic-factory';
 
@@ -31,7 +31,7 @@ export interface IQuestionResponse {
     question: string;
     questionNum: number;
     topic: ITopicResponse;
-    type: IQuestionType;
+    type: IQuestionTypeResponse;
     ticker: string;
     sent: boolean;
     expired: string;

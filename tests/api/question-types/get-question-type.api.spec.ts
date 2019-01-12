@@ -10,11 +10,11 @@ describe('GET /questions/type', () => {
     });
 
     describe('?forTopic', () => {
-        it('should return only generic question types for Any type', async () => {
+        it('should return only generic question types for Manual type', async () => {
             const { type: nonGenericType } = await questionResources.createType(uuid(), uuid());
-            const { types } = await questionResources.getTypes(KnownQuestionTypes.any);
-            expect(types.length).toBeGreaterThan(0, 'Did not receive any topics for the Any type');
-            expect(types.find(t => t.id === nonGenericType.id)).toBeUndefined('Found non generic type for Any type');
+            const { types } = await questionResources.getTypes(KnownQuestionTypes.manual);
+            expect(types.length).toBeGreaterThan(0, 'Did not receive any topics for the Manual type');
+            expect(types.find(t => t.id === nonGenericType.id)).toBeUndefined('Found non generic type for Manual type');
         });
 
         it('should return non generic question type with calculator for topic', async () => {

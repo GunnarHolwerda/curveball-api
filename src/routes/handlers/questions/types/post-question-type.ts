@@ -11,7 +11,10 @@ export const postQuestionTypeSchema = Joi.object().keys({
 export async function postQuestionType(event: hapi.Request): Promise<object> {
     const { title, description, generic } = event.payload as { title: string, description: string, generic: boolean };
 
-    const type = await QuestionType.create({ title, description, generic });
+    const type = await QuestionType.create({
+        title, description, generic,
+        machine_name: title.replace(' ', '-').toLowerCase()
+    });
 
     return { type: await type.toResponseObject() };
 }
