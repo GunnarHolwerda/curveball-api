@@ -1,4 +1,5 @@
 import { Subject, ISubject } from '../entities/subject';
+import { NFLResponse } from '../../interfaces/sports-api-responses/nfl';
 
 export interface INFLGame extends ISubject {
     id: number;
@@ -7,24 +8,12 @@ export interface INFLGame extends ISubject {
     created: Date;
     updated: Date;
     deleted: boolean;
-    json: any;
+    json: NFLResponse.Game;
 }
 
 export class NFLGame extends Subject<INFLGame> {
 
     constructor(properties: INFLGame) {
         super(properties);
-    }
-
-    get title(): string {
-        return 'test';
-    }
-
-    get subjectId(): number {
-        return this.properties.subject_id;
-    }
-
-    get type(): string {
-        return this.properties.subject_type;
     }
 }

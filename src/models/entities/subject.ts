@@ -6,10 +6,14 @@ export interface ISubject {
     topic: number;
 }
 
+export const SUBJECT_TABLE_NAME = 'subject';
+export const SPORT_GAME_TABLE_NAME = 'sport_game';
+export const SPORT_SEASON_TABLE_NAME = 'sport_season';
+export const SPORT_PLAYER_TABLE_NAME = 'sport_player';
+export const SPORT_TEAM_TABLE_NAME = 'sport_team';
+
 export abstract class Subject<T extends ISubject> implements Subjectable {
     constructor(protected properties: T) { }
-
-    abstract get title(): string;
 
     get subjectId(): number {
         return this.properties.subject_id;
