@@ -5,6 +5,7 @@ import { postQuestionTypeSchema, postQuestionType } from './handlers/questions/t
 import { getQuestionTypes, getQuestionTypesQueryParams } from './handlers/questions/types/get-question-types';
 import { getQuestionTopics } from './handlers/questions/topics/get-question-topics';
 import { postQuestionCalculatorSchema, postQuestionCalculator } from './handlers/questions/calculators/post-question-calculator';
+import { devRoutes } from './helpers/dev-routes';
 
 export function questionRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -64,25 +65,5 @@ export function questionRoutes(server: hapi.Server, _: IoServer): void {
         }
     ];
 
-    const devRoutes = routes.map(r => {
-        r.path = '/dev' + r.path;
-        if (!r.options) {
-            r.options = {};
-        }
-
-        const options: hapi.RouteOptions = r.options as hapi.RouteOptions;
-
-        if (options.tags) {
-            options.tags = [...options.tags!, 'api'];
-        } else {
-            options.tags = ['api'];
-        }
-        if (options.auth === 'internalJwt') {
-            options.tags.push('internal');
-        }
-        r.options = options;
-        return r;
-    });
-
-    devRoutes.forEach(r => server.route(r));
+    devRoutes(routes).forEach(r => server.route(r));
 }

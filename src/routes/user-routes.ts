@@ -14,6 +14,7 @@ import { postUserFriendsInvite } from './handlers/users/friends/post-user-friend
 import { getUserFriends } from './handlers/users/friends/get-user-friends';
 import { deleteUserFriend } from './handlers/users/friends/delete-user-friend';
 import { postUserFriendsRecommended } from './handlers/users/friends/post-user-friends--recommended';
+import { devRoutes } from './helpers/dev-routes';
 
 export function userRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -133,25 +134,5 @@ export function userRoutes(server: hapi.Server, _: IoServer): void {
         }
     ];
 
-    const devRoutes = routes.map(r => {
-        r.path = '/dev' + r.path;
-        if (!r.options) {
-            r.options = {};
-        }
-
-        const options: hapi.RouteOptions = r.options as hapi.RouteOptions;
-
-        if (options.tags) {
-            options.tags = [...options.tags!, 'api'];
-        } else {
-            options.tags = ['api'];
-        }
-        if (options.auth === 'internalJwt') {
-            options.tags.push('internal');
-        }
-        r.options = options;
-        return r;
-    });
-
-    devRoutes.forEach(r => server.route(r));
+    devRoutes(routes).forEach(r => server.route(r));
 }
