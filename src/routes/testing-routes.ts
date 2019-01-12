@@ -27,7 +27,7 @@ export function testingRoutes(server: hapi.Server, _: IoServer): void {
     });
 
     server.route({
-        path: '/text/sport:load',
+        path: '/test/sport:load',
         method: 'POST',
         options: {
             auth: false,
@@ -46,7 +46,7 @@ export function testingRoutes(server: hapi.Server, _: IoServer): void {
             // TODO: Validate that this is a valid sport
             preloadGamesTeamsPlayers(sport);
             return {
-                message: 'ok'
+                message: 'Job has been kicked off, check the logs for results'
             };
         }
     });

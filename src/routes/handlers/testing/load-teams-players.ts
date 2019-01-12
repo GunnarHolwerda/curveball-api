@@ -9,6 +9,7 @@ import { NBAResponse } from '../../../interfaces/sports-api-responses/nba';
 import { NBAResponseParser } from '../../../models/data-parser/nba-response-parser';
 import { Database } from '../../../models/database';
 import { Row } from 'sqorn-pg/types/methods';
+import { TopicFactory } from '../../../models/factories/topic-factory';
 
 function getApi(sport: Sport): SportsApi {
     switch (sport) {
@@ -38,37 +39,37 @@ function getParser(sport: Sport, schedule: Schedule): ResponseParser<any> {
     }
 }
 
-async function createTeam(teamId: string, sport: Sport, seasonId: string, data: Team): Promise<Array<Row>> {
+async function createTeam(teamId: string, topicId: number, seasonId: string, data: Team): Promise<Array<Row>> {
     const sq = Database.instance.sq;
-    const result = await sq.from`choice_reference`.insert({ reference_type: 'sport_team' }).return('reference_id');
+    const result = await sq.from`subject`.insert({ subject_type: 'sport_team' }).return('subject_id');
     return await sq.from`sport_team`.insert({
         id: teamId,
-        reference_id: result[0].reference_id,
-        sport: sport,
+        subject_id: result[0].subject_id,
+        topic: topicId,
         season: seasonId,
         json: data
     });
 }
 
-async function createPlayer(playerId: string, sport: Sport, teamId: string, data: Player): Promise<Array<Row>> {
+async function createPlayer(playerId: string, topicId: number, teamId: string, data: Player): Promise<Array<Row>> {
     const sq = Database.instance.sq;
-    const result = await sq.from`choice_reference`.insert({ reference_type: 'sport_player' }).return('reference_id');
+    const result = await sq.from`subject`.insert({ subject_type: 'sport_player' }).return('subject_id');
     return await sq.from`sport_player`.insert({
         id: playerId,
-        reference_id: result[0].reference_id,
-        sport: sport,
+        subject_id: result[0].subject_id,
+        topic: topicId,
         team: teamId,
         json: data
     });
 }
 
-async function createGame(gameId: string, sport: Sport, seasonId: string, data: Game): Promise<Array<Row>> {
+async function createGame(gameId: string, topicId: number, seasonId: string, data: Game): Promise<Array<Row>> {
     const sq = Database.instance.sq;
-    const result = await sq.from`choice_reference`.insert({ reference_type: 'sport_game' }).return('reference_id');
+    const result = await sq.from`subject`.insert({ subject_type: 'sport_game' }).return('subject_id');
     return await sq.from`sport_game`.insert({
         id: gameId,
-        sport: sport,
-        reference_id: result[0].reference_id,
+        topic: topicId,
+        subject_id: result[0].subject_id,
         season: seasonId,
         json: data
     });
@@ -76,6 +77,11 @@ async function createGame(gameId: string, sport: Sport, seasonId: string, data: 
 
 export async function preloadGamesTeamsPlayers(sport: Sport): Promise<void> {
     const api = getApi(sport);
+    const topic = await TopicFactory.loadByName(sport);
+    if (!topic) {
+        console.error('An error occurred when pre loading sport data');
+        return;
+    }
     console.log('Requesting schedule');
     const schedule = await api.getSeasonSchedule<Schedule>();
 
@@ -98,20 +104,21 @@ export async function preloadGamesTeamsPlayers(sport: Sport): Promise<void> {
     try {
         await sq.from`sport_season`.insert({
             id: parser.seasonId(),
-            sport: sport,
+            topic: topic.topicId,
             json: schedule
         });
 
-        await Promise.all(teams.map(t => createTeam(t.id, sport, parser.seasonId(), t)));
+        await Promise.all(teams.map(t => createTeam(t.id, topic.topicId, parser.seasonId(), t)));
 
         const promises = [
-            ...games.map(g => createGame(g.id, sport, parser.seasonId(), g)),
+            ...games.map(g => createGame(g.id, topic.topicId, parser.seasonId(), g)),
             ..._.flatten(rosters.map(r => {
                 const players: Array<Player> = parser.getPlayers(r);
-                return players.map(p => createPlayer(p.id, sport, r.id, p));
+                return players.map(p => createPlayer(p.id, topic.topicId, r.id, p));
             }))
         ];
         await Promise.all(promises);
+        console.log(`${sport} preload complete`);
     } catch (e) {
         console.error('Error occurred when uploading', e.message);
         throw e;

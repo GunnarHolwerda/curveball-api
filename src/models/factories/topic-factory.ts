@@ -33,4 +33,14 @@ export class TopicFactory {
         const result = await sq.from(TOPIC_TABLE_NAME);
         return result.map(r => camelizeKeys(r) as ITopicResponse);
     }
+
+    public static async loadByName(name: string): Promise<ITopicResponse | null> {
+        const sq = Database.instance.sq;
+        const result = await sq.from(TOPIC_TABLE_NAME).where`machine_name = ${name}`;
+
+        if (result.length === 0) {
+            return null;
+        }
+        return camelizeKeys(result[0]) as ITopicResponse;
+    }
 }
