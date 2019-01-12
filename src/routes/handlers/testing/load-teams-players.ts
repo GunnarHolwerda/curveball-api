@@ -41,11 +41,10 @@ function getParser(sport: Sport, schedule: Schedule): ResponseParser<any> {
 
 async function createTeam(teamId: string, topicId: number, seasonId: string, data: Team): Promise<Array<Row>> {
     const sq = Database.instance.sq;
-    const result = await sq.from`subject`.insert({ subject_type: 'sport_team' }).return('subject_id');
+    const result = await sq.from`subject`.insert({ subject_type: 'sport_team', topic: topicId, }).return('subject_id');
     return await sq.from`sport_team`.insert({
         id: teamId,
         subject_id: result[0].subject_id,
-        topic: topicId,
         season: seasonId,
         json: data
     });
@@ -53,11 +52,10 @@ async function createTeam(teamId: string, topicId: number, seasonId: string, dat
 
 async function createPlayer(playerId: string, topicId: number, teamId: string, data: Player): Promise<Array<Row>> {
     const sq = Database.instance.sq;
-    const result = await sq.from`subject`.insert({ subject_type: 'sport_player' }).return('subject_id');
+    const result = await sq.from`subject`.insert({ subject_type: 'sport_player', topic: topicId }).return('subject_id');
     return await sq.from`sport_player`.insert({
         id: playerId,
         subject_id: result[0].subject_id,
-        topic: topicId,
         team: teamId,
         json: data
     });
@@ -65,10 +63,9 @@ async function createPlayer(playerId: string, topicId: number, teamId: string, d
 
 async function createGame(gameId: string, topicId: number, seasonId: string, data: Game): Promise<Array<Row>> {
     const sq = Database.instance.sq;
-    const result = await sq.from`subject`.insert({ subject_type: 'sport_game' }).return('subject_id');
+    const result = await sq.from`subject`.insert({ subject_type: 'sport_game', topic: topicId }).return('subject_id');
     return await sq.from`sport_game`.insert({
         id: gameId,
-        topic: topicId,
         subject_id: result[0].subject_id,
         season: seasonId,
         json: data
@@ -102,9 +99,10 @@ export async function preloadGamesTeamsPlayers(sport: Sport): Promise<void> {
     const sq = Database.instance.sq;
 
     try {
+        const result = await sq.from`subject`.insert({ subject_type: 'sport_season', topic: topic.topicId }).return('subject_id');
         await sq.from`sport_season`.insert({
+            subject_id: result[0].subject_id,
             id: parser.seasonId(),
-            topic: topic.topicId,
             json: schedule
         });
 

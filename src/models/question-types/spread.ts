@@ -4,6 +4,10 @@ import { QuestionType } from '../entities/question-type';
 
 export class SpreadQuestionType extends QuestionType implements SubjectSupplier {
 
+    isSubjectSupplier(): boolean {
+        return true;
+    }
+
     questionSubjectType(): SubjectType | false {
         return SubjectType.sportGame;
     }

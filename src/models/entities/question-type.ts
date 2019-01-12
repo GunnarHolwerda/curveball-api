@@ -43,4 +43,6 @@ export abstract class QuestionType {
             ...this.properties
         });
     }
+
+    public abstract isSubjectSupplier(): boolean;
 }
