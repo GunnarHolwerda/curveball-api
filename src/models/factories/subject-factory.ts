@@ -29,7 +29,19 @@ export class SubjectFactory {
         const result = await this.joinSubjectTable(sq.from({ s: SUBJECT_TABLE_NAME }), subjectType)
             .where`s.subject_id = ${subjectId}`.and`s.subject_type = ${subjectType}`;
 
-        if (result.length > 0) {
+        if (result.length === 0) {
+            return null;
+        }
+
+        return await this.instantiateInstance(cleanObject<ISubject>(result[0]));
+    }
+
+    public static async loadByExternalId(externalId: string, subjectType: SubjectType): Promise<Subject<ISubject> | null> {
+        const sq = Database.instance.sq;
+        const result = await this.joinSubjectTable(sq.from({ s: SUBJECT_TABLE_NAME }), subjectType)
+            .where`t.id = ${externalId}`;
+
+        if (result.length === 0) {
             return null;
         }
 

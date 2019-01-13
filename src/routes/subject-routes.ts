@@ -10,6 +10,7 @@ export function subjectRoutes(server: hapi.Server, _: IoServer): void {
             path: '/subjects',
             method: 'get',
             options: {
+                auth: 'internalJwt',
                 validate: { query: getSubjectsQuerySchema },
                 description: 'Retrieve subjects',
                 notes: 'Retrieve subjects based on a question type and topic'

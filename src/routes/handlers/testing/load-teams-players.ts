@@ -85,8 +85,10 @@ export async function preloadGamesTeamsPlayers(sport: Sport): Promise<void> {
     const parser = getParser(sport, schedule);
     console.log('Parsing teams');
     const teams: Array<Team> = parser.getTeams();
+    console.log(`Found ${teams.length} teams`);
     console.log('Parsing games');
     const games: Array<Game> = parser.getGames();
+    console.log(`Found ${games.length} games`);
 
     const rosters: Array<Roster> = [];
     for (const team of teams) {

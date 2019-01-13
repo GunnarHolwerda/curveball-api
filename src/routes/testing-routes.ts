@@ -41,12 +41,12 @@ export function testingRoutes(server: hapi.Server, _: IoServer): void {
                 }
             }
         },
-        handler: (event) => {
+        handler: async (event) => {
             const { sport } = event.payload as { sport: Sport };
             // TODO: Validate that this is a valid sport
-            preloadGamesTeamsPlayers(sport);
+            await preloadGamesTeamsPlayers(sport);
             return {
-                message: 'Job has been kicked off, check the logs for results'
+                message: `${sport} teams have been preloaded`
             };
         }
     });
