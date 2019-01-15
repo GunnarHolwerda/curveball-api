@@ -3,9 +3,12 @@ import { NFLResponse } from '../../interfaces/sports-api-responses/nfl';
 import { SubjectTableResponse } from '../../interfaces/subject-table-response';
 import { TopicFactory } from '../factories/topic-factory';
 import { camelizeKeys } from '../../util/camelize-keys';
+import { Choice } from '../entities/question-choice';
+import { SubjectFactory } from '../factories/subject-factory';
+import { SubjectType } from '../../types/subject-type';
 
 export interface INFLTeam extends ISubject {
-    id: number;
+    external_id: string;
     topic: number;
     season: string;
     created: Date;
@@ -29,16 +32,26 @@ export class NFLTeam extends Subject<INFLTeam> {
     }
 
     async toResponseObject(): Promise<NFLTeamResponse> {
-        const { id, topic: topicId, season, created, updated } = this.properties;
+        const { external_id, topic: topicId, season, created, updated } = this.properties;
         const topic = await TopicFactory.load(topicId);
         const { name, alias } = this.properties.json;
         return camelizeKeys({
             ... (await super.toResponseObject()),
-            id, topic, season, created, updated,
+            external_id, topic, season, created, updated,
             team: {
                 name,
                 abbreviation: alias
             }
         });
+    }
+
+    async getRelatedChoices(): Promise<Array<Choice>> {
+        throw new Error('Method not implemented.');
+    }
+
+    async getRelatedSubjects(): Promise<Subject<ISubject>[]> {
+        return SubjectFactory.loadAllByTypeReferencingExternalId(
+            this.properties.external_id, SubjectType.sportPlayer
+        );
     }
 }

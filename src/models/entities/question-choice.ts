@@ -6,6 +6,8 @@ import { omit } from '../../util/omit';
 import { camelizeKeys } from '../../util/camelize-keys';
 import { SubjectFactory } from '../factories/subject-factory';
 import { ISubject, Subject } from './subject';
+import { QuestionFactory } from '../factories/question-factory';
+import { Question } from './question';
 
 export interface IChoice {
     choice_id: string;
@@ -13,6 +15,7 @@ export interface IChoice {
     text: string;
     is_answer: boolean;
     subject_id: number | null;
+    score: number | null;
 }
 
 export interface IChoiceResponse {
@@ -63,5 +66,20 @@ export class Choice implements Analyticize {
             text: this.properties.text,
             is_answer: this.properties.is_answer
         };
+    }
+
+    public get question(): Promise<Question> {
+        return (async () => {
+            return (await QuestionFactory.load(this.properties.question_id))!;
+        })();
+    }
+
+
+    public async setScoreForSubject(subject: Subject<ISubject>): Promise<void> {
+        const question = await this.question;
+        const scorer = question.getScorer();
+        const score = scorer.calculateScoreForSubject(subject);
+        this.properties.score = score;
+        await this.save();
     }
 }

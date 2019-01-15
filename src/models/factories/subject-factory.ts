@@ -55,6 +55,17 @@ export class SubjectFactory {
         return await this.instantiateInstance(cleanObject<ISubject>(result[0]));
     }
 
+    public static async loadAllByTypeReferencingExternalId(
+        externalId: string,
+        subjectType: SubjectType
+    ): Promise<Array<Subject<ISubject>>> {
+        const sq = Database.instance.sq;
+        const result = await this.joinSubjectTable(sq.from({ s: SUBJECT_TABLE_NAME }), subjectType)
+            .where`t.id = ${externalId}`;
+
+        return Promise.all(result.map(r => this.instantiateInstance(cleanObject<ISubject>(r)).then(s => s!)));
+    }
+
     public static async loadByExternalId(externalId: string, subjectType: SubjectType): Promise<Subject<ISubject> | null> {
         const sq = Database.instance.sq;
         const result = await this.joinSubjectTable(sq.from({ s: SUBJECT_TABLE_NAME }), subjectType)

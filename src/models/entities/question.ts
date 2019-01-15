@@ -156,4 +156,9 @@ export class Question implements Analyticize {
             quiz_id: this.properties.quiz_id
         };
     }
+
+    public getScorer(): any {
+        // Factory create a scorer based on topic and type of question
+        return null;
+    }
 }
