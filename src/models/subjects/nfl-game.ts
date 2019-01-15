@@ -83,10 +83,9 @@ export class NFLGame extends Subject<INFLGame> implements SportGame {
     }
 
     isFinished(): boolean {
-        if (this.properties.json.status) {
-            return this.properties.json.status === 'closed';
-        }
-        return false;
+        const { status: gameStatus } = this.properties.json;
+        const boxScoreStatus = this.properties.statistics ? this.properties.statistics.status : undefined;
+        return (gameStatus === 'closed') || (boxScoreStatus === 'closed');
     }
 
     async updateStatistics(): Promise<void> {

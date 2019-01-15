@@ -43,9 +43,9 @@ async function createTeam(teamId: string, topicId: number, seasonId: string, dat
     const sq = Database.instance.sq;
     const result = await sq.from`subject`.insert({ subject_type: 'sport_team', topic: topicId, }).return('subject_id');
     return await sq.from`sport_team`.insert({
-        id: teamId,
+        external_id: teamId,
         subject_id: result[0].subject_id,
-        season: seasonId,
+        parent_external_id: seasonId,
         json: data
     });
 }
@@ -54,9 +54,9 @@ async function createPlayer(playerId: string, topicId: number, teamId: string, d
     const sq = Database.instance.sq;
     const result = await sq.from`subject`.insert({ subject_type: 'sport_player', topic: topicId }).return('subject_id');
     return await sq.from`sport_player`.insert({
-        id: playerId,
+        external_id: playerId,
         subject_id: result[0].subject_id,
-        team: teamId,
+        parent_external_id: teamId,
         json: data
     });
 }
@@ -65,9 +65,9 @@ async function createGame(gameId: string, topicId: number, seasonId: string, dat
     const sq = Database.instance.sq;
     const result = await sq.from`subject`.insert({ subject_type: 'sport_game', topic: topicId }).return('subject_id');
     return await sq.from`sport_game`.insert({
-        id: gameId,
+        external_id: gameId,
         subject_id: result[0].subject_id,
-        season: seasonId,
+        parent_external_id: seasonId,
         json: data
     });
 }
@@ -92,7 +92,7 @@ export async function preloadGamesTeamsPlayers(sport: Sport): Promise<void> {
 
     const rosters: Array<Roster> = [];
     for (const team of teams) {
-        console.log('Requesting ', team.name);
+        console.log(`Requesting ${(rosters.length + 1)}/${teams.length}:`, team.name);
         rosters.push(await api.getTeamRoster<Roster>(team.id));
     }
 
@@ -104,7 +104,7 @@ export async function preloadGamesTeamsPlayers(sport: Sport): Promise<void> {
         const result = await sq.from`subject`.insert({ subject_type: 'sport_season', topic: topic.topicId }).return('subject_id');
         await sq.from`sport_season`.insert({
             subject_id: result[0].subject_id,
-            id: parser.seasonId(),
+            external_id: parser.seasonId(),
             json: schedule
         });
 
