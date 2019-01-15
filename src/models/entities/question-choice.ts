@@ -4,12 +4,15 @@ import { Analyticize, AnalyticsProperties } from '../../interfaces/analyticize';
 import { snakifyKeys } from '../../util/snakify-keys';
 import { omit } from '../../util/omit';
 import { camelizeKeys } from '../../util/camelize-keys';
+import { SubjectFactory } from '../factories/subject-factory';
+import { ISubject, Subject } from './subject';
 
 export interface IChoice {
     choice_id: string;
     question_id: string;
     text: string;
     is_answer: boolean;
+    subject_id: number | null;
 }
 
 export interface IChoiceResponse {
@@ -40,9 +43,16 @@ export class Choice implements Analyticize {
         await sq.from(CHOICES_TABLE_NAME).set({ ...omit(this.properties, ['choice_id']) }).where`choice_id = ${this._choice.choice_id}`;
     }
 
-    public toResponseObject(): Promise<IChoiceResponse> {
+    public async toResponseObject(): Promise<IChoiceResponse> {
+        const { subject_id } = this.properties;
+        let subject: Subject<ISubject> | null = null;
+        if (subject_id) {
+            subject = await SubjectFactory.loadById(subject_id);
+        }
+
         const response = {
-            ...omit(this.properties, ['is_answer']),
+            ...omit(this.properties, ['is_answer', 'subject_id']),
+            subject
         };
         return camelizeKeys(response);
     }

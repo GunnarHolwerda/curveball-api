@@ -10,6 +10,7 @@ import { omit } from '../../util/omit';
 import { IQuestionTypeResponse } from './question-type';
 import { QuestionTypeFactory } from '../factories/question-type-factory';
 import { TopicFactory, ITopicResponse } from '../factories/topic-factory';
+import { SubjectFactory } from '../factories/subject-factory';
 
 export interface IQuestion {
     question_id: string;
@@ -18,7 +19,7 @@ export interface IQuestion {
     question_num: number;
     topic: number;
     type_id: number;
-    subject_id: number;
+    subject_id: number | null;
     ticker: string;
     sent: Date | null;
     expired: Date | null;
@@ -107,7 +108,8 @@ export class Question implements Analyticize {
 
     public async toResponseObject(withChoices: boolean = false): Promise<IQuestionResponse> {
         const {
-            question_id, created, question, question_num, topic, type_id, sent, expired, quiz_id, ticker
+            question_id, created, question, question_num, topic, type_id, sent, expired, quiz_id, ticker,
+            subject_id
         } = this.properties;
 
         let choiceResponses: Array<IChoiceResponse> | undefined;
@@ -116,8 +118,13 @@ export class Question implements Analyticize {
             choiceResponses = await Promise.all(choices.map(c => c.toResponseObject()));
         }
 
-        const typeResponse = await (await QuestionTypeFactory.load(type_id))!.toResponseObject();
-        const topicResponse = await (await TopicFactory.load(topic))!;
+        const [typeResponse, topicResponse, subjectResponse] = await Promise.all([
+            QuestionTypeFactory.load(type_id).then(r => r!.toResponseObject()),
+            TopicFactory.load(topic),
+            subject_id ? SubjectFactory.loadById(subject_id).then(s => {
+                return s ? s.toResponseObject() : null;
+            }) : Promise.resolve(null)
+        ]);
 
         return camelizeKeys({
             created,
@@ -130,6 +137,7 @@ export class Question implements Analyticize {
             questionNum: question_num,
             type: typeResponse,
             topic: topicResponse,
+            subject: subjectResponse,
             choices: choiceResponses
         });
     }

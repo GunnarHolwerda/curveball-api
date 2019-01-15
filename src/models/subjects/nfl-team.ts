@@ -33,6 +33,7 @@ export class NFLTeam extends Subject<INFLTeam> {
         const topic = await TopicFactory.load(topicId);
         const { name, alias } = this.properties.json;
         return camelizeKeys({
+            ... (await super.toResponseObject()),
             id, topic, season, created, updated,
             team: {
                 name,

@@ -24,6 +24,25 @@ const SubjectTypeTableMap: { [type in SubjectType]: string } = {
 };
 
 export class SubjectFactory {
+
+    public static async loadById(subjectId: number): Promise<Subject<ISubject> | null> {
+        const sq = Database.instance.sq;
+        const subjects = await sq.from(SUBJECT_TABLE_NAME).where`subject_id = ${subjectId}`;
+        if (subjects.length === 0) {
+            return null;
+        }
+        const subject = subjects.pop()!;
+        const subjectType = (subject as ISubject).subject_type;
+        const result = await this.joinSubjectTable(sq.from({ s: SUBJECT_TABLE_NAME }), subjectType)
+            .where`s.subject_id = ${subjectId}`.and`s.subject_type = ${subjectType}`;
+
+        if (result.length === 0) {
+            return null;
+        }
+
+        return await this.instantiateInstance(cleanObject<ISubject>(result[0]));
+    }
+
     public static async load(subjectId: number, subjectType: SubjectType): Promise<Subject<ISubject> | null> {
         const sq = Database.instance.sq;
         const result = await this.joinSubjectTable(sq.from({ s: SUBJECT_TABLE_NAME }), subjectType)

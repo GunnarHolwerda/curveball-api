@@ -1,9 +1,10 @@
 import { Subjectable } from '../../interfaces/subject';
 import { camelizeKeys } from '../../util/camelize-keys';
+import { SubjectType } from '../../types/subject-type';
 
 export interface ISubject {
     subject_id: number;
-    subject_type: string;
+    subject_type: SubjectType;
     topic: number;
 }
 
@@ -29,6 +30,7 @@ export abstract class Subject<T extends ISubject> implements Subjectable {
     }
 
     async toResponseObject(): Promise<any> {
-        return camelizeKeys({ ...this.properties });
+        const { subject_id, subject_type, topic } = this.properties;
+        return camelizeKeys({ subject_id, subject_type, topic });
     }
 }

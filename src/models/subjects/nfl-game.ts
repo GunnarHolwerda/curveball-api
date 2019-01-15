@@ -41,11 +41,13 @@ export class NFLGame extends Subject<INFLGame> {
             SubjectFactory.loadByExternalId(away.id, SubjectType.sportTeam)
         ]);
         return camelizeKeys({
+            ... (await super.toResponseObject()),
             id, topic, season, created, updated,
             game: {
                 home: await homeTeam!.toResponseObject(),
                 away: await awayTeam!.toResponseObject(),
                 date: this.properties.json.scheduled,
+                status: this.properties.json.status
             }
         });
     }
