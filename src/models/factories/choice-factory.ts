@@ -16,4 +16,10 @@ export class ChoiceFactory {
         const result = await sq.from(CHOICES_TABLE_NAME).where`question_id = ${questionId}`;
         return result.map(r => new Choice(r as IChoice));
     }
+
+    public static async loadAllBySubjectId(subjectId: number): Promise<Array<Choice>> {
+        const sq = Database.instance.sq;
+        const result = await sq.from(CHOICES_TABLE_NAME).where`subject_id = ${subjectId}`;
+        return result.map(r => new Choice(r as IChoice));
+    }
 }

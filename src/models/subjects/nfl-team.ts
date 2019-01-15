@@ -3,7 +3,6 @@ import { NFLResponse } from '../../interfaces/sports-api-responses/nfl';
 import { SubjectTableResponse } from '../../interfaces/subject-table-response';
 import { TopicFactory } from '../factories/topic-factory';
 import { camelizeKeys } from '../../util/camelize-keys';
-import { Choice } from '../entities/question-choice';
 import { SubjectFactory } from '../factories/subject-factory';
 import { SubjectType } from '../../types/subject-type';
 
@@ -45,12 +44,8 @@ export class NFLTeam extends Subject<INFLTeam> {
         });
     }
 
-    async getRelatedChoices(): Promise<Array<Choice>> {
-        throw new Error('Method not implemented.');
-    }
-
     async getRelatedSubjects(): Promise<Subject<ISubject>[]> {
-        return SubjectFactory.loadAllByTypeReferencingExternalId(
+        return SubjectFactory.loadAllExternallyRelatedSubjects(
             this.properties.external_id, SubjectType.sportPlayer
         );
     }

@@ -16,7 +16,7 @@ import { NFLPlayer, INFLPlayer } from '../subjects/nfl-player';
 import { NFLTeam, INFLTeam } from '../subjects/nfl-team';
 import { SQF } from 'sqorn-pg/types/sq';
 
-const SubjectTypeTableMap: { [type in SubjectType]: string } = {
+export const SubjectTypeTableMap: { [type in SubjectType]: string } = {
     [SubjectType.sportGame]: SPORT_GAME_TABLE_NAME,
     [SubjectType.sportSeason]: SPORT_SEASON_TABLE_NAME,
     [SubjectType.sportPlayer]: SPORT_PLAYER_TABLE_NAME,
@@ -55,13 +55,13 @@ export class SubjectFactory {
         return await this.instantiateInstance(cleanObject<ISubject>(result[0]));
     }
 
-    public static async loadAllByTypeReferencingExternalId(
-        externalId: string,
+    public static async loadAllExternallyRelatedSubjects(
+        parentExternalId: string,
         subjectType: SubjectType
     ): Promise<Array<Subject<ISubject>>> {
         const sq = Database.instance.sq;
         const result = await this.joinSubjectTable(sq.from({ s: SUBJECT_TABLE_NAME }), subjectType)
-            .where`t.id = ${externalId}`;
+            .where`t.parent_external_id = ${parentExternalId}`;
 
         return Promise.all(result.map(r => this.instantiateInstance(cleanObject<ISubject>(r)).then(s => s!)));
     }
@@ -69,7 +69,7 @@ export class SubjectFactory {
     public static async loadByExternalId(externalId: string, subjectType: SubjectType): Promise<Subject<ISubject> | null> {
         const sq = Database.instance.sq;
         const result = await this.joinSubjectTable(sq.from({ s: SUBJECT_TABLE_NAME }), subjectType)
-            .where`t.id = ${externalId}`;
+            .where`t.external_id = ${externalId}`;
 
         if (result.length === 0) {
             return null;

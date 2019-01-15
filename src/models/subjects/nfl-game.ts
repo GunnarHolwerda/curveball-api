@@ -5,8 +5,9 @@ import { SubjectFactory } from '../factories/subject-factory';
 import { SubjectType } from '../../types/subject-type';
 import { SubjectTableResponse } from '../../interfaces/subject-table-response';
 import { NFLTeamResponse, NFLTeam } from './nfl-team';
-import { Choice } from '../entities/question-choice';
 import { NFLPlayer } from './nfl-player';
+import { SportGame } from '../../interfaces/sport-game';
+import { NFLSportsApi } from '../data-loader/nfl-sports-api';
 
 export interface INFLGame extends ISubject {
     external_id: string;
@@ -16,6 +17,7 @@ export interface INFLGame extends ISubject {
     updated: Date;
     deleted: boolean;
     json: NFLResponse.Game;
+    statistics: NFLResponse.GameStatistics;
 }
 
 export interface NFLGameResponse {
@@ -28,8 +30,7 @@ export interface INFLGameResponse extends SubjectTableResponse {
     game: NFLGameResponse;
 }
 
-export class NFLGame extends Subject<INFLGame> {
-
+export class NFLGame extends Subject<INFLGame> implements SportGame {
     constructor(properties: INFLGame) {
         super(properties);
     }
@@ -58,12 +59,7 @@ export class NFLGame extends Subject<INFLGame> {
 
     async toResponseObject(): Promise<INFLGameResponse> {
         const { external_id, topic, parent_external_id, created, updated } = this.properties;
-        // TODO: Add index to external id on subject tables
-        const { home, away } = this.properties.json;
-        const [homeTeam, awayTeam] = await Promise.all([
-            SubjectFactory.loadByExternalId(home.id, SubjectType.sportTeam),
-            SubjectFactory.loadByExternalId(away.id, SubjectType.sportTeam)
-        ]);
+        const [homeTeam, awayTeam] = await Promise.all([this.homeTeam, this.awayTeam]);
         return camelizeKeys({
             ... (await super.toResponseObject()),
             external_id, topic, created, updated,
@@ -77,10 +73,6 @@ export class NFLGame extends Subject<INFLGame> {
         });
     }
 
-    async getRelatedChoices(): Promise<Array<Choice>> {
-        throw new Error('Method not implemented.');
-    }
-
     async getRelatedSubjects(): Promise<Array<Subject<ISubject>>> {
         const teams = await Promise.all([this.homeTeam, this.awayTeam]);
         const players = await this.players;
@@ -88,5 +80,19 @@ export class NFLGame extends Subject<INFLGame> {
             ...teams,
             ...players
         ];
+    }
+
+    isFinished(): boolean {
+        if (this.properties.json.status) {
+            return this.properties.json.status === 'closed';
+        }
+        return false;
+    }
+
+    async updateStatistics(): Promise<void> {
+        const nflSportsApi = new NFLSportsApi();
+        const boxscore = await nflSportsApi.getGameStats(this.properties.external_id);
+        this.properties.statistics = boxscore;
+        await this.save();
     }
 }

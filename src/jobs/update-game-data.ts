@@ -1,11 +1,14 @@
 import { Row } from 'sqorn-pg/types/methods';
 import { Subject, ISubject } from '../models/entities/subject';
+import { SportGame } from '../interfaces/sport-game';
+
+type SportGameSubject = Subject<ISubject> & SportGame;
 
 function loadAllGamesToday(): Array<Row> {
     return [];
 }
 
-function transformToSubject(subject: Array<Row>): Array<any> {
+function transformToSubject(subject: Array<Row>): Array<SportGameSubject> {
     console.log(subject);
     return [];
 }
@@ -22,7 +25,7 @@ async function setScoresForSubjects(subjects: Array<Subject<ISubject>>): Promise
     }
 }
 
-async function updateScoresForGame(game: Subject<ISubject>): Promise<void> {
+async function updateScoresForGame(game: SportGameSubject): Promise<void> {
     await Promise.all([
         setScoresForSubjects([game]),
         game.getRelatedSubjects().then(subjects => setScoresForSubjects(subjects))
@@ -43,7 +46,7 @@ async function updateGameData(): Promise<void> {
         if (game.isFinished()) {
             continue;
         }
-        await game.updateDetails();
+        await game.updateStatistics();
         await updateScoresForGame(game);
     }
 }
