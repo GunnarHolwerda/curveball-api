@@ -78,7 +78,7 @@ export class Choice implements Analyticize {
     public async setScoreForSubject(subject: Subject<ISubject>): Promise<void> {
         const question = await this.question;
         const scorer = question.getScorer();
-        const score = scorer.calculateScoreForSubject(subject);
+        const score = scorer.calculateScoreForSubject(subject, this);
         this.properties.score = score;
         await this.save();
     }

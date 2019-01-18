@@ -2,6 +2,7 @@ import { Database } from '../database';
 import { QuestionTypeFactory } from '../factories/question-type-factory';
 import { camelizeKeys } from '../../util/camelize-keys';
 import { QuestionTypeMachineNames } from '../../types/question-type-machine-names';
+import { Scorer } from '../scorers/scorer';
 
 export enum KnownQuestionTypes {
     manual = 1
@@ -45,4 +46,5 @@ export abstract class QuestionType {
     }
 
     public abstract isSubjectSupplier(): boolean;
+    public abstract getScorerForQuestion(): Scorer | null;
 }

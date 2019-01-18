@@ -1,9 +1,9 @@
 import { SubjectSupplier } from '../../interfaces/subject-supplier';
 import { SubjectType } from '../../types/subject-type';
 import { QuestionType } from '../entities/question-type';
+import { Scorer } from '../scorers/scorer';
 
 export class SpreadQuestionType extends QuestionType implements SubjectSupplier {
-
     isSubjectSupplier(): boolean {
         return true;
     }
@@ -14,5 +14,9 @@ export class SpreadQuestionType extends QuestionType implements SubjectSupplier 
 
     choiceSubjectType(): SubjectType | false {
         return SubjectType.sportTeam;
+    }
+
+    public getScorerForQuestion(): Scorer | null {
+        return null;
     }
 }

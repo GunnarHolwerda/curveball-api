@@ -19,7 +19,7 @@ export const SPORT_PLAYER_TABLE_NAME = 'sport_player';
 export const SPORT_TEAM_TABLE_NAME = 'sport_team';
 
 export abstract class Subject<T extends ISubject> {
-    constructor(protected properties: T) { }
+    constructor(public properties: T) { }
 
     async toResponseObject(): Promise<any> {
         const { subject_id, subject_type, topic } = this.properties;
@@ -39,7 +39,7 @@ export abstract class Subject<T extends ISubject> {
         await sq.from(this.tableName)
             .set({ ...omit(this.properties, ['subject_id', 'subject_type', 'topic']) })
             .where`subject_id = ${this.properties.subject_id}`;
-        this.properties = { ...this.properties };
+        this.properties = { ...(this.properties as object) } as T;
     }
 
     abstract getRelatedSubjects(): Promise<Array<Subject<ISubject>>>;
