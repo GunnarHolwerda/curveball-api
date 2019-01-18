@@ -11,6 +11,9 @@ import { IQuestionTypeResponse } from './question-type';
 import { QuestionTypeFactory } from '../factories/question-type-factory';
 import { TopicFactory, ITopicResponse } from '../factories/topic-factory';
 import { SubjectFactory } from '../factories/subject-factory';
+import { Scorer } from '../scorers/scorer';
+import { QuestionTypeMachineNames } from '../../types/question-type-machine-names';
+import { SpreadScorer } from '../scorers/spread-scorer';
 
 export interface IQuestion {
     question_id: string;
@@ -157,8 +160,20 @@ export class Question implements Analyticize {
         };
     }
 
-    public getScorer(): any {
-        // Factory create a scorer based on topic and type of question
+    public async getScorer(): Promise<Scorer | null> {
+        const [type, topic] = await Promise.all([
+            QuestionTypeFactory.load(this.properties.type_id),
+            TopicFactory.load(this.properties.topic)
+        ]);
+        if (type === null || topic === null) {
+            throw new Error('Question was associated with nonexistant type or topic');
+        }
+
+        if (type.properties.machine_name === QuestionTypeMachineNames.spread) {
+            if (topic.machineName === 'nfl') {
+                return new SpreadScorer(this);
+            }
+        }
         return null;
     }
 }

@@ -88,6 +88,13 @@ export class NFLGame extends Subject<INFLGame> implements SportGame {
         return (gameStatus === 'closed') || (boxScoreStatus === 'closed');
     }
 
+    getHomeTeam(): { id: string; points: number; } {
+        return this.properties.statistics.summary.home;
+    }
+    getAwayTeam(): { id: string; points: number; } {
+        return this.properties.statistics.summary.away;
+    }
+
     async updateStatistics(): Promise<void> {
         const nflSportsApi = new NFLSportsApi();
         const boxscore = await nflSportsApi.getGameStats(this.properties.external_id);
