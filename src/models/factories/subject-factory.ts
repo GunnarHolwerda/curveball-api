@@ -15,6 +15,9 @@ import { cleanObject } from '../../util/clean-object';
 import { NFLPlayer, INFLPlayer } from '../subjects/nfl-player';
 import { NFLTeam, INFLTeam } from '../subjects/nfl-team';
 import { SQF } from 'sqorn-pg/types/sq';
+import { NBATeam, INBATeam } from '../subjects/nba-team';
+import { INBAGame, NBAGame } from '../subjects/nba-game';
+import { INBAPlayer, NBAPlayer } from '../subjects/nba-player';
 
 export const SubjectTypeTableMap: { [type in SubjectType]: string } = {
     [SubjectType.sportGame]: SPORT_GAME_TABLE_NAME,
@@ -63,7 +66,7 @@ export class SubjectFactory {
         const result = await this.joinSubjectTable(sq.from({ s: SUBJECT_TABLE_NAME }), subjectType)
             .where`t.parent_external_id = ${parentExternalId}`;
 
-        return Promise.all(result.map(r => this.instantiateInstance(cleanObject<ISubject>(r)).then(s => s!)));
+        return Promise.all(result.map(r => this.instantiateInstance(r as ISubject).then(s => s!)));
     }
 
     public static async loadByExternalId(externalId: string, subjectType: SubjectType): Promise<Subject<ISubject> | null> {
@@ -75,7 +78,7 @@ export class SubjectFactory {
             return null;
         }
 
-        return await this.instantiateInstance(cleanObject<ISubject>(result[0]));
+        return await this.instantiateInstance(result[0] as ISubject);
     }
 
     public static async loadAllByTypeAndTopic(subjectType: SubjectType, topicId: number): Promise<Array<Subject<ISubject>>> {
@@ -84,7 +87,24 @@ export class SubjectFactory {
             .where`s.subject_type = ${subjectType}`.and`s.topic = ${topicId}`;
 
         // TODO: Improve performance by caching topics in redis
-        return await Promise.all(result.map(r => this.instantiateInstance(cleanObject<ISubject>(r))));
+        return await Promise.all(result.map(r => this.instantiateInstance(r as ISubject)));
+    }
+
+    public static async loadAllSportsGamesBetweenDate(startDate: Date, endDate: Date): Promise<Array<Subject<ISubject>>> {
+        const startDateISO = startDate.toISOString();
+        const endDateISO = endDate.toISOString();
+        const sq = Database.instance.sq;
+        const query = this.joinSubjectTable(sq.from({ s: SUBJECT_TABLE_NAME }), SubjectType.sportGame)
+            .where(sq.raw(
+                `(json->>'scheduled')::timestamp with time zone >= TO_TIMESTAMP('${startDateISO}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`
+            ))
+            .and(
+                sq.raw(`(json->>'scheduled')::timestamp with time zone < TO_TIMESTAMP('${endDateISO}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`)
+            ).and`s.subject_id = ${3400}`;
+        console.log(query.unparameterized);
+        const result = await query;
+
+        return await Promise.all(result.map(r => this.instantiateInstance(r as ISubject)));
     }
 
     private static joinSubjectTable(query: SQF, type: SubjectType): SQF {
@@ -96,8 +116,23 @@ export class SubjectFactory {
         switch (topic.machineName) {
             case 'nfl':
                 return this.nflFactory(sub);
+            case 'nba':
+                return this.nbaFactory(sub);
             default:
-                throw new Error('subject is not associated with a known topic');
+                throw new Error(`subject is not associated with a known topic ${sub.toString()}`);
+        }
+    }
+
+    private static nbaFactory(sub: ISubject): Subject<ISubject> {
+        switch (sub.subject_type) {
+            case SubjectType.sportGame:
+                return new NBAGame(sub as INBAGame);
+            case SubjectType.sportPlayer:
+                return new NBAPlayer(sub as INBAPlayer);
+            case SubjectType.sportTeam:
+                return new NBATeam(sub as INBATeam);
+            default:
+                throw new Error('Unsupported NBA subject type ' + sub.subject_type);
         }
     }
 

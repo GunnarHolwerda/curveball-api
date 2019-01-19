@@ -1,16 +1,17 @@
-import { Row } from 'sqorn-pg/types/methods';
 import { Subject, ISubject } from '../models/entities/subject';
 import { SportGame } from '../interfaces/sport-game';
+import { Database } from '../models/database';
+import { SubjectFactory } from '../models/factories/subject-factory';
 
 type SportGameSubject = Subject<ISubject> & SportGame;
 
-function loadAllGamesToday(): Array<Row> {
-    return [];
-}
+function loadAllGamesToday(): Promise<Array<SportGameSubject>> {
+    const startDate = new Date();
+    startDate.setTime(0);
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 1);
 
-function transformToSubject(subject: Array<Row>): Array<SportGameSubject> {
-    console.log(subject);
-    return [];
+    return SubjectFactory.loadAllSportsGamesBetweenDate(startDate, endDate) as Promise<Array<SportGameSubject>>;
 }
 
 async function setScoresForSubjects(subjects: Array<Subject<ISubject>>): Promise<void> {
@@ -34,25 +35,35 @@ async function updateScoresForGame(game: SportGameSubject): Promise<void> {
 
 async function updateGameData(): Promise<void> {
     // Load all games that are going on today
-    const subjects = await loadAllGamesToday();
-    if (subjects.length === 0) {
+    const games = await loadAllGamesToday();
+    if (games.length === 0) {
+        console.log('No games today');
         return;
     }
 
-    // Turn them into game objects
-    const games = await transformToSubject(subjects);
-
+    let skippedGames = 0;
+    let counter = 0;
     for (const game of games) {
+        console.log(`Processing game ${counter + skippedGames + 1}/${games.length}`);
         if (game.isFinished()) {
+            console.log('Skipping game');
+            skippedGames++;
             continue;
         }
-        await game.updateStatistics();
+        console.log('Updating game');
+        // await game.updateStatistics();
+        console.log('Updating scores');
         await updateScoresForGame(game);
+        counter++;
     }
+    console.log(`Skipped ${skippedGames}/${games.length} games`);
 }
-
-updateGameData().then(() => {
-    console.log('success!');
-}).catch((err) => {
-    console.error(err);
-});
+Database.instance.connect()
+    .then(() => updateGameData())
+    .then(() => {
+        console.log('success!');
+        process.exit(0);
+    }).catch((err) => {
+        console.error('An error occurred', err);
+        process.exit(1);
+    });

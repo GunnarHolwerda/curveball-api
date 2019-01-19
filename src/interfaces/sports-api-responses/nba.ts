@@ -331,7 +331,7 @@ export namespace NBAResponse {
         fouled_out?: boolean;
     }
 
-    export interface Team {
+    export interface TeamStatistics {
         name: string;
         alias: string;
         market: string;
@@ -371,8 +371,8 @@ export namespace NBAResponse {
         reference: string;
         entry_mode: string;
         venue: Venue;
-        home: Team;
-        away: Team;
+        home: TeamStatistics;
+        away: TeamStatistics;
         officials: Official[];
     }
 }

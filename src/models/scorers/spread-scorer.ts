@@ -1,20 +1,14 @@
 import { Scorer } from './scorer';
 import { Choice } from '../entities/question-choice';
-import { SubjectFactory } from '../factories/subject-factory';
-import { SubjectType } from '../../types/subject-type';
 import { NFLTeam } from '../subjects/nfl-team';
 import { SportGame } from '../../interfaces/sport-game';
-import { Subject, ISubject } from '../entities/subject';
-
-type SportGameSubject = Subject<ISubject> & SportGame;
 
 export class SpreadScorer extends Scorer {
-    async calculateScoreForSubject(subject: SportGameSubject, choice: Choice): Promise<number> {
-        const selectedTeam = await SubjectFactory.load(choice.properties.subject_id!, SubjectType.sportPlayer) as NFLTeam;
-
+    async calculateScoreForSubject(selectedTeam: NFLTeam, choice: Choice): Promise<number> {
         const selectionIsFavored = choice.properties.text.startsWith('-');
-        const home = subject.getHomeTeam();
-        const away = subject.getAwayTeam();
+        const questionSubject: SportGame = (await this.question.subject<SportGame>())!;
+        const home = questionSubject.getHomeTeam();
+        const away = questionSubject.getAwayTeam();
         const hasSelectedHomeTeam = selectedTeam.properties.external_id === home.id;
         let favoredTeamPoints: number, underdogTeamPoints: number;
         if (selectionIsFavored) {

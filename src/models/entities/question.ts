@@ -90,6 +90,13 @@ export class Question implements Analyticize {
         await this.save();
     }
 
+    public async subject<T>(): Promise<T | null> {
+        if (this.properties.subject_id) {
+            return (await SubjectFactory.loadById(this.properties.subject_id)) as T | null;
+        }
+        return null;
+    }
+
     public async results(): Promise<QuestionResults> {
         const results = await AnswerFactory.questionResults(this.properties.question_id);
         const choices = await this.choices();
