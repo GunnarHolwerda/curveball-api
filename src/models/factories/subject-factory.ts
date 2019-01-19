@@ -12,12 +12,16 @@ import {
 import { INFLGame, NFLGame } from '../subjects/nfl-game';
 import { TopicFactory } from './topic-factory';
 import { cleanObject } from '../../util/clean-object';
-import { NFLPlayer, INFLPlayer } from '../subjects/nfl-player';
-import { NFLTeam, INFLTeam } from '../subjects/nfl-team';
+import { NFLPlayer } from '../subjects/nfl-player';
+import { NFLTeam } from '../subjects/nfl-team';
 import { SQF } from 'sqorn-pg/types/sq';
-import { NBATeam, INBATeam } from '../subjects/nba-team';
+import { NBATeam } from '../subjects/nba-team';
 import { INBAGame, NBAGame } from '../subjects/nba-game';
-import { INBAPlayer, NBAPlayer } from '../subjects/nba-player';
+import { NBAPlayer } from '../subjects/nba-player';
+import { ISportPlayer } from '../subjects/sport-player';
+import { NBAResponse } from '../../interfaces/sports-api-responses/nba';
+import { ISportTeam } from '../subjects/sport-team';
+import { NFLResponse } from '../../interfaces/sports-api-responses/nfl';
 
 export const SubjectTypeTableMap: { [type in SubjectType]: string } = {
     [SubjectType.sportGame]: SPORT_GAME_TABLE_NAME,
@@ -128,9 +132,9 @@ export class SubjectFactory {
             case SubjectType.sportGame:
                 return new NBAGame(sub as INBAGame);
             case SubjectType.sportPlayer:
-                return new NBAPlayer(sub as INBAPlayer);
+                return new NBAPlayer(sub as ISportPlayer<NBAResponse.Player>);
             case SubjectType.sportTeam:
-                return new NBATeam(sub as INBATeam);
+                return new NBATeam(sub as ISportTeam<NBAResponse.Team>);
             default:
                 throw new Error('Unsupported NBA subject type ' + sub.subject_type);
         }
@@ -141,9 +145,9 @@ export class SubjectFactory {
             case SubjectType.sportGame:
                 return new NFLGame(sub as INFLGame);
             case SubjectType.sportPlayer:
-                return new NFLPlayer(sub as INFLPlayer);
+                return new NFLPlayer(sub as ISportPlayer<NFLResponse.Player>);
             case SubjectType.sportTeam:
-                return new NFLTeam(sub as INFLTeam);
+                return new NFLTeam(sub as ISportTeam<NFLResponse.Team>);
             default:
                 throw new Error('Unsupported NFL subject type ' + sub.subject_type);
         }

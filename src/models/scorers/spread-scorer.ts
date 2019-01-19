@@ -1,10 +1,10 @@
 import { Scorer } from './scorer';
 import { Choice } from '../entities/question-choice';
-import { NFLTeam } from '../subjects/nfl-team';
 import { SportGame } from '../../interfaces/sport-game';
+import { SportTeam } from '../subjects/sport-team';
 
 export class SpreadScorer extends Scorer {
-    async calculateScoreForSubject(selectedTeam: NFLTeam, choice: Choice): Promise<number> {
+    async calculateScoreForSubject(selectedTeam: SportTeam<object>, choice: Choice): Promise<number> {
         const selectionIsFavored = choice.properties.text.startsWith('-');
         const questionSubject: SportGame = (await this.question.subject<SportGame>())!;
         const home = questionSubject.getHomeTeam();

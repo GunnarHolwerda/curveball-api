@@ -7,8 +7,8 @@ import { ISubject, Subject } from '../entities/subject';
 import { SubjectFactory } from '../factories/subject-factory';
 import { NBAPlayer } from './nba-player';
 import { NBATeam } from './nba-team';
-import { NFLTeamResponse } from './nfl-team';
 import { NBASportsApi } from '../data-loader/nba-sports-api';
+import { ISportTeamResponse } from './sport-team';
 
 export interface INBAGame extends ISubject {
     external_id: string;
@@ -22,8 +22,8 @@ export interface INBAGame extends ISubject {
 }
 
 export interface NBAGameResponse {
-    home: NFLTeamResponse;
-    away: NFLTeamResponse;
+    home: ISportTeamResponse;
+    away: ISportTeamResponse;
     date: string;
 }
 

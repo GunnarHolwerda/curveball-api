@@ -4,10 +4,11 @@ import { camelizeKeys } from '../../util/camelize-keys';
 import { SubjectFactory } from '../factories/subject-factory';
 import { SubjectType } from '../../types/subject-type';
 import { SubjectTableResponse } from '../../interfaces/subject-table-response';
-import { NFLTeamResponse, NFLTeam } from './nfl-team';
+import { NFLTeam } from './nfl-team';
 import { NFLPlayer } from './nfl-player';
 import { SportGame } from '../../interfaces/sport-game';
 import { NFLSportsApi } from '../data-loader/nfl-sports-api';
+import { ISportTeamResponse } from './sport-team';
 
 export interface INFLGame extends ISubject {
     external_id: string;
@@ -21,8 +22,8 @@ export interface INFLGame extends ISubject {
 }
 
 export interface NFLGameResponse {
-    home: NFLTeamResponse;
-    away: NFLTeamResponse;
+    home: ISportTeamResponse;
+    away: ISportTeamResponse;
     date: string;
 }
 
