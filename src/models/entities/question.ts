@@ -14,6 +14,7 @@ import { SubjectFactory } from '../factories/subject-factory';
 import { Scorer } from '../scorers/scorer';
 import { QuestionTypeMachineNames } from '../../types/question-type-machine-names';
 import { SpreadScorer } from '../scorers/spread-scorer';
+import { SportsFantasyScorer } from '../scorers/fantasy-scorer';
 
 export interface IQuestion {
     question_id: string;
@@ -176,11 +177,13 @@ export class Question implements Analyticize {
             throw new Error('Question was associated with nonexistant type or topic');
         }
 
-        if (type.properties.machine_name === QuestionTypeMachineNames.spread) {
-            if (topic.machineName === 'nfl') {
+        switch (type.properties.machine_name) {
+            case QuestionTypeMachineNames.spread:
                 return new SpreadScorer(this);
-            }
+            case QuestionTypeMachineNames.fantasy:
+                return new SportsFantasyScorer(this);
+            default:
+                return null;
         }
-        return null;
     }
 }

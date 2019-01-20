@@ -1,4 +1,7 @@
 import { Subject, ISubject } from '../entities/subject';
+import { SubjectFactory } from '../factories/subject-factory';
+import { SubjectType } from '../../types/subject-type';
+import { SportTeam } from './sport-team';
 
 export interface ISportPlayer<T> extends ISubject {
     external_id: string;
@@ -10,7 +13,7 @@ export interface ISportPlayer<T> extends ISubject {
     json: T;
 }
 
-export class SportPlayer<T> extends Subject<ISportPlayer<T>> {
+export abstract class SportPlayer<T> extends Subject<ISportPlayer<T>> {
     constructor(properties: ISportPlayer<T>) {
         super(properties);
     }
@@ -18,4 +21,10 @@ export class SportPlayer<T> extends Subject<ISportPlayer<T>> {
     async getRelatedSubjects(): Promise<Array<Subject<ISubject>>> {
         return [];
     }
+
+    async getTeam(): Promise<SportTeam<any>> {
+        return SubjectFactory.loadByExternalId(this.properties.external_id, SubjectType.sportTeam) as Promise<SportTeam<any>>;
+    }
+
+    abstract calculateFantasyScore(statistics: any): number;
 }

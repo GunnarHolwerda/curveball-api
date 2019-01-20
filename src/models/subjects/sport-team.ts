@@ -4,6 +4,7 @@ import { TopicFactory } from '../factories/topic-factory';
 import { camelizeKeys } from '../../util/camelize-keys';
 import { SubjectFactory } from '../factories/subject-factory';
 import { SubjectType } from '../../types/subject-type';
+import { SportGame } from './sport-game';
 
 export interface ISportTeam<T> extends ISubject {
     external_id: string;
@@ -23,7 +24,7 @@ export interface ISportTeamResponse extends SubjectTableResponse {
     };
 }
 
-export class SportTeam<T> extends Subject<ISportTeam<T>> {
+export abstract class SportTeam<T> extends Subject<ISportTeam<T>> {
 
     constructor(properties: ISportTeam<T>) {
         super(properties);
@@ -47,5 +48,9 @@ export class SportTeam<T> extends Subject<ISportTeam<T>> {
         return SubjectFactory.loadAllExternallyRelatedSubjects(
             this.properties.external_id, SubjectType.sportPlayer
         );
+    }
+
+    gameOnDay(date: Date): Promise<SportGame<any, any>> {
+        return SubjectFactory.loadSportGameForTeamOnDay(this.properties.external_id, date) as Promise<SportGame<any, any>>;
     }
 }

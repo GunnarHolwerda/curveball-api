@@ -9,19 +9,20 @@ import {
     Subject,
     SUBJECT_TABLE_NAME
 } from '../entities/subject';
-import { INFLGame, NFLGame } from '../subjects/nfl-game';
+import { NFLGame } from '../subjects/nfl-game';
 import { TopicFactory } from './topic-factory';
 import { cleanObject } from '../../util/clean-object';
 import { NFLPlayer } from '../subjects/nfl-player';
 import { NFLTeam } from '../subjects/nfl-team';
 import { SQF } from 'sqorn-pg/types/sq';
 import { NBATeam } from '../subjects/nba-team';
-import { INBAGame, NBAGame } from '../subjects/nba-game';
+import { NBAGame } from '../subjects/nba-game';
 import { NBAPlayer } from '../subjects/nba-player';
 import { ISportPlayer } from '../subjects/sport-player';
 import { NBAResponse } from '../../interfaces/sports-api-responses/nba';
 import { ISportTeam } from '../subjects/sport-team';
 import { NFLResponse } from '../../interfaces/sports-api-responses/nfl';
+import { ISportGame } from '../subjects/sport-game';
 
 export const SubjectTypeTableMap: { [type in SubjectType]: string } = {
     [SubjectType.sportGame]: SPORT_GAME_TABLE_NAME,
@@ -111,6 +112,27 @@ export class SubjectFactory {
         return await Promise.all(result.map(r => this.instantiateInstance(r as ISubject)));
     }
 
+    public static async loadSportGameForTeamOnDay(teamExternalId: string, date: Date): Promise<Subject<ISubject>> {
+        const startDate = new Date(date.getTime());
+        startDate.setTime(0);
+        const endDate = new Date(startDate.getTime());
+        endDate.setDate(startDate.getDate() + 1);
+        const sq = Database.instance.sq;
+        const query = sq.from({ s: SUBJECT_TABLE_NAME })
+            .join({ game: SPORT_GAME_TABLE_NAME }).on`game.subject_id = s.subject_id`
+            .where(sq.raw(`json -> 'home' ->> 'id' = ${teamExternalId}`))
+            .or(sq.raw(`json -> 'away' ->> 'id' = ${teamExternalId}`))
+            .and(sq.raw(
+                `(json->>'scheduled')::timestamp with time zone >= TO_TIMESTAMP('${startDate.toISOString()}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`
+            ))
+            .and(sq.raw(
+                `(json->>'scheduled')::timestamp with time zone < TO_TIMESTAMP('${endDate.toISOString()}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`
+            ));
+        console.log(query.unparameterized);
+        const result = await query;
+        return this.instantiateInstance(result[0] as ISubject);
+    }
+
     private static joinSubjectTable(query: SQF, type: SubjectType): SQF {
         return query.join({ t: SubjectTypeTableMap[type] }).on`t.subject_id = s.subject_id`;
     }
@@ -130,7 +152,7 @@ export class SubjectFactory {
     private static nbaFactory(sub: ISubject): Subject<ISubject> {
         switch (sub.subject_type) {
             case SubjectType.sportGame:
-                return new NBAGame(sub as INBAGame);
+                return new NBAGame(sub as ISportGame<NBAResponse.Game, NBAResponse.GameStatistics>);
             case SubjectType.sportPlayer:
                 return new NBAPlayer(sub as ISportPlayer<NBAResponse.Player>);
             case SubjectType.sportTeam:
@@ -143,7 +165,7 @@ export class SubjectFactory {
     private static nflFactory(sub: ISubject): Subject<ISubject> {
         switch (sub.subject_type) {
             case SubjectType.sportGame:
-                return new NFLGame(sub as INFLGame);
+                return new NFLGame(sub as ISportGame<NFLResponse.Game, NFLResponse.GameStatistics>);
             case SubjectType.sportPlayer:
                 return new NFLPlayer(sub as ISportPlayer<NFLResponse.Player>);
             case SubjectType.sportTeam:

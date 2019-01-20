@@ -1,4 +1,5 @@
 export enum QuestionTypeMachineNames {
     manual = 'manual',
-    spread = 'spread'
+    spread = 'spread',
+    fantasy = 'fantasy'
 }

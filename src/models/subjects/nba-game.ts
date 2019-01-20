@@ -1,105 +1,42 @@
-import { SportGame } from '../../interfaces/sport-game';
+import { BasicSportGame } from '../../interfaces/basic-sport-game';
 import { NBAResponse } from '../../interfaces/sports-api-responses/nba';
-import { SubjectTableResponse } from '../../interfaces/subject-table-response';
-import { SubjectType } from '../../types/subject-type';
-import { camelizeKeys } from '../../util/camelize-keys';
-import { ISubject, Subject } from '../entities/subject';
-import { SubjectFactory } from '../factories/subject-factory';
-import { NBAPlayer } from './nba-player';
-import { NBATeam } from './nba-team';
+import { SportGame } from './sport-game';
 import { NBASportsApi } from '../data-loader/nba-sports-api';
-import { ISportTeamResponse } from './sport-team';
+import { SportPlayer } from './sport-player';
 
-export interface INBAGame extends ISubject {
-    external_id: string;
-    topic: number;
-    parent_external_id: string;
-    created: Date;
-    updated: Date;
-    deleted: boolean;
-    json: NBAResponse.Game;
-    statistics: NBAResponse.GameStatistics;
+export interface NBAPlayerStatistics {
+    points: number;
+    rebounds: number;
+    assists: number;
+    steals: number;
+    blocks: number;
+    turnovers: number;
 }
 
-export interface NBAGameResponse {
-    home: ISportTeamResponse;
-    away: ISportTeamResponse;
-    date: string;
-}
+export class NBAGame extends SportGame<NBAResponse.Game, NBAResponse.GameStatistics> implements BasicSportGame {
 
-export interface INBAGameResponse extends SubjectTableResponse {
-    game: NBAGameResponse;
-}
-
-export class NBAGame extends Subject<INBAGame> implements SportGame {
-    constructor(properties: INBAGame) {
-        super(properties);
+    getStatsForPlayer(player: SportPlayer<any>): NBAPlayerStatistics {
+        const { parent_external_id: teamId, external_id: playerId } = player.properties;
+        const { home, away } = this.properties.statistics as NBAResponse.GameStatistics;
+        const team = home.id === teamId ? home : away;
+        const playerStats = team.players.find(p => p.id === playerId);
+        if (playerStats === undefined) {
+            return {
+                points: 0,
+                rebounds: 0,
+                assists: 0,
+                steals: 0,
+                blocks: 0,
+                turnovers: 0
+            };
+        }
+        const { points, rebounds, assists, blocks, steals, turnovers } = playerStats.statistics;
+        return {
+            points, rebounds, assists, blocks, steals, turnovers
+        };
     }
 
-    get homeTeam(): Promise<NBATeam> {
-        const { home } = this.properties.json;
-        return SubjectFactory.loadByExternalId(home.id, SubjectType.sportTeam)
-            .then(t => t! as NBATeam);
-    }
-
-    get awayTeam(): Promise<NBATeam> {
-        const { away } = this.properties.json;
-        return SubjectFactory.loadByExternalId(away.id, SubjectType.sportTeam)
-            .then(t => t! as NBATeam);
-    }
-
-    get players(): Promise<Array<NBAPlayer>> {
-        return (async () => {
-            const teams = await Promise.all([this.homeTeam, this.awayTeam]);
-            const [homeTeamPlayers, awayTeamPlayers] = await Promise.all(
-                teams.map(t => t.getRelatedSubjects().then(s => s as Array<NBAPlayer>))
-            );
-            return [...homeTeamPlayers, ...awayTeamPlayers];
-        })();
-    }
-
-    async toResponseObject(): Promise<INBAGameResponse> {
-        const { external_id, topic, parent_external_id, created, updated } = this.properties;
-        const [homeTeam, awayTeam] = await Promise.all([this.homeTeam, this.awayTeam]);
-        return camelizeKeys({
-            ... (await super.toResponseObject()),
-            external_id, topic, created, updated,
-            seasonExternalId: parent_external_id,
-            game: {
-                home: await homeTeam!.toResponseObject(),
-                away: await awayTeam!.toResponseObject(),
-                date: this.properties.json.scheduled,
-                status: this.properties.json.status
-            }
-        });
-    }
-
-    async getRelatedSubjects(): Promise<Array<Subject<ISubject>>> {
-        const teams = await Promise.all([this.homeTeam, this.awayTeam]);
-        const players = await this.players;
-        return [
-            ...teams,
-            ...players
-        ];
-    }
-
-    isFinished(): boolean {
-        const { status: gameStatus } = this.properties.json;
-        const boxScoreStatus = this.properties.statistics ? this.properties.statistics.status : undefined;
-        return (gameStatus === 'closed') || (boxScoreStatus === 'closed');
-    }
-
-    getHomeTeam(): { id: string; points: number; } {
-        return this.properties.statistics.home;
-    }
-    getAwayTeam(): { id: string; points: number; } {
-        return this.properties.statistics.away;
-    }
-
-    async updateStatistics(): Promise<void> {
-        const sportsApi = new NBASportsApi();
-        const boxscore = await sportsApi.getGameStats(this.properties.external_id);
-        this.properties.statistics = boxscore;
-        await this.save();
+    getSportsApi(): NBASportsApi {
+        return new NBASportsApi();
     }
 }

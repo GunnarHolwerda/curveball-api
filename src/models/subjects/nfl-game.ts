@@ -1,105 +1,118 @@
-import { Subject, ISubject } from '../entities/subject';
 import { NFLResponse } from '../../interfaces/sports-api-responses/nfl';
-import { camelizeKeys } from '../../util/camelize-keys';
-import { SubjectFactory } from '../factories/subject-factory';
-import { SubjectType } from '../../types/subject-type';
-import { SubjectTableResponse } from '../../interfaces/subject-table-response';
-import { NFLTeam } from './nfl-team';
-import { NFLPlayer } from './nfl-player';
-import { SportGame } from '../../interfaces/sport-game';
 import { NFLSportsApi } from '../data-loader/nfl-sports-api';
-import { ISportTeamResponse } from './sport-team';
+import { SportsApi } from '../data-loader/sports-api';
+import { SportGame } from './sport-game';
+import { NFLPlayer } from './nfl-player';
 
-export interface INFLGame extends ISubject {
-    external_id: string;
-    topic: number;
-    parent_external_id: string;
-    created: Date;
-    updated: Date;
-    deleted: boolean;
-    json: NFLResponse.Game;
-    statistics: NFLResponse.GameStatistics;
+export interface NFLPassingStatistics {
+    yards: number;
+    touchdowns: number;
+    interceptions: number;
+    sacks: number;
+    twoPts: number;
 }
 
-export interface NFLGameResponse {
-    home: ISportTeamResponse;
-    away: ISportTeamResponse;
-    date: string;
+export interface NFLRushingStatistics {
+    yards: number;
+    touchdowns: number;
+    twoPts: number;
 }
 
-export interface INFLGameResponse extends SubjectTableResponse {
-    game: NFLGameResponse;
+export interface NFLReceivingStatistics extends NFLRushingStatistics {
+    receptions: number;
 }
 
-export class NFLGame extends Subject<INFLGame> implements SportGame {
-    constructor(properties: INFLGame) {
-        super(properties);
+export interface NFLFumbleStatistics {
+    fumbles: number;
+}
+
+export interface NFLKickingStatistics {
+    pats: number;
+    fieldGoals: number;
+}
+
+export interface NFLDefensiveStats {
+    touchdowns: number;
+    interceptions: number;
+    fumblesRecovered: number;
+    blockedKicks: number;
+    sacks: number;
+    safeties: number;
+}
+
+export interface NFLReturnStats {
+    yards: number;
+    touchdowns: number;
+}
+
+export interface NFLPlayerStatistics {
+    passing: NFLPassingStatistics;
+    rushing: NFLRushingStatistics;
+    receiving: NFLReceivingStatistics;
+    kicking: NFLKickingStatistics;
+    returning: NFLReturnStats;
+    fumbles: NFLFumbleStatistics;
+}
+
+export class NFLGame extends SportGame<NFLResponse.Game, NFLResponse.GameStatistics> {
+    getSportsApi(): SportsApi {
+        return new NFLSportsApi();
     }
 
-    get homeTeam(): Promise<NFLTeam> {
-        const { home } = this.properties.json;
-        return SubjectFactory.loadByExternalId(home.id, SubjectType.sportTeam)
-            .then(t => t! as NFLTeam);
+    getStats<T>(type: string, team: NFLResponse.TeamStatistics, playerId: string, stats: Array<keyof T>): T {
+        if (!team.hasOwnProperty(type)) {
+            throw new Error('Attempting to get statistics for unknown type ' + type);
+        }
+        const statistics = team[type].player.find((p: NFLResponse.PlayerStatistic) => p.id === playerId) || {};
+        const result = stats.reduce((carry, stat) => {
+            carry[stat] = statistics[stat] || 0;
+            return carry;
+        }, {} as T);
+        return result as T;
     }
 
-    get awayTeam(): Promise<NFLTeam> {
-        const { away } = this.properties.json;
-        return SubjectFactory.loadByExternalId(away.id, SubjectType.sportTeam)
-            .then(t => t! as NFLTeam);
+    getKickingStats(team: NFLResponse.TeamStatistics, playerId: string): NFLKickingStatistics {
+        const pats = team.extra_points.kicks.players.find(p => p.id === playerId);
+        const fieldGoals = team.field_goals.players.find(p => p.id === playerId);
+        return {
+            pats: pats ? pats.made : 0,
+            fieldGoals: fieldGoals ? fieldGoals.made : 0
+        };
     }
 
-    get players(): Promise<Array<NFLPlayer>> {
-        return (async () => {
-            const teams = await Promise.all([this.homeTeam, this.awayTeam]);
-            const [homeTeamPlayers, awayTeamPlayers] = await Promise.all(
-                teams.map(t => t.getRelatedSubjects().then(s => s as Array<NFLPlayer>))
-            );
-            return [...homeTeamPlayers, ...awayTeamPlayers];
-        })();
+    getDefensiveStats(team: NFLResponse.TeamStatistics): NFLDefensiveStats {
+        const stats = team.defense.totals;
+        return {
+            touchdowns: team.touchdowns.int_return + team.touchdowns.fumble_return,
+            interceptions: stats.interceptions,
+            fumblesRecovered: stats.fumble_recoveries,
+            blockedKicks: team.defense.totals.sp_blocks,
+            sacks: stats.sacks,
+            safeties: stats.safeties
+        };
     }
 
-    async toResponseObject(): Promise<INFLGameResponse> {
-        const { external_id, topic, parent_external_id, created, updated } = this.properties;
-        const [homeTeam, awayTeam] = await Promise.all([this.homeTeam, this.awayTeam]);
-        return camelizeKeys({
-            ... (await super.toResponseObject()),
-            external_id, topic, created, updated,
-            seasonExternalId: parent_external_id,
-            game: {
-                home: await homeTeam!.toResponseObject(),
-                away: await awayTeam!.toResponseObject(),
-                date: this.properties.json.scheduled,
-                status: this.properties.json.status
-            }
-        });
+    getReturnStats(team: NFLResponse.TeamStatistics, playerId: string): NFLReturnStats {
+        const kickReturn = this.getStats<{ yards: number, touchdowns: number }>('kick_returns', team, playerId, ['yards', 'touchdowns']);
+        const puntReturn = this.getStats<{ yards: number, touchdowns: number }>('punt_returns', team, playerId, ['yards', 'touchdowns']);
+        return {
+            yards: kickReturn.yards + puntReturn.yards,
+            touchdowns: kickReturn.touchdowns + puntReturn.touchdowns
+        };
     }
 
-    async getRelatedSubjects(): Promise<Array<Subject<ISubject>>> {
-        const teams = await Promise.all([this.homeTeam, this.awayTeam]);
-        const players = await this.players;
-        return [
-            ...teams,
-            ...players
-        ];
-    }
+    getStatsForPlayer(player: NFLPlayer): NFLPlayerStatistics {
+        const { home, away } = this.properties.statistics.statistics;
+        const { parent_external_id: teamId, external_id: playerId } = player.properties;
 
-    isFinished(): boolean {
-        const { status: gameStatus } = this.properties.json;
-        const boxScoreStatus = this.properties.statistics ? this.properties.statistics.status : undefined;
-        return (gameStatus === 'closed') || (boxScoreStatus === 'closed');
-    }
-
-    getHomeTeam(): { id: string; points: number; } {
-        return this.properties.statistics.summary.home;
-    }
-    getAwayTeam(): { id: string; points: number; } {
-        return this.properties.statistics.summary.away;
-    }
-
-    async updateStatistics(): Promise<void> {
-        const nflSportsApi = new NFLSportsApi();
-        const boxscore = await nflSportsApi.getGameStats(this.properties.external_id);
-        this.properties.statistics = boxscore;
-        await this.save();
+        const team = home.id === teamId ? home : away;
+        return {
+            passing: this.getStats<NFLPassingStatistics>('passing', team, playerId, ['yards', 'touchdowns', 'interceptions', 'sacks']),
+            rushing: this.getStats<NFLRushingStatistics>('rushing', team, playerId, ['yards', 'touchdowns']),
+            receiving: this.getStats<NFLReceivingStatistics>('receiving', team, playerId, ['yards', 'touchdowns', 'receptions']),
+            kicking: this.getKickingStats(team, playerId),
+            returning: this.getReturnStats(team, playerId),
+            fumbles: this.getStats<NFLFumbleStatistics>('fumbles', team, playerId, ['fumbles'])
+        };
     }
 }

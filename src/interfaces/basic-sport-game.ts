@@ -1,4 +1,4 @@
-export interface SportGame {
+export interface BasicSportGame {
     getHomeTeam(): { id: string, points: number };
     getAwayTeam(): { id: string, points: number };
     isFinished(): boolean;

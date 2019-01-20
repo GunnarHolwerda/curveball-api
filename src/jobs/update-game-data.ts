@@ -1,9 +1,9 @@
 import { Subject, ISubject } from '../models/entities/subject';
-import { SportGame } from '../interfaces/sport-game';
+import { BasicSportGame } from '../interfaces/basic-sport-game';
 import { Database } from '../models/database';
 import { SubjectFactory } from '../models/factories/subject-factory';
 
-type SportGameSubject = Subject<ISubject> & SportGame;
+type SportGameSubject = Subject<ISubject> & BasicSportGame;
 
 function loadAllGamesToday(): Promise<Array<SportGameSubject>> {
     const startDate = new Date();
