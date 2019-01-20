@@ -5,8 +5,6 @@ import * as Boom from 'boom';
 import { TopicFactory } from '../../../models/factories/topic-factory';
 import { QuestionTypeFactory } from '../../../models/factories/question-type-factory';
 import { SubjectSupplier } from '../../../interfaces/subject-supplier';
-import { SubjectFactory } from '../../../models/factories/subject-factory';
-import { Subject, ISubject } from '../../../models/entities/subject';
 
 export const getSubjectsQuerySchema = {
     topicId: Joi.number().required().description('The topic id to retrieve related subjects for'),
@@ -31,21 +29,11 @@ export async function getSubjects(event: hapi.Request): Promise<object> {
     }
 
     const subjectSupplier = (type as unknown) as SubjectSupplier;
-
-    const questionSubjectType = subjectSupplier.questionSubjectType();
-    let questionSubjects: Array<Subject<ISubject>> | undefined;
-    if (questionSubjectType) {
-        questionSubjects = await SubjectFactory.loadAllByTypeAndTopic(questionSubjectType, numericTopicId);
-    }
-    const choiceSubjectType = subjectSupplier.choiceSubjectType();
-    let choiceSubjects: Array<Subject<ISubject>> | undefined;
-    if (choiceSubjectType) {
-        choiceSubjects = await SubjectFactory.loadAllByTypeAndTopic(choiceSubjectType, numericTopicId);
-    }
+    const [questionSubjects, choiceSubjects] = await Promise.all(
+        [subjectSupplier.questionSubjects(topic), subjectSupplier.choiceSubjects(topic)]
+    );
 
     return {
-        questionSubjectType,
-        choiceSubjectType,
         choiceSubjects: choiceSubjects ? await Promise.all(choiceSubjects.map(s => s.toResponseObject())) : undefined,
         questionSubjects: questionSubjects ? await Promise.all(questionSubjects.map(s => s.toResponseObject())) : undefined,
     };

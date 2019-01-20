@@ -1,6 +1,7 @@
-import { SubjectType } from '../types/subject-type';
+import { ISubject, Subject } from '../models/entities/subject';
+import { ITopicResponse } from '../models/factories/topic-factory';
 
 export interface SubjectSupplier {
-    questionSubjectType(): SubjectType | false; // Returns false if it does not have a subject for this key
-    choiceSubjectType(): SubjectType | false;
+    questionSubjects(topic: ITopicResponse): Promise<Array<Subject<ISubject>>>;
+    choiceSubjects(topic: ITopicResponse): Promise<Array<Subject<ISubject>>>;
 }

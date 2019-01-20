@@ -5,6 +5,7 @@ import { ChoiceFactory } from '../factories/choice-factory';
 import { SubjectTypeTableMap } from '../factories/subject-factory';
 import { Database } from '../database';
 import { omit } from '../../util/omit';
+import { TopicFactory } from '../factories/topic-factory';
 
 export interface ISubject {
     subject_id: number;
@@ -23,7 +24,7 @@ export abstract class Subject<T extends ISubject> {
 
     async toResponseObject(): Promise<any> {
         const { subject_id, subject_type, topic } = this.properties;
-        return camelizeKeys({ subject_id, subject_type, topic });
+        return camelizeKeys({ subject_id, subject_type, topic: await TopicFactory.load(topic) });
     }
 
     public async getRelatedChoices(): Promise<Array<Choice>> {

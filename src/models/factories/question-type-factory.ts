@@ -7,6 +7,7 @@ import { TOPIC_TABLE_NAME } from './topic-factory';
 import { QuestionTypeMachineNames } from '../../types/question-type-machine-names';
 import { SpreadQuestionType } from '../question-types/spread';
 import { ManualQuestionType } from '../question-types/manual';
+import { FantasyQuestionType } from '../question-types/fantasy';
 
 export class QuestionTypeFactory {
     public static async load(typeId: number): Promise<QuestionType | null> {
@@ -47,6 +48,8 @@ export class QuestionTypeFactory {
                 return new SpreadQuestionType(properties);
             case QuestionTypeMachineNames.manual:
                 return new ManualQuestionType(properties);
+            case QuestionTypeMachineNames.fantasy:
+                return new FantasyQuestionType(properties);
             default:
                 return new ManualQuestionType(properties);
         }

@@ -8,10 +8,18 @@ import {
     NFLReturnStats,
     NFLRushingStatistics
 } from './nfl-game';
-import { SportPlayer } from './sport-player';
+import { SportPlayer, SportPlayerResponse } from './sport-player';
 
 
 export class NFLPlayer extends SportPlayer<NFLResponse.Player> {
+
+    async playerResponse(): Promise<SportPlayerResponse> {
+        return {
+            fullName: this.properties.json.name,
+            position: this.properties.json.position
+        };
+    }
+
     calculateFantasyScore(statistics: NFLPlayerStatistics): number {
         const passingScore = this.calculatePassingScore(statistics.passing);
         const rushingScore = this.calculateRushingScore(statistics.rushing);

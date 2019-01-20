@@ -154,7 +154,7 @@ export class SubjectFactory {
             case SubjectType.sportGame:
                 return new NBAGame(sub as ISportGame<NBAResponse.Game, NBAResponse.GameStatistics>);
             case SubjectType.sportPlayer:
-                return new NBAPlayer(sub as ISportPlayer<NBAResponse.Player>);
+                return new NBAPlayer(sub as ISportPlayer<NBAResponse.PlayerDetail>);
             case SubjectType.sportTeam:
                 return new NBATeam(sub as ISportTeam<NBAResponse.Team>);
             default:
