@@ -104,4 +104,5 @@ export abstract class SportGame<TJson, TStats> extends Subject<ISportGame<TJson,
 
     abstract getSportsApi(): SportsApi;
     abstract getStatsForPlayer(player: SportPlayer<any>): any;
+    abstract getStatsForTeam(team: SportTeam<any>): any;
 }

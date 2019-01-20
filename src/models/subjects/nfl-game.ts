@@ -3,6 +3,7 @@ import { NFLSportsApi } from '../data-loader/nfl-sports-api';
 import { SportsApi } from '../data-loader/sports-api';
 import { SportGame } from './sport-game';
 import { NFLPlayer } from './nfl-player';
+import { NFLTeam } from './nfl-team';
 
 export interface NFLPassingStatistics {
     yards: number;
@@ -55,6 +56,13 @@ export interface NFLPlayerStatistics {
 }
 
 export class NFLGame extends SportGame<NFLResponse.Game, NFLResponse.GameStatistics> {
+
+    getStatsForTeam(team: NFLTeam): NFLDefensiveStats {
+        const { home, away } = this.properties.statistics.statistics;
+        const teamStats = home.id === team.properties.external_id ? home : away;
+        return this.getDefensiveStats(teamStats);
+    }
+
     getSportsApi(): SportsApi {
         return new NFLSportsApi();
     }

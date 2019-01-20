@@ -2,6 +2,7 @@ import { Subject, ISubject } from '../entities/subject';
 import { SubjectFactory } from '../factories/subject-factory';
 import { SubjectType } from '../../types/subject-type';
 import { SportTeam } from './sport-team';
+import { FantasySubject } from '../../interfaces/fantasy-subject';
 
 export interface ISportPlayer<T> extends ISubject {
     external_id: string;
@@ -13,7 +14,7 @@ export interface ISportPlayer<T> extends ISubject {
     json: T;
 }
 
-export abstract class SportPlayer<T> extends Subject<ISportPlayer<T>> {
+export abstract class SportPlayer<T> extends Subject<ISportPlayer<T>> implements FantasySubject {
     constructor(properties: ISportPlayer<T>) {
         super(properties);
     }

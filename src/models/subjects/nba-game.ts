@@ -2,7 +2,8 @@ import { BasicSportGame } from '../../interfaces/basic-sport-game';
 import { NBAResponse } from '../../interfaces/sports-api-responses/nba';
 import { SportGame } from './sport-game';
 import { NBASportsApi } from '../data-loader/nba-sports-api';
-import { SportPlayer } from './sport-player';
+import { NBAPlayer } from './nba-player';
+import { NBATeam } from './nba-team';
 
 export interface NBAPlayerStatistics {
     points: number;
@@ -15,7 +16,12 @@ export interface NBAPlayerStatistics {
 
 export class NBAGame extends SportGame<NBAResponse.Game, NBAResponse.GameStatistics> implements BasicSportGame {
 
-    getStatsForPlayer(player: SportPlayer<any>): NBAPlayerStatistics {
+    getStatsForTeam(_: NBATeam): null {
+        // NBA Teams don't get selected for fantasy
+        return null;
+    }
+
+    getStatsForPlayer(player: NBAPlayer): NBAPlayerStatistics {
         const { parent_external_id: teamId, external_id: playerId } = player.properties;
         const { home, away } = this.properties.statistics as NBAResponse.GameStatistics;
         const team = home.id === teamId ? home : away;
