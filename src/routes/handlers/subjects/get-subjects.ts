@@ -33,6 +33,7 @@ export async function getSubjects(event: hapi.Request): Promise<object> {
         [subjectSupplier.questionSubjects(topic), subjectSupplier.choiceSubjects(topic)]
     );
 
+    // TODO: Solve n+1 problem
     return {
         choiceSubjects: choiceSubjects ? await Promise.all(choiceSubjects.map(s => s.toResponseObject())) : undefined,
         questionSubjects: questionSubjects ? await Promise.all(questionSubjects.map(s => s.toResponseObject())) : undefined,

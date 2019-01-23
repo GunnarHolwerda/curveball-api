@@ -29,11 +29,11 @@ export const postQuestionsSchema = Joi.object().keys({
         topic: Joi.number().required().description('The id of the topic the question relates to'),
         typeId: Joi.number().required().description('The id of the question type'),
         ticker: Joi.string().max(24).required().description('Ticker text for the question'),
-        subjectId: Joi.number().optional().description('The id of the subject this question relates to'),
+        subjectId: Joi.number().allow(null).optional().description('The id of the subject this question relates to'),
         choices: Joi.array().optional().items(Joi.object().keys({
             text: Joi.string().max(64).required().description('Text to be displayed with the choice'),
             isAnswer: Joi.boolean().required().description('Whether the question is the answer or not'),
-            subjectId: Joi.number().optional().description('The subject id of the subject to associate with this choice')
+            subjectId: Joi.number().allow(null).optional().description('The subject id of the subject to associate with this choice')
         }).unknown(false))
     }).unknown(false).required())
 });
