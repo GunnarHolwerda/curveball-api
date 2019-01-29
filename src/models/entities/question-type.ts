@@ -1,5 +1,4 @@
 import { Database } from '../database';
-import { QuestionTypeFactory } from '../factories/question-type-factory';
 import { camelizeKeys } from '../../util/camelize-keys';
 import { QuestionTypeMachineNames } from '../../types/question-type-machine-names';
 
@@ -32,10 +31,10 @@ export abstract class QuestionType {
         this.properties = { ...this._questionType };
     }
 
-    public static async create(qt: Pick<IQuestionType, 'title' | 'description' | 'generic' | 'machine_name'>): Promise<QuestionType> {
+    public static async create(qt: Pick<IQuestionType, 'title' | 'description' | 'generic' | 'machine_name'>): Promise<number> {
         const sq = Database.instance.sq;
         const result = await sq.from(QUESTION_TYPE_TABLE_NAME).insert({ ...qt }).return`id`;
-        return (await QuestionTypeFactory.load(result[0].id as number))!;
+        return result[0].id;
     }
 
     public toResponseObject(): Promise<IQuestionTypeResponse> {

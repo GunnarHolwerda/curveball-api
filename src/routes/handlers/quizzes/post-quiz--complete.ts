@@ -12,9 +12,7 @@ export async function postQuizComplete(event: hapi.Request): Promise<object> {
     const participants = await quiz.activeParticipants();
 
     quiz.properties.active = false;
-    quiz.properties.completed = true;
-    // TODO: add this
-    // quiz.properties.completedAt = (new Date()).toISOString();
+    quiz.properties.completed_date = new Date();
     await quiz.save();
     await quiz.cleanUpAnswers();
 

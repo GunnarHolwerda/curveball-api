@@ -99,7 +99,7 @@ describe('POST /quizzes/{quizId}/complete', () => {
         await quizResources.completeQuiz(quiz.quizId);
         const { quiz: completedQuiz } = await quizResources.getQuiz(quiz.quizId);
         expect(completedQuiz.active).toBeFalsy('Quiz was not marked inactive after completion');
-        expect(completedQuiz.completed).toBeTruthy('Quiz was not marked as complete after completion');
+        expect(completedQuiz.completedDate).toBeTruthy('Quiz was not marked as complete after completion');
     });
 
     it('should update the users stats', async () => {

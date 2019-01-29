@@ -5,6 +5,7 @@ import { QuestionCalculator } from '../../../../models/entities/question-calcula
 import { snakifyKeys } from '../../../../util/snakify-keys';
 import { QuestionTypeFactory } from '../../../../models/factories/question-type-factory';
 import { TopicFactory } from '../../../../models/factories/topic-factory';
+import { QuestionCalculatorFactory } from '../../../../models/factories/question-calculator-factory';
 
 export const postQuestionCalculatorSchema = Joi.object().keys({
     topic: Joi.number().required().description('The topic id for which this calculator is valid'),
@@ -21,7 +22,8 @@ export async function postQuestionCalculator(event: hapi.Request): Promise<objec
         throw Boom.badRequest('Type or topic do not exist');
     }
 
-    const calculator = await QuestionCalculator.create(snakifyKeys({ topic: topicId, functionName, typeId }));
+    const calculatorId = await QuestionCalculator.create(snakifyKeys({ topic: topicId, functionName, typeId }));
+    const calculator = (await QuestionCalculatorFactory.load(calculatorId))!;
 
     return { calculator: await calculator.toResponseObject() };
 }

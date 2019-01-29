@@ -1,6 +1,5 @@
 import { User, IUserResponse } from './user';
 import { Database } from '../database';
-import { FriendFactory } from '../factories/friend-factory';
 import { UserFactory } from '../factories/user-factory';
 import { omit } from '../../util/omit';
 
@@ -27,13 +26,13 @@ export class Friend {
         this.properties = { ...this._friend };
     }
 
-    public static async create(inviterUserId: string, inviteeUserId: string): Promise<Friend> {
+    public static async create(inviterUserId: string, inviteeUserId: string): Promise<string> {
         const sq = Database.instance.sq;
         await sq.from(FRIEND_TABLE_NAME).insert({
             account_user_id: inviterUserId,
             friend_user_id: inviteeUserId,
         });
-        return (await FriendFactory.load(inviterUserId, inviteeUserId))!;
+        return inviteeUserId;
     }
 
     public get user(): Promise<User> {

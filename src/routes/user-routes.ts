@@ -15,6 +15,7 @@ import { getUserFriends } from './handlers/users/friends/get-user-friends';
 import { deleteUserFriend } from './handlers/users/friends/delete-user-friend';
 import { postUserFriendsRecommended } from './handlers/users/friends/post-user-friends--recommended';
 import { devRoutes } from './helpers/dev-routes';
+import { getUserPicks } from './handlers/users/picks/get-user-picks';
 
 export function userRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -69,6 +70,16 @@ export function userRoutes(server: hapi.Server, _: IoServer): void {
                 notes: 'Gives user access to their user with a jwt token and provides the ability to set the username and name'
             },
             handler: postUserVerify
+        },
+        {
+            path: '/users/{userId}/picks',
+            method: 'get',
+            options: {
+                pre: [onlyCurrentUser],
+                description: 'Retrieve picks for a user',
+                notes: 'Retrieves picks by show for the user specified'
+            },
+            handler: getUserPicks
         },
         {
             path: '/users/{userId}/lives/use',

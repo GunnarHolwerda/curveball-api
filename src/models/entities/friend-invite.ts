@@ -1,6 +1,5 @@
 import { omit } from '../../util/omit';
 import { Database } from '../database';
-import { FriendInviteFactory } from '../factories/friend-invite-factory';
 import { camelizeKeys } from '../../util/camelize-keys';
 
 export interface IFriendInvite {
@@ -28,13 +27,13 @@ export class FriendInvite {
         this.properties = { ...this._invite };
     }
 
-    public static async create(inviteUserId: string, phoneNumber: string): Promise<FriendInvite> {
+    public static async create(inviteUserId: string, phoneNumber: string): Promise<string> {
         const sq = Database.instance.sq;
         await sq.from(FRIEND_INVITE_TABLE_NAME).insert({
             inviter_user_id: inviteUserId,
             invite_phone: phoneNumber,
         });
-        return (await FriendInviteFactory.load(inviteUserId, phoneNumber))!;
+        return phoneNumber;
     }
 
     public async save(): Promise<void> {

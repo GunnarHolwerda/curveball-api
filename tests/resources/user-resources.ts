@@ -4,6 +4,8 @@ import { ApiResources } from './test-resources';
 import { generatePhone } from '../../src/util/generate-phone';
 import { IFriendResponse } from '../../src/models/entities/friend';
 import { IFriendInviteResponse } from '../../src/models/entities/friend-invite';
+import { IChoiceResponse } from '../../src/models/entities/question-choice';
+import { SubjectTableResponse } from '../../src/interfaces/subject-table-response';
 
 
 export interface TokenResponse {
@@ -39,6 +41,19 @@ export interface GetFriendsResponse {
     };
     invites: Array<IFriendInviteResponse>;
     friends: Array<IFriendResponse>;
+}
+
+export interface GetUserPicksResponse<T = SubjectTableResponse> {
+    shows: Array<{
+        quizId: string;
+        title: string;
+        potAmount: string;
+        completedDate: string | null;
+        picks: Array<{
+            answerId: string;
+            choice: IChoiceResponse<T>
+        }>;
+    }>;
 }
 
 export type UserTokenResponse = UserResponse & TokenResponse & StatsPayload;
@@ -108,5 +123,9 @@ export class UserResources extends ApiResources {
 
     public async getFriendRecommendations(userId: string, phones: Array<string>): Promise<{ recommendations: Array<IUserResponse> }> {
         return this.post<{ recommendations: Array<IUserResponse> }>(`/users/${userId}/friends:recommended`, { phones });
+    }
+
+    public async getPicks<T>(userId: string): Promise<GetUserPicksResponse<T>> {
+        return this.get<GetUserPicksResponse<T>>(`/users/${userId}/picks`);
     }
 }

@@ -4,6 +4,7 @@ import { generatePhone } from '../../../util/generate-phone';
 import { Answer } from '../../../models/entities/answer';
 import { Request } from 'hapi';
 import * as Boom from 'boom';
+import { UserFactory } from '../../../models/factories/user-factory';
 
 
 function getRandomElement<T>(items: Array<T>): T {
@@ -38,16 +39,18 @@ export async function generateRandomAnswers(req: Request): Promise<any> {
     const quizId = question.properties.quiz_id;
     for (let i = 0; i < numAnswers; i++) {
         answerPromises.push(new Promise((res, rej) => {
-            User.create(generatePhone()).then(u => {
-                let choice = getRandomElement(choices);
-                while ((numSelected[choice.properties.choice_id] / numAnswers) > percentageChoices[choice.properties.choice_id]) {
-                    choice = getRandomElement(choices);
-                }
-                numSelected[choice.properties.choice_id]++;
-                Answer.create(quizId, questionId, u.properties.user_id, choice.properties.choice_id).then((a) => {
-                    res(a);
+            User.create(generatePhone())
+                .then(userId => UserFactory.load(userId) as Promise<User>)
+                .then(u => {
+                    let choice = getRandomElement(choices);
+                    while ((numSelected[choice.properties.choice_id] / numAnswers) > percentageChoices[choice.properties.choice_id]) {
+                        choice = getRandomElement(choices);
+                    }
+                    numSelected[choice.properties.choice_id]++;
+                    Answer.create(quizId, questionId, u.properties.user_id, choice.properties.choice_id).then((a) => {
+                        res(a);
+                    }).catch(rej);
                 }).catch(rej);
-            }).catch(rej);
         }));
     }
     try {

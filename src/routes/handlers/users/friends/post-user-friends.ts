@@ -18,8 +18,9 @@ export async function postUserFriends(event: hapi.Request): Promise<object> {
 
     let friend = await FriendFactory.load(userClaims.userId!, friendUserId);
     if (friend === null) {
-        friend = await Friend.create(userClaims.userId!, friendUserId);
+        await Friend.create(userClaims.userId!, friendUserId);
     }
+    friend = (await FriendFactory.load(userClaims.userId!, friendUserId))!;
 
     return {
         friend: await friend.toResponseObject()

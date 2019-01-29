@@ -1,6 +1,5 @@
 import { Choice, IChoiceResponse } from './question-choice';
 import { Database } from '../database';
-import { QuestionFactory } from '../factories/question-factory';
 import { AnswerFactory } from '../factories/answer-factory';
 import { ChoiceFactory } from '../factories/choice-factory';
 import { Analyticize, AnalyticsProperties } from '../../interfaces/analyticize';
@@ -15,6 +14,7 @@ import { Scorer } from '../scorers/scorer';
 import { QuestionTypeMachineNames } from '../../types/question-type-machine-names';
 import { SpreadScorer } from '../scorers/spread-scorer';
 import { SportsFantasyScorer } from '../scorers/fantasy-scorer';
+import { SubjectTableResponse } from '../../interfaces/subject-table-response';
 
 export interface IQuestion {
     question_id: string;
@@ -30,7 +30,7 @@ export interface IQuestion {
     quiz_id: string;
 }
 
-export interface IQuestionResponse {
+export interface IQuestionResponse<T = SubjectTableResponse | null> {
     questionId: string;
     created: string;
     question: string;
@@ -41,7 +41,7 @@ export interface IQuestionResponse {
     sent: boolean;
     expired: string;
     quizId: string;
-    choices: Array<IChoiceResponse>;
+    choices: Array<IChoiceResponse<T>>;
 }
 
 export interface QuestionResults {
@@ -62,11 +62,11 @@ export class Question implements Analyticize {
         this.properties = { ...this._question };
     }
 
-    public static async create(question: Partial<IQuestion>): Promise<Question> {
+    public static async create(question: Partial<IQuestion>): Promise<string> {
         const params = snakifyKeys(question);
         const sq = Database.instance.sq;
         const result = await sq.from(QUESTION_TABLE_NAME).insert(params).return`question_id`;
-        return (await QuestionFactory.load(result![0].question_id))!;
+        return result![0].question_id;
     }
 
     public async save(): Promise<void> {
@@ -117,23 +117,23 @@ export class Question implements Analyticize {
         return result;
     }
 
-    public async toResponseObject(withChoices: boolean = false): Promise<IQuestionResponse> {
+    public async toResponseObject<T>(withChoices: boolean = false): Promise<IQuestionResponse<T>> {
         const {
             question_id, created, question, question_num, topic, type_id, sent, expired, quiz_id, ticker,
             subject_id
         } = this.properties;
 
-        let choiceResponses: Array<IChoiceResponse> | undefined;
+        let choiceResponses: Array<IChoiceResponse<T>> | undefined;
         if (withChoices) {
             const choices = await this.choices();
-            choiceResponses = await Promise.all(choices.map(c => c.toResponseObject()));
+            choiceResponses = await Promise.all(choices.map(c => c.toResponseObject<T>()));
         }
 
         const [typeResponse, topicResponse, subjectResponse] = await Promise.all([
             QuestionTypeFactory.load(type_id).then(r => r!.toResponseObject()),
             TopicFactory.load(topic),
             subject_id ? SubjectFactory.loadById(subject_id).then(s => {
-                return s ? s.toResponseObject() : null;
+                return s ? s.toResponseObject() : Promise.resolve(null);
             }) : Promise.resolve(null)
         ]);
 

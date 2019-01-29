@@ -24,7 +24,8 @@ export async function postUser(event: hapi.Request): Promise<object> {
         throw Boom.badRequest('Invalid phone number');
     }
     if (user === null) {
-        user = await User.create(phone);
+        const userId = await User.create(phone);
+        user = (await UserFactory.load(userId))!;
         await user.convertInvitesToFriendRequests();
         if (referral) {
             try {

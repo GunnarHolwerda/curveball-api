@@ -1,6 +1,5 @@
 import { Database } from '../database';
 import { camelizeKeys } from '../../util/camelize-keys';
-import { QuestionCalculatorFactory } from '../factories/question-calculator-factory';
 import { omit } from '../../util/omit';
 
 export interface IQuestionCalculator {
@@ -25,10 +24,10 @@ export class QuestionCalculator {
         this.properties = { ...this._questionType };
     }
 
-    public static async create(qt: Pick<IQuestionCalculator, 'type_id' | 'function_name' | 'topic'>): Promise<QuestionCalculator> {
+    public static async create(qt: Pick<IQuestionCalculator, 'type_id' | 'function_name' | 'topic'>): Promise<number> {
         const sq = Database.instance.sq;
         const result = await sq.from(QUESTION_CALCULATOR_TABLE_NAME).insert({ ...qt }).return`calculator_id`;
-        return (await QuestionCalculatorFactory.load(result[0].calculator_id as number))!;
+        return result[0].calculator_id;
     }
 
     public toResponseObject(): Promise<IQuestionCalculator> {

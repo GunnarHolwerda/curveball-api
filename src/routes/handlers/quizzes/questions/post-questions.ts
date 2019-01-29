@@ -5,6 +5,8 @@ import { IChoiceResponse, IChoice, Choice } from '../../../../models/entities/qu
 import { IQuestion, Question } from '../../../../models/entities/question';
 import { QuizFactory } from '../../../../models/factories/quiz-factory';
 import { snakifyKeys } from '../../../../util/snakify-keys';
+import { QuestionFactory } from '../../../../models/factories/question-factory';
+import { ChoiceFactory } from '../../../../models/factories/choice-factory';
 
 export interface QuestionPayload {
     question: string;
@@ -50,12 +52,15 @@ export async function postQuestions(event: hapi.Request): Promise<object> {
     for (const question of payload.questions) {
         const questionToCreate = { ...question };
         delete questionToCreate.choices;
-        const q = await Question.create({ ...(questionToCreate as Partial<IQuestion>), quiz_id: quizId });
+        const questionId = await Question.create({ ...(questionToCreate as Partial<IQuestion>), quiz_id: quizId });
+        const q = (await QuestionFactory.load(questionId))!;
         createdQuestions.push(q);
 
         const choicePromises: Array<Promise<Choice>> = [];
         question.choices.forEach(c => {
-            choicePromises.push(Choice.create({ ...c, question_id: q.properties.question_id }));
+            choicePromises.push(Choice.create({ ...c, question_id: q.properties.question_id }).then(id => {
+                return ChoiceFactory.load(id) as Promise<Choice>;
+            }));
         });
 
         await Promise.all(choicePromises);

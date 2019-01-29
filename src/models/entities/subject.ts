@@ -1,7 +1,5 @@
 import { camelizeKeys } from '../../util/camelize-keys';
 import { SubjectType } from '../../types/subject-type';
-import { Choice } from './question-choice';
-import { ChoiceFactory } from '../factories/choice-factory';
 import { SubjectTypeTableMap } from '../factories/subject-factory';
 import { Database } from '../database';
 import { omit } from '../../util/omit';
@@ -25,10 +23,6 @@ export abstract class Subject<T extends ISubject> {
     async toResponseObject(): Promise<any> {
         const { subject_id, subject_type, topic } = this.properties;
         return camelizeKeys({ subject_id, subject_type, topic: await TopicFactory.load(topic) });
-    }
-
-    public async getRelatedChoices(): Promise<Array<Choice>> {
-        return ChoiceFactory.loadAllBySubjectId(this.properties.subject_id);
     }
 
     public get tableName(): string {

@@ -11,7 +11,7 @@ export async function postQuizReset(event: hapi.Request): Promise<object> {
     }
 
     quiz.properties.active = false;
-    quiz.properties.completed = false;
+    quiz.properties.completed_date = null;
     const questions = await quiz.getQuestions();
 
     for (const question of questions) {

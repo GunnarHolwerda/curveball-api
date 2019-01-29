@@ -10,7 +10,6 @@ import { POWERUP_TABLE_NAME } from './powerup';
 import { Analyticize, AnalyticsProperties } from '../../interfaces/analyticize';
 import { camelizeKeys } from '../../util/camelize-keys';
 import { ANSWER_TABLE_NAME } from './answer';
-import { QuizFactory } from '../factories/quiz-factory';
 import { omit } from '../../util/omit';
 
 export interface IQuiz {
@@ -18,7 +17,7 @@ export interface IQuiz {
     active: boolean;
     title: string;
     pot_amount: number;
-    completed: boolean;
+    completed_date: Date | null;
     created: Date;
     auth: boolean;
     deleted: boolean;
@@ -29,7 +28,7 @@ export interface IQuizResponse {
     active: boolean;
     title: string;
     potAmount: number;
-    completed: boolean;
+    completedDate: string;
     created: string;
     auth: boolean;
     deleted: boolean;
@@ -45,10 +44,10 @@ export class Quiz implements Cacheable, Analyticize {
         this.properties = { ...this._quiz };
     }
 
-    public static async create(quiz: Partial<IQuiz>): Promise<Quiz> {
+    public static async create(quiz: Partial<IQuiz>): Promise<string> {
         const sq = Database.instance.sq;
         const result = await sq.from(QUIZZES_TABLE_NAME).insert({ ...quiz }).return`quiz_id`;
-        return (await QuizFactory.load(result[0].quiz_id as string))!;
+        return result[0].quiz_id;
     }
 
     public async markUserAsIncorrect(userId: string): Promise<boolean> {

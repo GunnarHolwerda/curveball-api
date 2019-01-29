@@ -2,6 +2,7 @@ import * as Joi from 'joi';
 
 import * as hapi from 'hapi';
 import { IQuizResponse, IQuiz, Quiz } from '../../../models/entities/quiz';
+import { QuizFactory } from '../../../models/factories/quiz-factory';
 
 export const postQuizzesSchema = Joi.object().keys({
     title: Joi.string().required().description('The title of the quiz'),
@@ -22,7 +23,8 @@ export async function postQuizzes(event: hapi.Request): Promise<object> {
         auth: quizParams.auth,
         pot_amount: quizParams.potAmount
     };
-    const quiz = await Quiz.create(newQuiz);
+    const quizId = await Quiz.create(newQuiz);
+    const quiz = (await QuizFactory.load(quizId))!;
 
     return { quiz: await quiz.toResponseObject() };
 }

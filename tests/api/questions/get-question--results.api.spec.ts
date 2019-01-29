@@ -5,6 +5,7 @@ import { UserResources } from '../../resources/user-resources';
 import { expectHttpError } from '../../resources/test-helpers';
 import { QuestionsPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
 import { IChoiceResponse } from '../../../src/models/entities/question-choice';
+import { runFullQuiz } from '../helpers/run-full-quiz';
 
 
 describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
@@ -14,27 +15,8 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
 
     beforeAll(async () => {
         quizResources = new QuizResources();
-        const userResources = new UserResources();
-        const response = await quizResources.createQuiz({
-            title: uuid(),
-            potAmount: 500,
-        });
-        await quizResources.addQuestions(response.quiz.quizId, mockQuestionsPayload);
-        startedQuiz = await quizResources.startQuiz(response.quiz.quizId);
-        const { firstQuestion, quiz } = startedQuiz;
-        const answerPromises: Array<Promise<any>> = [];
-        for (let i = 0; i < TotalAnswers; i++) {
-            answerPromises.push(new Promise((resolve, reject) => {
-                return userResources.getNewUser().then((res) => {
-                    const specialQuizResources = new QuizResources(res.token);
-                    const randomChoice = getRandomChoice(firstQuestion.choices);
-                    specialQuizResources.answerQuestion(
-                        quiz.quizId, firstQuestion.questionId, randomChoice
-                    ).then(resolve).catch(reject);
-                }).catch(reject);
-            }));
-        }
-        await Promise.all(answerPromises);
+        const result = await runFullQuiz({ numberOfAnswers: TotalAnswers, questions: mockQuestionsPayload });
+        startedQuiz = result.quizStart;
     });
 
     it('should retrieve correct stats for answer results for a question', async () => {

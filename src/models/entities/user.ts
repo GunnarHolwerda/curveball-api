@@ -2,7 +2,6 @@ import * as Randomstring from 'randomstring';
 import { createUserJWT } from '../jwt';
 import { Powerup } from './powerup';
 import { Database } from '../database';
-import { UserFactory } from '../factories/user-factory';
 import { PowerupFactory } from '../factories/lives-factory';
 import { Analyticize, AnalyticsProperties } from '../../interfaces/analyticize';
 import { UserJwtClaims } from '../../interfaces/user-jwt-claims';
@@ -63,7 +62,7 @@ export class User implements Analyticize {
         this.properties = { ...this._user };
     }
 
-    public static async create(phoneNumber: string): Promise<User> {
+    public static async create(phoneNumber: string): Promise<string> {
         const formattedPhoneNumber = PhoneVerifier.getValidPhoneNumber(phoneNumber);
         if (formattedPhoneNumber === null) {
             throw new Error('Invalid phone number');
@@ -71,9 +70,7 @@ export class User implements Analyticize {
         const sq = Database.instance.sq;
         const result = await sq.from(USER_TABLE_NAME).insert({ phone: phoneNumber, photo: getAvatarUrl() }).return`user_id`;
         const userId = result[0].user_id;
-        const user = (await UserFactory.load(userId))!;
-        Analytics.instance.trackUser(user);
-        return user;
+        return userId;
     }
 
     public getJWTToken(): string {

@@ -1,13 +1,12 @@
-import { ChoiceFactory } from '../factories/choice-factory';
 import { Database } from '../database';
 import { Analyticize, AnalyticsProperties } from '../../interfaces/analyticize';
 import { snakifyKeys } from '../../util/snakify-keys';
 import { omit } from '../../util/omit';
 import { camelizeKeys } from '../../util/camelize-keys';
 import { SubjectFactory } from '../factories/subject-factory';
-import { ISubject, Subject } from './subject';
 import { QuestionFactory } from '../factories/question-factory';
 import { Question } from './question';
+import { SubjectTableResponse } from '../../interfaces/subject-table-response';
 
 export interface IChoice {
     choice_id: string;
@@ -18,10 +17,11 @@ export interface IChoice {
     score: number | null;
 }
 
-export interface IChoiceResponse {
+export interface IChoiceResponse<T = SubjectTableResponse | null> {
     choiceId: string;
     questionId: string;
     text: string;
+    subject: T;
     isAnswer?: boolean;
 }
 
@@ -34,11 +34,11 @@ export class Choice implements Analyticize {
         this.properties = { ...this._choice };
     }
 
-    public static async create(choice: Partial<IChoice>): Promise<Choice> {
+    public static async create(choice: Partial<IChoice>): Promise<string> {
         const params = snakifyKeys(choice);
         const sq = Database.instance.sq;
         const result = await sq.from(CHOICES_TABLE_NAME).insert(params).return`choice_id`;
-        return (await ChoiceFactory.load(result![0].choice_id))!;
+        return result![0].choice_id!;
     }
 
     public async save(): Promise<void> {
@@ -46,16 +46,12 @@ export class Choice implements Analyticize {
         await sq.from(CHOICES_TABLE_NAME).set({ ...omit(this.properties, ['choice_id']) }).where`choice_id = ${this._choice.choice_id}`;
     }
 
-    public async toResponseObject(): Promise<IChoiceResponse> {
+    public async toResponseObject<T>(): Promise<IChoiceResponse<T>> {
         const { subject_id } = this.properties;
-        let subject: Subject<ISubject> | null = null;
-        if (subject_id) {
-            subject = await SubjectFactory.loadById(subject_id);
-        }
 
         const response = {
             ...omit(this.properties, ['is_answer', 'subject_id']),
-            subject
+            subject: subject_id ? await SubjectFactory.loadById(subject_id) : null
         };
         return camelizeKeys(response);
     }
@@ -72,17 +68,5 @@ export class Choice implements Analyticize {
         return (async () => {
             return (await QuestionFactory.load(this.properties.question_id))!;
         })();
-    }
-
-
-    public async setScoreForSubject(subject: Subject<ISubject>): Promise<void> {
-        const question = await this.question;
-        const scorer = await question.getScorer();
-        if (scorer === null) {
-            return;
-        }
-        const score = await scorer.calculateScoreForSubject(subject, this);
-        this.properties.score = score;
-        await this.save();
     }
 }

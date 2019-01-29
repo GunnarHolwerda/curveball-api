@@ -12,8 +12,9 @@
     "preload-sport": "ts-node game-clock/load-teams-players.ts",
     "clean:images": "docker rmi $(docker images -qa -f 'dangling=true') || true ",
     "build:image": "npm run clean:images && docker build -t curveball/realtime .",
-    "lint": "tslint -p src/tsconfig.app.json",
-    "compile": "rimraf dist && tsc -p tsconfig.json"
+    "lint": "tslint -p src/tsconfig.app.json && tslint -p tests/tsconfig.test.json",
+    "compile": "rimraf dist && tsc -p src/tsconfig.app.json && tsc -p tests/tsconfig.test.json",
+    "detect-circular-dependencies": "npx madge --circular --extensions ts ./"
   },
   "pre-commit": [
     "lint",
