@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import { trustOwnCa } from './test-helpers';
 
 const jasmineSettings: { config: { [key: string]: string } } = require('../jasmine-api.json');
@@ -47,11 +47,9 @@ export class ApiResources {
         }
     }
 
-    protected handleError(err: any): void {
-        if (err.statusCode) {
-            console.error('An error occured', JSON.stringify(err));
-        }
-        throw err;
+    protected handleError(err: AxiosError): void {
+        const { method, url } = err.config;
+        throw new Error(`${method!.toUpperCase()} ${url}\nCode: ${err.code} Message: ${err.message}`);
     }
 
     protected initializeConfig(token?: string): void {

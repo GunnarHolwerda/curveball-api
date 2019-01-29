@@ -16,30 +16,47 @@ export interface FullQuizParameters {
     answeringUsers: Array<UserTokenResponse>;
     numberOfAnswers: number;
     questions: QuestionsPayload;
+    endQuestionNumber: number;
+    authenticateQuiz: boolean;
 }
 
 export async function runFullQuiz(params: Partial<FullQuizParameters> = {}): Promise<QuizResult> {
-    const { answeringUsers, numberOfAnswers, questions } = buildParamsWithDefaults(params);
+    const userTokenMap: { [userId: string]: string } = {};
+    const { answeringUsers, numberOfAnswers, questions, endQuestionNumber, authenticateQuiz } = buildParamsWithDefaults(params);
     const participants = [...answeringUsers, ...(await generateUsers(numberOfAnswers - answeringUsers.length))];
     const quizResources = new QuizResources();
     const response = await quizResources.createQuiz({
         title: uuid(),
         potAmount: 500,
+        auth: authenticateQuiz
     });
     await quizResources.addQuestions(response.quiz.quizId, questions);
     const startedQuiz = await quizResources.startQuiz(response.quiz.quizId);
-    const { firstQuestion, quiz } = startedQuiz;
+    const { quiz } = startedQuiz;
     const answerPromises: Array<Promise<any>> = [];
-    for (const p of participants) {
-        answerPromises.push(new Promise((resolve, reject) => {
-            const specialQuizResources = new QuizResources(p.token);
-            const randomChoice = getRandomChoice(firstQuestion.choices);
-            specialQuizResources.answerQuestion(
-                quiz.quizId, firstQuestion.questionId, randomChoice
-            ).then(resolve).catch(reject);
-        }));
+    const fullQuiz = await quizResources.getQuiz(quiz.quizId);
+    for (let i = 0; i <= endQuestionNumber - 1; i++) {
+
+        const question = fullQuiz.quiz.questions[i];
+        if (i > 0) {
+            await quizResources.startQuestion(fullQuiz.quiz.quizId, question.questionId);
+        }
+
+        for (const p of participants) {
+            answerPromises.push(new Promise((resolve, reject) => {
+                const specialQuizResources = new QuizResources(p.token);
+                const randomChoice = getRandomChoice(question.choices);
+                return specialQuizResources.answerQuestion(
+                    quiz.quizId, question.questionId, randomChoice, userTokenMap[p.user.userId]
+                ).then((r) => {
+                    userTokenMap[p.user.userId] = r.token;
+                    resolve();
+                }).catch(reject);
+            }));
+        }
+        await Promise.all(answerPromises);
     }
-    await Promise.all(answerPromises);
+
     return {
         quiz: response.quiz,
         questions: questions,
@@ -48,11 +65,15 @@ export async function runFullQuiz(params: Partial<FullQuizParameters> = {}): Pro
 }
 
 function buildParamsWithDefaults(params: Partial<FullQuizParameters>): FullQuizParameters {
-    const { answeringUsers, numberOfAnswers, questions } = params;
+    const { answeringUsers, numberOfAnswers, questions, endQuestionNumber, authenticateQuiz } = params;
+    const paramQuestions = questions === undefined ? mockQuestionsPayload : questions;
+    const endQuestionNum = endQuestionNumber === undefined ? paramQuestions.questions.length : endQuestionNumber;
     return {
         answeringUsers: answeringUsers === undefined ? [] : answeringUsers,
         numberOfAnswers: numberOfAnswers === undefined ? 15 : numberOfAnswers,
-        questions: questions === undefined ? mockQuestionsPayload : questions
+        questions: paramQuestions,
+        endQuestionNumber: endQuestionNum,
+        authenticateQuiz: authenticateQuiz || true
     };
 }
 
