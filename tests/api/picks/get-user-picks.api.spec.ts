@@ -1,5 +1,6 @@
 import { UserResources, UserTokenResponse } from '../../resources/user-resources';
 import { runFullQuiz, QuizResult } from '../helpers/run-full-quiz';
+import { mockQuestionsPayload } from '../mock-data';
 
 describe('GET /users/{userId}/picks', () => {
     let userResponse: UserTokenResponse;
@@ -13,13 +14,23 @@ describe('GET /users/{userId}/picks', () => {
     });
 
     beforeEach(async () => {
-        fullQuizRun = await runFullQuiz({ answeringUsers: [userResponse], authenticateQuiz: false });
-        console.log(fullQuizRun);
+        fullQuizRun = await runFullQuiz({
+            answeringUsers: [userResponse],
+            authenticateQuiz: false,
+            questions: {
+                questions: mockQuestionsPayload.questions.map(q => {
+                    return {
+                        ...q,
+                        choices: q.choices.map(c => ({ ...c, subjectId: 1000 }))
+                    };
+                })
+            }
+        });
     });
 
     it('should retrieve user picks', async () => {
         const picks = await userResources.getPicks(userResponse.user.userId);
-        expect(picks).toBeTruthy();
+        expect(picks.shows.find(s => s.quizId === fullQuizRun.quiz.quizId)).toBeDefined('Did not find show participated in');
     });
 
     it('should retrieve picks shows participated in that ended in the last 5 days', async () => {

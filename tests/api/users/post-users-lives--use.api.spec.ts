@@ -75,22 +75,6 @@ describe('POST /users/{userId}/lives:use', () => {
     });
 
     describe('Authorization', () => {
-        // TODO: Removing this until we are sure we want this functionality back
-        xit('should return 403 if user has not failed a question', async () => {
-            const { quiz, firstQuestion } = startResponse;
-            const { user, token } = await userResources.getNewUser();
-            // Give user a life by adding a user with their referral code
-            await userResources.getNewUser(user.username);
-            userResources.token = token;
-            quizResources.token = token;
-            const quizToken = (await quizResources.answerQuestion(
-                quiz.quizId,
-                questions.questions[0].questionId,
-                getRightAnswer(firstQuestion.questionId, quizQuestions)
-            )).token;
-            await expectHttpError(userResources.useLife(user.userId, quizToken), 403, 'User has not failed a question');
-        });
-
         it('should return 403 if user has zero lives', async () => {
             const { quiz, firstQuestion } = startResponse;
             const { user, token } = await userResources.getNewUser();
@@ -120,10 +104,10 @@ describe('POST /users/{userId}/lives:use', () => {
         return questions.questions.find(q => q.questionId === questionId)!.choices[1].choiceId;
     }
 
-    function getRightAnswer(questionId: string, originalQuestions: Array<QuestionPayload>): string {
-        const question = questions.questions.find(q => q.questionId === questionId)!;
-        const correctAnswerText = originalQuestions
-            .find(q => q.question === question.question)!.choices.find(c => c.isAnswer === true)!.choiceId;
-        return question.choices.find(c => c.text === correctAnswerText)!.choiceId;
-    }
+    // function getRightAnswer(questionId: string, originalQuestions: Array<IQuestionResponse>): string {
+    //     const question = questions.questions.find(q => q.questionId === questionId)!;
+    //     const correctAnswerText = originalQuestions
+    //         .find(q => q.question === question.question)!.choices.find(c => c.isAnswer === true)!.choiceId;
+    //     return question.choices.find(c => c.text === correctAnswerText)!.choiceId;
+    // }
 });

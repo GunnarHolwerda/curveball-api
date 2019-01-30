@@ -1,7 +1,7 @@
 import * as Joi from 'joi';
 import * as Boom from 'boom';
 import * as hapi from 'hapi';
-import { IChoiceResponse, IChoice, Choice } from '../../../../models/entities/question-choice';
+import { IChoice, Choice } from '../../../../models/entities/question-choice';
 import { IQuestion, Question } from '../../../../models/entities/question';
 import { QuizFactory } from '../../../../models/factories/quiz-factory';
 import { snakifyKeys } from '../../../../util/snakify-keys';
@@ -14,7 +14,14 @@ export interface QuestionPayload {
     ticker: string;
     topic: number;
     typeId: number;
-    choices: Array<Partial<IChoiceResponse>>;
+    subjectId?: number;
+    choices: Array<ChoicePayload>;
+}
+
+export interface ChoicePayload {
+    text: string;
+    subjectId?: number | null;
+    isAnswer: boolean;
 }
 export interface QuestionsPayload {
     questions: Array<QuestionPayload>;

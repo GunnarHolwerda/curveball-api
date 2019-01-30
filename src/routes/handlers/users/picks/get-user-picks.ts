@@ -8,6 +8,9 @@ import { QUIZZES_TABLE_NAME } from '../../../../models/entities/quiz';
 import { QUESTION_TABLE_NAME, IQuestionResponse } from '../../../../models/entities/question';
 import { ANSWER_TABLE_NAME } from '../../../../models/entities/answer';
 import * as _ from 'lodash';
+import { SubjectFactory } from '../../../../models/factories/subject-factory';
+import { TopicFactory } from '../../../../models/factories/topic-factory';
+import { QuestionTypeFactory } from '../../../../models/factories/question-type-factory';
 
 export interface Picks {
     shows: Array<{
@@ -31,11 +34,11 @@ interface PicksQueryResponse {
     answer_id: string;
     question_id: string;
     question: string;
-    question_subject_id: number;
+    question_subject_id: number | null;
     question_topic_id: number;
     question_type_id: number;
-    choice_subject_id: number;
-    choice_score: number;
+    choice_subject_id: number | null;
+    choice_score: number | null;
     choice_id: number;
     choice: string;
 }
@@ -84,6 +87,7 @@ export async function getUserPicks(event: hapi.Request): Promise<object> {
     for (const quizId in showPicks) {
         if (showPicks.hasOwnProperty(quizId)) {
             const showData = showPicks[quizId];
+            const [qSubject, topic, type, cSubject] = await buildPicksData(showData[0]);
             response.push(
                 {
                     quizId: quizId,
@@ -95,12 +99,14 @@ export async function getUserPicks(event: hapi.Request): Promise<object> {
                         question: {
                             questionId: s.question_id,
                             question: s.question,
-                            subject: s.question_subject_id
+                            subject: qSubject,
+                            type,
+                            topic
                         },
                         choice: {
                             choiceId: s.choice_id,
                             score: s.choice_score,
-                            subject: s.choice_subject_id,
+                            subject: cSubject,
                             text: s.choice
                         }
                     }))
@@ -114,4 +120,13 @@ export async function getUserPicks(event: hapi.Request): Promise<object> {
     };
 }
 
-
+async function buildPicksData(data: PicksQueryResponse): Promise<any> {
+    const { question_subject_id, choice_subject_id, question_topic_id, question_type_id } = data;
+    const result = await Promise.all([
+        question_subject_id ? SubjectFactory.loadById(question_subject_id).then(r => r!.toResponseObject()) : Promise.resolve(null),
+        TopicFactory.load(question_topic_id),
+        QuestionTypeFactory.load(question_type_id).then(r => r!.toResponseObject()),
+        choice_subject_id ? SubjectFactory.loadById(choice_subject_id).then(r => r!.toResponseObject()) : Promise.resolve(null)
+    ]);
+    return result;
+}
