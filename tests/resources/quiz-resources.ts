@@ -33,10 +33,11 @@ export interface QuizStartResponse {
     firstQuestion: IQuestionResponse;
 }
 
-export interface QuizCompleteResponse {
-    users: Array<IUserResponse>;
-    amountWon: string;
-}
+// TODO: Make this the response of the completed quiz data
+// export interface QuizCompleteResponse {
+//     users: Array<IUserResponse>;
+//     amountWon: string;
+// }
 
 export class QuizResources extends ApiResources {
 
@@ -102,8 +103,8 @@ export class QuizResources extends ApiResources {
         return this.makeInternalRequest(() => this.post<FullQuizResponse>(`/quizzes/${quizId}/reset`));
     }
 
-    public async completeQuiz(quizId: string): Promise<QuizCompleteResponse> {
-        return this.makeInternalRequest(() => this.post<QuizCompleteResponse>(`/quizzes/${quizId}/complete`));
+    public async completeQuiz(quizId: string): Promise<string> {
+        return this.makeInternalRequest(() => this.post<string>(`/quizzes/${quizId}/complete`));
     }
 
     public async deleteQuiz(quizId: string): Promise<void> {

@@ -13,12 +13,12 @@ describe('POST /quizzes/{quizId}/complete', () => {
     let quiz: IQuizResponse;
     let questions: Array<IQuestionResponse>;
     let rightUser: IUserResponse;
-    let wrongUser: IUserResponse;
+    // let wrongUser: IUserResponse;
     let wrongUserResponse: UserTokenResponse;
     let rightUserResponse: UserTokenResponse;
     let userResources: UserResources;
     let startResponse: QuizStartResponse;
-    let wrongUserQt: string;
+    // let wrongUserQt: string;
 
     beforeEach(async () => {
         quizResources = new QuizResources();
@@ -49,7 +49,7 @@ describe('POST /quizzes/{quizId}/complete', () => {
         const { firstQuestion } = startResponse;
         userResources = new UserResources();
         wrongUserResponse = await userResources.getNewUser();
-        wrongUser = wrongUserResponse.user;
+        // wrongUser = wrongUserResponse.user;
         rightUserResponse = await userResources.getNewUser();
         rightUser = rightUserResponse.user;
 
@@ -58,11 +58,11 @@ describe('POST /quizzes/{quizId}/complete', () => {
         const correctAnswer = question.choices.find(c => c.isAnswer!)!.text!;
 
         quizResources.token = wrongUserResponse.token;
-        const wrongAnswer = questions
-            .find(q => q.questionId === firstQuestion.questionId)!.choices
-            .find(c => c.text !== correctAnswer)!.choiceId;
-        const { token: wrongUserToken } = await quizResources.answerQuestion(quiz.quizId, questionId, wrongAnswer);
-        wrongUserQt = wrongUserToken;
+        // const wrongAnswer = questions
+        //     .find(q => q.questionId === firstQuestion.questionId)!.choices
+        //     .find(c => c.text !== correctAnswer)!.choiceId;
+        // const { token: wrongUserToken } = await quizResources.answerQuestion(quiz.quizId, questionId, wrongAnswer);
+        // wrongUserQt = wrongUserToken;
 
         quizResources.token = rightUserResponse.token;
         const correctAnswerChoice = questions
@@ -71,29 +71,30 @@ describe('POST /quizzes/{quizId}/complete', () => {
         await quizResources.answerQuestion(quiz.quizId, questionId, correctAnswerChoice);
     });
 
-    it('should return users who have not submitted an incorrect answer', async () => {
-        const { users } = await quizResources.completeQuiz(quiz.quizId);
-        expect(users.find(u => u.userId === rightUser.userId)).toBeDefined('Unable to find user who only submitted correct answers');
-        expect(users.find(u => u.userId === wrongUser.userId)).toBeUndefined('Found user who answered incorrectly');
-    });
-
     it('should return 404 if quiz does not exist', async () => {
         await expectHttpError(quizResources.completeQuiz(uuid()), 404);
     });
 
-    it('should include users who used a life', async () => {
-        await userResources.getNewUser(wrongUser.username);
-        userResources.token = wrongUserResponse.token;
-        await userResources.useLife(wrongUser.userId, wrongUserQt);
-        const { users } = await quizResources.completeQuiz(quiz.quizId);
-        expect(users.find(u => u.userId === rightUser.userId)).toBeDefined('Unable to find user who only submitted correct answers');
-        expect(users.find(u => u.userId === wrongUser.userId)).toBeDefined('User who used life was excluded');
-    });
+    // TODO: Resurrect these tests once we have endpoint to get data about completed quiz
+    // it('should return users who have not submitted an incorrect answer', async () => {
+    //     const { users } = await quizResources.completeQuiz(quiz.quizId);
+    //     expect(users.find(u => u.userId === rightUser.userId)).toBeDefined('Unable to find user who only submitted correct answers');
+    //     expect(users.find(u => u.userId === wrongUser.userId)).toBeUndefined('Found user who answered incorrectly');
+    // });
 
-    it('should return the amount won', async () => {
-        const { amountWon, users } = await quizResources.completeQuiz(quiz.quizId);
-        expect(amountWon).toBe((quiz.potAmount / users.length).toFixed(2), 'Amount won was not divided among winning users correctly');
-    });
+    // it('should include users who used a life', async () => {
+    //     await userResources.getNewUser(wrongUser.username);
+    //     userResources.token = wrongUserResponse.token;
+    //     await userResources.useLife(wrongUser.userId, wrongUserQt);
+    //     const { users } = await quizResources.completeQuiz(quiz.quizId);
+    //     expect(users.find(u => u.userId === rightUser.userId)).toBeDefined('Unable to find user who only submitted correct answers');
+    //     expect(users.find(u => u.userId === wrongUser.userId)).toBeDefined('User who used life was excluded');
+    // });
+
+    // it('should return the amount won', async () => {
+    //     const { amountWon, users } = await quizResources.completeQuiz(quiz.quizId);
+    //     expect(amountWon).toBe((quiz.potAmount / users.length).toFixed(2), 'Amount won was not divided among winning users correctly');
+    // });
 
     it('should mark quiz as completed and inactive', async () => {
         await quizResources.completeQuiz(quiz.quizId);
