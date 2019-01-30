@@ -56,6 +56,7 @@ export async function runFullQuiz(params: Partial<FullQuizParameters> = {}): Pro
         }
         await Promise.all(answerPromises);
     }
+    await quizResources.completeQuiz(quiz.quizId);
 
     return {
         quiz: response.quiz,
