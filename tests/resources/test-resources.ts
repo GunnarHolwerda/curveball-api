@@ -49,7 +49,9 @@ export class ApiResources {
 
     protected handleError(err: AxiosError): void {
         const { method, url } = err.config;
-        throw new Error(`${method!.toUpperCase()} ${url}\nCode: ${err.code} Message: ${err.message}`);
+        const error = err;
+        error.message = `${method!.toUpperCase()} ${url}\nCode: ${err.response!.status} Message: ${err.message}`;
+        throw error;
     }
 
     protected initializeConfig(token?: string): void {

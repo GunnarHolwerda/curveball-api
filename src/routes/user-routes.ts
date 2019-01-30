@@ -75,7 +75,6 @@ export function userRoutes(server: hapi.Server, _: IoServer): void {
             path: '/users/{userId}/picks',
             method: 'get',
             options: {
-                pre: [onlyCurrentUser],
                 description: 'Retrieve picks for a user',
                 notes: 'Retrieves picks by show for the user specified'
             },
