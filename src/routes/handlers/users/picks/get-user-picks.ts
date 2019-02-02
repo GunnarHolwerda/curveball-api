@@ -2,15 +2,17 @@
 import * as hapi from 'hapi';
 import * as Boom from 'boom';
 import { UserFactory } from '../../../../models/factories/user-factory';
-import { IChoiceResponse, CHOICES_TABLE_NAME } from '../../../../models/entities/question-choice';
+import { CHOICES_TABLE_NAME } from '../../../../models/entities/question-choice';
 import { Database } from '../../../../models/database';
 import { QUIZZES_TABLE_NAME } from '../../../../models/entities/quiz';
-import { QUESTION_TABLE_NAME, IQuestionResponse } from '../../../../models/entities/question';
+import { QUESTION_TABLE_NAME } from '../../../../models/entities/question';
 import { ANSWER_TABLE_NAME } from '../../../../models/entities/answer';
 import * as _ from 'lodash';
 import { SubjectFactory } from '../../../../models/factories/subject-factory';
-import { TopicFactory } from '../../../../models/factories/topic-factory';
+import { TopicFactory, ITopicResponse } from '../../../../models/factories/topic-factory';
 import { QuestionTypeFactory } from '../../../../models/factories/question-type-factory';
+import { IQuestionTypeResponse } from '../../../../models/entities/question-type';
+import { SimpleSubjectResponse } from '../../../../interfaces/simple-subject-response';
 
 export interface Picks {
     shows: Array<{
@@ -20,8 +22,19 @@ export interface Picks {
         completedDate: string | null;
         picks: Array<{
             answerId: string;
-            question: IQuestionResponse<any>
-            choice: IChoiceResponse<any>
+            question: {
+                questionId: string;
+                question: string,
+                subject: SimpleSubjectResponse,
+                type: IQuestionTypeResponse,
+                topic: ITopicResponse;
+            }
+            choice: {
+                choiceId: string;
+                score: number;
+                subject: SimpleSubjectResponse,
+                text: string;
+            }
         }>;
     }>;
 }
@@ -124,10 +137,10 @@ export async function getUserPicks(event: hapi.Request): Promise<object> {
 async function buildPicksData(data: PicksQueryResponse): Promise<any> {
     const { question_subject_id, choice_subject_id, question_topic_id, question_type_id } = data;
     const result = await Promise.all([
-        question_subject_id ? SubjectFactory.loadById(question_subject_id).then(r => r!.toResponseObject()) : Promise.resolve(null),
+        question_subject_id ? SubjectFactory.loadById(question_subject_id).then(r => r!.asQuestionResponse()) : Promise.resolve(null),
         TopicFactory.load(question_topic_id),
         QuestionTypeFactory.load(question_type_id).then(r => r!.toResponseObject()),
-        choice_subject_id ? SubjectFactory.loadById(choice_subject_id).then(r => r!.toResponseObject()) : Promise.resolve(null)
+        choice_subject_id ? SubjectFactory.loadById(choice_subject_id).then(r => r!.asQuestionResponse()) : Promise.resolve(null)
     ]);
     return result;
 }

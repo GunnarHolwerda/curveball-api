@@ -4,6 +4,7 @@ import { SportsApi } from '../data-loader/sports-api';
 import { SportGame } from './sport-game';
 import { NFLPlayer } from './nfl-player';
 import { NFLTeam } from './nfl-team';
+import { SimpleSubjectResponse } from '../../interfaces/simple-subject-response';
 
 export interface NFLPassingStatistics {
     yards: number;
@@ -121,6 +122,24 @@ export class NFLGame extends SportGame<NFLResponse.Game, NFLResponse.GameStatist
             kicking: this.getKickingStats(team, playerId),
             returning: this.getReturnStats(team, playerId),
             fumbles: this.getStats<NFLFumbleStatistics>('fumbles', team, playerId, ['fumbles'])
+        };
+    }
+
+    async asQuestionResponse(): Promise<SimpleSubjectResponse> {
+        const { home, away, scheduled } = this.properties.json as NFLResponse.Game;
+        let status: 'in-progress' | 'finished' | 'not-started' = 'not-started';
+        let description = `${home.name} vs. ${away.name} @ ${scheduled.toDateString()}`;
+        if (this.properties.statistics) {
+            const { status: currentStatus, summary, quarter, clock } = (this.properties.statistics as NFLResponse.GameStatistics);
+            const { home: h, away: a } = summary;
+            status = currentStatus !== 'closed' ? 'in-progress' : 'finished';
+            description = `${home.alias} ${h.points} vs. ${away.alias} ${a.points} Q${quarter} ${clock}`;
+        }
+        return {
+            subjectId: this.properties.subject_id,
+            headline: `${home.name} vs. ${away.name}`,
+            status: status,
+            description: description
         };
     }
 }

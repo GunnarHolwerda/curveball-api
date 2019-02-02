@@ -4,6 +4,7 @@ import { SportGame } from './sport-game';
 import { NBASportsApi } from '../data-loader/nba-sports-api';
 import { NBAPlayer } from './nba-player';
 import { NBATeam } from './nba-team';
+import { SimpleSubjectResponse } from '../../interfaces/simple-subject-response';
 
 export interface NBAPlayerStatistics {
     points: number;
@@ -15,7 +16,6 @@ export interface NBAPlayerStatistics {
 }
 
 export class NBAGame extends SportGame<NBAResponse.Game, NBAResponse.GameStatistics> implements BasicSportGame {
-
     getStatsForTeam(_: NBATeam): null {
         // NBA Teams don't get selected for fantasy
         return null;
@@ -44,5 +44,22 @@ export class NBAGame extends SportGame<NBAResponse.Game, NBAResponse.GameStatist
 
     getSportsApi(): NBASportsApi {
         return new NBASportsApi();
+    }
+
+    async asQuestionResponse(): Promise<SimpleSubjectResponse> {
+        const { home, away, scheduled } = this.properties.json as NBAResponse.Game;
+        let status: 'in-progress' | 'finished' | 'not-started' = 'not-started';
+        let description = `${home.name} vs. ${away.name} @ ${scheduled.toDateString()}`;
+        if (this.properties.statistics) {
+            const { status: currentStatus, home: h, away: a, quarter, clock } = (this.properties.statistics as NBAResponse.GameStatistics);
+            status = currentStatus !== 'closed' ? 'in-progress' : 'finished';
+            description = `${home.alias} ${h.points} vs. ${away.alias} ${a.points} Q${quarter} ${clock}`;
+        }
+        return {
+            subjectId: this.properties.subject_id,
+            headline: `${home.name} vs. ${away.name}`,
+            status: status,
+            description: description
+        };
     }
 }

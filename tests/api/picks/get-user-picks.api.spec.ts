@@ -12,7 +12,8 @@ describe('GET /users/{userId}/picks', () => {
 
     beforeAll(async () => {
         userResources = new UserResources();
-        userResponse = await userResources.getNewUser();
+        // userResponse = await userResources.getNewUser();
+        userResponse = await userResources.verifyUser('e5d2b59e-1d9b-4ca9-a36c-adb209ecf719');
         userResources = new UserResources(userResponse.token);
     });
 

@@ -30,7 +30,9 @@ export interface IQuestion {
     quiz_id: string;
 }
 
-export interface IQuestionResponse<T = SubjectTableResponse | null> {
+type OptionalSubject = SubjectTableResponse | null;
+
+export interface IQuestionResponse<TQuestionSubject = OptionalSubject, TChoiceSubject = OptionalSubject> {
     questionId: string;
     created: string;
     question: string;
@@ -41,7 +43,8 @@ export interface IQuestionResponse<T = SubjectTableResponse | null> {
     sent: boolean;
     expired: string;
     quizId: string;
-    choices: Array<IChoiceResponse<T>>;
+    subject: TQuestionSubject;
+    choices: Array<IChoiceResponse<TChoiceSubject>>;
 }
 
 export interface QuestionResults {

@@ -4,6 +4,7 @@ import { SubjectTypeTableMap } from '../factories/subject-factory';
 import { Database } from '../database';
 import { omit } from '../../util/omit';
 import { TopicFactory } from '../factories/topic-factory';
+import { SimpleSubjectResponse } from '../../interfaces/simple-subject-response';
 
 export interface ISubject {
     subject_id: number;
@@ -38,4 +39,12 @@ export abstract class Subject<T extends ISubject> {
     }
 
     abstract getRelatedSubjects(): Promise<Array<Subject<ISubject>>>;
+    async asQuestionResponse(): Promise<SimpleSubjectResponse> {
+        return {
+            subjectId: this.properties.subject_id,
+            headline: 'none',
+            description: 'none',
+            status: 'finished'
+        };
+    }
 }

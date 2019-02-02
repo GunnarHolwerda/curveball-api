@@ -9,6 +9,7 @@ import {
     NFLRushingStatistics
 } from './nfl-game';
 import { SportPlayer, SportPlayerResponse } from './sport-player';
+import { SimpleSubjectResponse } from '../../interfaces/simple-subject-response';
 
 
 export class NFLPlayer extends SportPlayer<NFLResponse.Player> {
@@ -28,6 +29,17 @@ export class NFLPlayer extends SportPlayer<NFLResponse.Player> {
         const fumbleScore = this.calculateFumbleScore(statistics.fumbles);
         const kickingScore = this.calculateKickingScore(statistics.kicking);
         return passingScore + rushingScore + receivingScore + returnScore + fumbleScore + kickingScore;
+    }
+
+    async asQuestionResponse(): Promise<SimpleSubjectResponse> {
+        const { fullName, position } = await this.playerResponse();
+        // TODO: Load current game information for player and then populate status and description from that
+        return {
+            subjectId: this.properties.subject_id,
+            headline: fullName,
+            status: 'in-progress',
+            description: position
+        };
     }
 
     private calculateKickingScore(statistics: NFLKickingStatistics): number {
