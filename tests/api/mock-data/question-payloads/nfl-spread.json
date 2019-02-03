@@ -9,34 +9,46 @@
             "subjectId": 14,
             "choices": [
                 {
-                    "text": "Kansas City Chiefs (-4)",
+                    "text": "Kansas City Chiefs (+5)",
                     "subjectId": 12,
-                    "isAnswer": false
+                    "isAnswer": false,
+                    "data": {
+                        "spread": "+5"
+                    }
                 },
                 {
-                    "text": "Tennessee Titans (+4)",
+                    "text": "Tennessee Titans (-5)",
                     "subjectId": 2,
-                    "isAnswer": false
+                    "isAnswer": false,
+                    "data": {
+                        "spread": "-5"
+                    }
                 }
             ]
         },
         {
-            "question": "New Orleans Saints vs. Carolina Panthers",
+            "question": "New England Patriots vs. Jacksonville Jaguars",
             "questionNum": 2,
-            "ticker": "NO vs. CAR",
+            "ticker": "NE vs. JAC",
             "topic": 2,
             "typeId": 2,
-            "subjectId": 16,
+            "subjectId": 23,
             "choices": [
                 {
-                    "text": "New Orleans Saints (+2)",
-                    "subjectId": 7,
-                    "isAnswer": false
+                    "text": "New England Patriots (+5)",
+                    "subjectId": 3,
+                    "isAnswer": false,
+                    "data": {
+                        "spread": "+5"
+                    }
                 },
                 {
-                    "text": "Carolina Panthers (-2)",
-                    "subjectId": 11,
-                    "isAnswer": false
+                    "text": "Jacksonville Jaguars (-5)",
+                    "subjectId": 10,
+                    "isAnswer": false,
+                    "data": {
+                        "spread": "-5"
+                    }
                 }
             ]
         },
@@ -49,34 +61,46 @@
             "subjectId": 17,
             "choices": [
                 {
-                    "text": "Jacksonville Jaguars (+1.5)",
+                    "text": "Jacksonville Jaguars (+3)",
                     "subjectId": 10,
-                    "isAnswer": false
+                    "isAnswer": false,
+                    "data": {
+                        "spread": "+3"
+                    }
                 },
                 {
-                    "text": "Buffalo Bills (-1.5)",
+                    "text": "Buffalo Bills (-3)",
                     "subjectId": 13,
-                    "isAnswer": false
+                    "isAnswer": false,
+                    "data": {
+                        "spread": "-3"
+                    }
                 }
             ]
         },
         {
-            "question": "Philadelphia Eagles vs. Minnesota Vikings",
+            "question": "Philadelphia Eagles vs. Atlanta Falcons",
             "questionNum": 4,
-            "ticker": "PHI vs. MIN",
+            "ticker": "PHI vs. ATL",
             "topic": 2,
             "typeId": 2,
-            "subjectId": 22,
+            "subjectId": 19,
             "choices": [
                 {
-                    "text": "Philadelphia Eagles (+10)",
+                    "text": "Philadelphia Eagles (-1.5)",
                     "subjectId": 5,
-                    "isAnswer": false
+                    "isAnswer": false,
+                    "data": {
+                        "spread": "-1.5"
+                    }
                 },
                 {
-                    "text": "Minnesota Vikings (-10)",
-                    "subjectId": 4,
-                    "isAnswer": false
+                    "text": "Atlanta Falcons (+1.5)",
+                    "subjectId": 8,
+                    "isAnswer": false,
+                    "data": {
+                        "spread": "+1.5"
+                    }
                 }
             ]
         }

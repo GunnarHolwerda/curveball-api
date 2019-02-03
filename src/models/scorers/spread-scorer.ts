@@ -4,8 +4,8 @@ import { BasicSportGame } from '../../interfaces/basic-sport-game';
 import { SportTeam } from '../subjects/sport-team';
 
 export class SpreadScorer extends Scorer {
-    async calculateScoreForSubject(selectedTeam: SportTeam<object>, choice: Choice): Promise<number> {
-        const selectionIsFavored = choice.properties.text.startsWith('-');
+    async calculateScoreForSubject(selectedTeam: SportTeam<object>, choice: Choice<{ spread: string }>): Promise<number> {
+        const selectionIsFavored = choice.properties.data.spread.startsWith('-');
         const questionSubject: BasicSportGame = (await this.question.subject<BasicSportGame>())!;
         const home = questionSubject.getHomeTeam();
         const away = questionSubject.getAwayTeam();

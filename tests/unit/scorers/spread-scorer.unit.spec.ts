@@ -22,7 +22,7 @@ describe('SpreadScorer', () => {
         } as NFLGame;
     };
 
-    const createMockChoice = (selection: string, teamId: string): Choice => {
+    const createMockChoice = (selection: string, teamId: string): Choice<{ spread: string }> => {
         const spiedSubjectFactory = spy(SubjectFactory);
         when(spiedSubjectFactory.load(anything(), anything())).thenReturn(Promise.resolve({ properties: { external_id: teamId } } as any));
         return {

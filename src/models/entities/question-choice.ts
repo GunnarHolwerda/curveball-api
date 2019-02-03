@@ -8,29 +8,30 @@ import { QuestionFactory } from '../factories/question-factory';
 import { Question } from './question';
 import { SubjectTableResponse } from '../../interfaces/subject-table-response';
 
-export interface IChoice {
+export interface IChoice<T = null> {
     choice_id: string;
     question_id: string;
     text: string;
     is_answer: boolean;
     subject_id: number | null;
     score: number | null;
+    data: T;
 }
 
-export interface IChoiceResponse<T = SubjectTableResponse | null> {
+export interface IChoiceResponse<TSubject = SubjectTableResponse | null> {
     choiceId: string;
     questionId: string;
     text: string;
-    subject: T;
+    subject: TSubject;
     isAnswer?: boolean;
 }
 
 export const CHOICES_TABLE_NAME = 'questions_choices';
 
-export class Choice implements Analyticize {
-    public properties: IChoice;
+export class Choice<TData = null> implements Analyticize {
+    public properties: IChoice<TData>;
 
-    constructor(private _choice: IChoice) {
+    constructor(private _choice: IChoice<TData>) {
         this.properties = { ...this._choice };
     }
 
@@ -50,7 +51,7 @@ export class Choice implements Analyticize {
         const { subject_id } = this.properties;
 
         const response = {
-            ...omit(this.properties, ['is_answer', 'subject_id']),
+            ...omit(this.properties, ['is_answer', 'subject_id', 'data']),
             subject: subject_id ? await SubjectFactory.loadById(subject_id) : null
         };
         return camelizeKeys(response);
