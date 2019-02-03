@@ -14,7 +14,7 @@ export class QuizFactory {
 
     public static async loadAll(includeDeleted: boolean = false): Promise<Array<Quiz>> {
         const q = Database.instance.sq;
-        let query = q.from(QUIZZES_TABLE_NAME).where`deleted = ${false}`;
+        let query = q.from(QUIZZES_TABLE_NAME).where`deleted = ${false}`.order({ by: 'created', sort: 'desc' });
         if (includeDeleted) {
             query = query.or`deleted = ${true}`;
         }
