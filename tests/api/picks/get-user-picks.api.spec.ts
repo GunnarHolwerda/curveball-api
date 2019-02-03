@@ -1,6 +1,6 @@
 import { UserResources, UserTokenResponse } from '../../resources/user-resources';
 import { runFullQuiz, QuizResult } from '../helpers/run-full-quiz';
-import { mockManualQuestionsPayload, nflSpreadQuestionPayload } from '../mock-data';
+import { nflSpreadQuestionPayload } from '../mock-data';
 import { QuizResources } from '../../resources/quiz-resources';
 import { expectHttpError } from '../../resources/test-helpers';
 import * as uuid from 'uuid/v4';
@@ -21,15 +21,7 @@ describe('GET /users/{userId}/picks', () => {
         beforeEach(async () => {
             fullQuizRun = await runFullQuiz({
                 answeringUsers: [userResponse],
-                authenticateQuiz: false,
-                questions: {
-                    questions: mockManualQuestionsPayload.questions.map(q => {
-                        return {
-                            ...q,
-                            choices: q.choices.map(c => ({ ...c, subjectId: 1000 }))
-                        };
-                    })
-                }
+                authenticateQuiz: false
             });
         });
 

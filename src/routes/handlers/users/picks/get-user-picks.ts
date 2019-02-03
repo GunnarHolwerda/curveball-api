@@ -101,29 +101,32 @@ export async function getUserPicks(event: hapi.Request): Promise<object> {
     for (const quizId in showPicks) {
         if (showPicks.hasOwnProperty(quizId)) {
             const showData = showPicks[quizId];
-            const [qSubject, topic, type, cSubject] = await buildPicksData(showData[0]);
+            const resolvedShowData = await buildPicksData(showData);
             response.push(
                 {
                     quizId: quizId,
                     title: showData[0].title,
                     potAmount: showData[0].pot_amount,
                     completedDate: showData[0].completed_date,
-                    picks: showData.map((s) => ({
-                        answerId: s.answer_id,
-                        question: {
-                            questionId: s.question_id,
-                            question: s.question,
-                            subject: qSubject,
-                            type,
-                            topic
-                        },
-                        choice: {
-                            choiceId: s.choice_id,
-                            score: s.choice_score,
-                            subject: cSubject,
-                            text: s.choice
-                        }
-                    }))
+                    picks: showData.map((s, i) => {
+                        const { questionSubject, topic, type, subject: cSubject } = resolvedShowData[i];
+                        return {
+                            answerId: s.answer_id,
+                            question: {
+                                questionId: s.question_id,
+                                question: s.question,
+                                subject: questionSubject,
+                                topic,
+                                type
+                            },
+                            choice: {
+                                choiceId: s.choice_id,
+                                score: s.choice_score,
+                                subject: cSubject,
+                                text: s.choice
+                            }
+                        };
+                    })
                 }
             );
         }
@@ -134,13 +137,31 @@ export async function getUserPicks(event: hapi.Request): Promise<object> {
     };
 }
 
-async function buildPicksData(data: PicksQueryResponse): Promise<any> {
-    const { question_subject_id, choice_subject_id, question_topic_id, question_type_id } = data;
-    const result = await Promise.all([
-        question_subject_id ? SubjectFactory.loadById(question_subject_id).then(r => r!.asQuestionResponse()) : Promise.resolve(null),
-        TopicFactory.load(question_topic_id),
-        QuestionTypeFactory.load(question_type_id).then(r => r!.toResponseObject()),
-        choice_subject_id ? SubjectFactory.loadById(choice_subject_id).then(r => r!.asQuestionResponse()) : Promise.resolve(null)
-    ]);
-    return result;
+interface AggregatedPicksData {
+    questionSubject: SimpleSubjectResponse | null;
+    topic: ITopicResponse | null;
+    type: IQuestionTypeResponse | null;
+    subject: SimpleSubjectResponse | null;
+}
+
+async function buildPicksData(
+    data: Array<PicksQueryResponse>
+): Promise<Array<AggregatedPicksData>> {
+    const pickDataPromises = data.map(async (d) => {
+        const { question_subject_id, choice_subject_id, question_topic_id, question_type_id } = d;
+        const result = await Promise.all([
+            question_subject_id ? SubjectFactory.loadById(question_subject_id).then(r => r!.asQuestionResponse()) : Promise.resolve(null),
+            TopicFactory.load(question_topic_id),
+            QuestionTypeFactory.load(question_type_id).then(r => r!.toResponseObject()),
+            choice_subject_id ? SubjectFactory.loadById(choice_subject_id).then(r => r!.asQuestionResponse()) : Promise.resolve(null)
+        ]);
+        return {
+            questionSubject: result[0],
+            topic: result[1],
+            type: result[2],
+            subject: result[3]
+        };
+    });
+
+    return await Promise.all(pickDataPromises);
 }
