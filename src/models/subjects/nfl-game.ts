@@ -128,12 +128,14 @@ export class NFLGame extends SportGame<NFLResponse.Game, NFLResponse.GameStatist
     async asQuestionResponse(): Promise<SimpleSubjectResponse> {
         const { home, away, scheduled } = this.properties.json as NFLResponse.Game;
         let status: 'in-progress' | 'finished' | 'not-started' = 'not-started';
-        let description = `${home.name} vs. ${away.name} @ ${scheduled.toDateString()}`;
+        const gameDate = new Date(Date.parse(scheduled));
+        const gameDateString = `${gameDate.getMonth() + 1}/${gameDate.getDate()}/${gameDate.getFullYear()}`;
+        let description = `${home.alias} @ ${away.alias} / ${gameDateString}`;
         if (this.properties.statistics) {
             const { status: currentStatus, summary, quarter, clock } = (this.properties.statistics as NFLResponse.GameStatistics);
             const { home: h, away: a } = summary;
             status = currentStatus !== 'closed' ? 'in-progress' : 'finished';
-            description = `${home.alias} ${h.points} vs. ${away.alias} ${a.points} Q${quarter} ${clock}`;
+            description = `${away.alias} ${a.points} @ ${home.alias} ${h.points} / ${clock} Q${quarter}`;
         }
         return {
             subjectId: this.properties.subject_id,

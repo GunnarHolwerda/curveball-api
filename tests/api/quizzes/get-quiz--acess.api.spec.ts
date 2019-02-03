@@ -1,6 +1,6 @@
 import * as uuid from 'uuid';
 
-import { mockQuestionsPayload } from '../mock-data';
+import { mockManualQuestionsPayload } from '../mock-data';
 import { QuizResources } from '../../resources/quiz-resources';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
 import { UserResources } from '../../resources/user-resources';
@@ -24,7 +24,7 @@ describe('GET /quizzes/{quizId}/access', () => {
                 auth: true
             });
             quiz = response.quiz;
-            await quizResources.addQuestions(quiz.quizId, mockQuestionsPayload);
+            await quizResources.addQuestions(quiz.quizId, mockManualQuestionsPayload);
         });
 
         it('should return a token for a quiz with authentication on that has not started', async () => {
@@ -54,7 +54,7 @@ describe('GET /quizzes/{quizId}/access', () => {
                 auth: false
             });
             quiz = response.quiz;
-            await quizResources.addQuestions(quiz.quizId, mockQuestionsPayload);
+            await quizResources.addQuestions(quiz.quizId, mockManualQuestionsPayload);
         });
 
         it('should return a token for a quiz with no authentication', async () => {

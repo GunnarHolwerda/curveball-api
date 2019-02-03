@@ -1,6 +1,6 @@
 import { QuizResources, QuizStartResponse } from '../../resources/quiz-resources';
 import { IChoiceResponse } from '../../../src/models/entities/question-choice';
-import { mockQuestionsPayload } from '../mock-data';
+import { mockManualQuestionsPayload } from '../mock-data';
 import { UserResources, UserTokenResponse } from '../../resources/user-resources';
 import * as uuid from 'uuid/v4';
 import { QuestionsPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
@@ -22,7 +22,13 @@ export interface FullQuizParameters {
 
 export async function runFullQuiz(params: Partial<FullQuizParameters> = {}): Promise<QuizResult> {
     const userTokenMap: { [userId: string]: string } = {};
-    const { answeringUsers, numberOfAnswers, questions, endQuestionNumber, authenticateQuiz } = buildParamsWithDefaults(params);
+    const {
+        answeringUsers,
+        numberOfAnswers,
+        questions,
+        endQuestionNumber,
+        authenticateQuiz,
+    } = buildParamsWithDefaults(params);
     const participants = [...answeringUsers, ...(await generateUsers(numberOfAnswers - answeringUsers.length))];
     const quizResources = new QuizResources();
     const response = await quizResources.createQuiz({
@@ -67,7 +73,7 @@ export async function runFullQuiz(params: Partial<FullQuizParameters> = {}): Pro
 
 function buildParamsWithDefaults(params: Partial<FullQuizParameters>): FullQuizParameters {
     const { answeringUsers, numberOfAnswers, questions, endQuestionNumber, authenticateQuiz } = params;
-    const paramQuestions = questions === undefined ? mockQuestionsPayload : questions;
+    const paramQuestions = questions === undefined ? mockManualQuestionsPayload : questions;
     const endQuestionNum = endQuestionNumber === undefined ? paramQuestions.questions.length : endQuestionNumber;
     return {
         answeringUsers: answeringUsers === undefined ? [] : answeringUsers,

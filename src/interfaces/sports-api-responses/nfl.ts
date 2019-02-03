@@ -153,7 +153,7 @@ export namespace NFLResponse {
         status: string;
         reference: string;
         number: number;
-        scheduled: Date;
+        scheduled: string;
         attendance: number;
         utc_offset: number;
         entry_mode: string;

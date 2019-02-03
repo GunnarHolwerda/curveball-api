@@ -1,5 +1,5 @@
 import * as uuid from 'uuid';
-import { mockQuestionsPayload } from '../mock-data';
+import { mockManualQuestionsPayload } from '../mock-data';
 import { QuizResources, QuizStartResponse } from '../../resources/quiz-resources';
 import { UserResources } from '../../resources/user-resources';
 import { expectHttpError } from '../../resources/test-helpers';
@@ -15,7 +15,7 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
 
     beforeAll(async () => {
         quizResources = new QuizResources();
-        const result = await runFullQuiz({ numberOfAnswers: TotalAnswers, questions: mockQuestionsPayload });
+        const result = await runFullQuiz({ numberOfAnswers: TotalAnswers, questions: mockManualQuestionsPayload });
         startedQuiz = result.quizStart;
     });
 
@@ -41,7 +41,7 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
     it('should return the correctAnswer for the question', async () => {
         const { quiz, firstQuestion } = startedQuiz;
         const results = await quizResources.getQuestionResults(quiz.quizId, firstQuestion.questionId);
-        const correctAnswerText = mockQuestionsPayload.questions[0].choices.find(c => c.isAnswer!)!.text!;
+        const correctAnswerText = mockManualQuestionsPayload.questions[0].choices.find(c => c.isAnswer!)!.text!;
         expect(results.correctAnswer).toBe(firstQuestion.choices.find(c => c.text === correctAnswerText)!.choiceId);
     });
 
@@ -65,7 +65,7 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
                 potAmount: 500,
             });
             questionsPayload = {
-                questions: mockQuestionsPayload.questions.map((q) => {
+                questions: mockManualQuestionsPayload.questions.map((q) => {
                     return { ...q, choices: q.choices.map(c => ({ ...c, isAnswer: false })) };
                 })
             };

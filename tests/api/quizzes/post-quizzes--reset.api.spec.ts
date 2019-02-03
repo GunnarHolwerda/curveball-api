@@ -1,6 +1,6 @@
 import * as uuid from 'uuid';
 
-import { mockQuestionsPayload } from '../mock-data';
+import { mockManualQuestionsPayload } from '../mock-data';
 import { QuizResources, QuizResponse } from '../../resources/quiz-resources';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
 import { UserResources } from '../../resources/user-resources';
@@ -17,7 +17,7 @@ describe('POST /quizzes/{quizId}/reset', () => {
             potAmount: 500,
         });
         quiz = quizResponse.quiz;
-        await quizResources.addQuestions(quiz.quizId, mockQuestionsPayload);
+        await quizResources.addQuestions(quiz.quizId, mockManualQuestionsPayload);
         const startResponse = await quizResources.startQuiz(quiz.quizId);
         const userResources = new UserResources();
         const userResponse = await userResources.getNewUser();

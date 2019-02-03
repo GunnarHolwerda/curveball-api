@@ -53,7 +53,7 @@ export class NBAGame extends SportGame<NBAResponse.Game, NBAResponse.GameStatist
         if (this.properties.statistics) {
             const { status: currentStatus, home: h, away: a, quarter, clock } = (this.properties.statistics as NBAResponse.GameStatistics);
             status = currentStatus !== 'closed' ? 'in-progress' : 'finished';
-            description = `${home.alias} ${h.points} vs. ${away.alias} ${a.points} Q${quarter} ${clock}`;
+            description = `${away.alias} ${a.points} @ ${home.alias} ${h.points} / ${clock} Q${quarter}`;
         }
         return {
             subjectId: this.properties.subject_id,

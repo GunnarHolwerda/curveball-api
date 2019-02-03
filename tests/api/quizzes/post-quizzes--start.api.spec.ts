@@ -1,6 +1,6 @@
 import * as uuid from 'uuid';
 
-import { mockQuestionsPayload } from '../mock-data';
+import { mockManualQuestionsPayload } from '../mock-data';
 import { expectHttpError } from '../../resources/test-helpers';
 import { QuizResources, QuizResponse, QuizStartResponse } from '../../resources/quiz-resources';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
@@ -19,7 +19,7 @@ describe('POST /quizzes/{quizId}:start', () => {
             potAmount: 500,
         });
         quiz = quizResponse.quiz;
-        await quizResources.addQuestions(quiz.quizId, mockQuestionsPayload);
+        await quizResources.addQuestions(quiz.quizId, mockManualQuestionsPayload);
         startedQuiz = await quizResources.startQuiz(quiz.quizId);
     });
 

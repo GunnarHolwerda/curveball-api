@@ -1,7 +1,7 @@
 import { TestToolResources } from '../../resources/test-tool-resources';
 import { QuizResources, QuizAndQuestion } from '../../resources/quiz-resources';
 import * as uuid from 'uuid';
-import { mockQuestionsPayload } from '../mock-data';
+import { mockManualQuestionsPayload } from '../mock-data';
 
 describe('POST /test/answers:generate', () => {
     let testToolResources: TestToolResources;
@@ -18,7 +18,7 @@ describe('POST /test/answers:generate', () => {
             title: uuid(),
             potAmount: 500,
         });
-        await quizResources.addQuestions(quizResponse.quiz.quizId, mockQuestionsPayload);
+        await quizResources.addQuestions(quizResponse.quiz.quizId, mockManualQuestionsPayload);
         quiz = (await quizResources.getQuiz(quizResponse.quiz.quizId)).quiz;
     });
 

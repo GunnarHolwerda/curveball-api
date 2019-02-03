@@ -1,11 +1,11 @@
 import { QuestionsPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
 
-export const mockQuestionsPayload: QuestionsPayload = {
+export const mockManualQuestionsPayload: QuestionsPayload = {
     questions: [
         {
             question: 'What is your favorite color?',
             questionNum: 1,
-            topic: 1, // NCAAF
+            topic: 1, // Any
             typeId: 1, // Manual
             ticker: 'Deion Sander',
             choices: [
@@ -17,8 +17,8 @@ export const mockQuestionsPayload: QuestionsPayload = {
         {
             question: 'What is your favorite animal?',
             questionNum: 2,
-            topic: 1,
-            typeId: 1,
+            topic: 1, // Any
+            typeId: 1, // Any
             ticker: 'College World Series',
             choices: [
                 { text: 'Cat', isAnswer: true },
@@ -28,3 +28,5 @@ export const mockQuestionsPayload: QuestionsPayload = {
         }
     ]
 };
+
+export const nflSpreadQuestionPayload: QuestionsPayload = require('./question-payloads/nfl-spread');

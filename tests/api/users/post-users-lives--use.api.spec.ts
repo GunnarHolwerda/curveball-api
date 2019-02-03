@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import * as uuid from 'uuid';
 
-import { mockQuestionsPayload } from '../mock-data';
+import { mockManualQuestionsPayload } from '../mock-data';
 import { QuestionPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
 import { QTClaims, BaseClaims } from '../../../src/types/qt';
 import { UserResources, UserTokenResponse } from '../../resources/user-resources';
@@ -18,7 +18,7 @@ describe('POST /users/{userId}/lives:use', () => {
     let startResponse: QuizStartResponse;
     let qt: string;
     const quizQuestions: Array<QuestionPayload> = [
-        ...mockQuestionsPayload.questions,
+        ...mockManualQuestionsPayload.questions,
         {
             question: 'What is your favorite animal?',
             questionNum: 3,

@@ -1,0 +1,104 @@
+{
+    "questions": [
+        {
+            "choices": [
+                {
+                    "isAnswer": false,
+                    "subjectId": 12,
+                    "text": "+4"
+                },
+                {
+                    "isAnswer": false,
+                    "subjectId": 2,
+                    "text": "-4"
+                }
+            ],
+            "question": "Kansas City Chiefs vs. Tennessee Titans",
+            "questionNum": 1,
+            "subjectId": 14,
+            "ticker": "KC vs. TEN",
+            "topic": 2,
+            "typeId": 2
+        },
+        {
+            "choices": [
+                {
+                    "isAnswer": false,
+                    "subjectId": 4,
+                    "text": "+4"
+                },
+                {
+                    "isAnswer": false,
+                    "subjectId": 7,
+                    "text": "-4"
+                }
+            ],
+            "question": "Minnesota Vikings vs. New Orleans Saints",
+            "questionNum": 2,
+            "subjectId": 21,
+            "ticker": "MIN vs. NO",
+            "topic": 2,
+            "typeId": 2
+        },
+        {
+            "choices": [
+                {
+                    "isAnswer": false,
+                    "subjectId": 9,
+                    "text": "+7"
+                },
+                {
+                    "isAnswer": false,
+                    "subjectId": 8,
+                    "text": "-7"
+                }
+            ],
+            "question": "Los Angeles Rams vs. Atlanta Falcons",
+            "questionNum": 3,
+            "subjectId": 15,
+            "ticker": "LA vs. ATL",
+            "topic": 2,
+            "typeId": 2
+        },
+        {
+            "choices": [
+                {
+                    "isAnswer": false,
+                    "subjectId": 5,
+                    "text": "-6"
+                },
+                {
+                    "isAnswer": false,
+                    "subjectId": 8,
+                    "text": "+6"
+                }
+            ],
+            "question": "Philadelphia Eagles vs. Atlanta Falcons",
+            "questionNum": 4,
+            "subjectId": 19,
+            "ticker": "PHI vs. ATL",
+            "topic": 2,
+            "typeId": 2
+        },
+        {
+            "choices": [
+                {
+                    "isAnswer": false,
+                    "subjectId": 10,
+                    "text": "+2"
+                },
+                {
+                    "isAnswer": false,
+                    "subjectId": 13,
+                    "text": "-2"
+                }
+            ],
+            "question": "Jacksonville Jaguars vs. Buffalo Bills",
+            "questionNum": 5,
+            "subjectId": 17,
+            "ticker": "JAC vs. BUF",
+            "topic": 2,
+            "typeId": 2
+        }
+    ]
+}

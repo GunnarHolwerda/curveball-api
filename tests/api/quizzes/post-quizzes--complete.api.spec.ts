@@ -1,6 +1,6 @@
 import * as uuid from 'uuid';
 
-import { mockQuestionsPayload } from '../mock-data';
+import { mockManualQuestionsPayload } from '../mock-data';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
 import { IQuestionResponse } from '../../../src/models/entities/question';
 import { IUserResponse } from '../../../src/models/entities/user';
@@ -29,7 +29,7 @@ describe('POST /quizzes/{quizId}/complete', () => {
         quiz = response.quiz;
         const qPayload = {
             questions: [
-                ...mockQuestionsPayload.questions,
+                ...mockManualQuestionsPayload.questions,
                 {
                     question: 'What is your favorite animal?',
                     questionNum: 3,
@@ -53,7 +53,7 @@ describe('POST /quizzes/{quizId}/complete', () => {
         rightUserResponse = await userResources.getNewUser();
         rightUser = rightUserResponse.user;
 
-        const question = mockQuestionsPayload.questions.find(q => q.question === firstQuestion.question)!;
+        const question = mockManualQuestionsPayload.questions.find(q => q.question === firstQuestion.question)!;
         const questionId = firstQuestion.questionId;
         const correctAnswer = question.choices.find(c => c.isAnswer!)!.text!;
 
