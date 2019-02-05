@@ -39,6 +39,16 @@ export interface QuizStartResponse {
 //     amountWon: string;
 // }
 
+export interface Standing {
+    user: IUserResponse;
+    standing: number;
+    score: number;
+}
+
+export interface LeaderboardResponse {
+    standings: Array<Standing>;
+}
+
 export class QuizResources extends ApiResources {
 
     constructor(token?: string) {
@@ -109,5 +119,9 @@ export class QuizResources extends ApiResources {
 
     public async deleteQuiz(quizId: string): Promise<void> {
         return this.makeInternalRequest<void>(() => this.delete(`/quizzes/${quizId}`));
+    }
+
+    public async getLeaderboard(quizId: string, options?: { filter?: 'friends' }): Promise<LeaderboardResponse> {
+        return this.get<LeaderboardResponse>(`/quizzes/${quizId}/leaderboard`, { params: options });
     }
 }

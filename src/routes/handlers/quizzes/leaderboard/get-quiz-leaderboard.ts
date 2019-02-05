@@ -36,8 +36,11 @@ export async function getQuizLeaderboard(event: hapi.Request): Promise<object> {
     if (filter === 'friends') {
         const { userId: currentUserId } = (event.auth.credentials as UserJwtClaims);
         query = query.join({ f: FRIEND_TABLE_NAME }).on`f.friend_user_id = a.user_id`
+            .join({ friends_friends: FRIEND_TABLE_NAME })
+            .on`friends_friends.account_user_id = f.friend_user_id AND friends_friends.friend_user_id = ${currentUserId}`
             .where`f.account_user_id = ${currentUserId}`;
     }
+    console.log(query.unparameterized);
 
     const result = await query;
 
