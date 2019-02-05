@@ -17,6 +17,7 @@ import { postQuestions, postQuestionsSchema } from './handlers/quizzes/questions
 import { getQuizUsers } from './handlers/quizzes/users/get-quiz-users';
 import { postUserForceLogin, postUserForceLoginSchema } from './handlers/users/post-user--forcelogin';
 import { qtPreRouteHandler } from './pres/qt-access';
+import { getQuizLeaderboard } from './handlers/quizzes/leaderboard/get-quiz-leaderboard';
 
 export function quizRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -94,6 +95,15 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
                 notes: 'Retrieves all questions for a quiz and their full choice information'
             },
             handler: getQuestions
+        },
+        {
+            path: '/quizzes/{quizId}/leaderboard',
+            method: 'get',
+            options: {
+                description: 'Get the global leaderboard for a quiz',
+                notes: 'Returns the standings for all users in a leaderboard'
+            },
+            handler: getQuizLeaderboard
         },
         {
             path: '/quizzes/{quizId}/start',

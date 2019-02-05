@@ -17,7 +17,7 @@ export class UserFactory {
             return [];
         }
         const sq = Database.instance.sq;
-        const result = await sq.from(USER_TABLE_NAME).where`user_id IN ${userIds}`;
+        const result = await sq.from(USER_TABLE_NAME).where(sq.raw(`user_id IN (${userIds.map(i => `'${i}'`).join(',')})`));
         if (result.length === 0) {
             return [];
         }
