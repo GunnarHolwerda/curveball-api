@@ -74,7 +74,12 @@ export class UserResources extends ApiResources {
     public async verifyUser(
         userId: string,
         code: string = DevVerificationCode,
-        options: { username: string; name?: string } = { username: Randomstring.generate(15) }): Promise<UserTokenResponse> {
+        options: { username: string; name?: string } = {
+            username: Randomstring.generate(15)
+        }): Promise<UserTokenResponse> {
+        if (options.name === undefined) {
+            options.name = Randomstring.generate(8);
+        }
         return this.post<UserTokenResponse>(`/users/${userId}/verify`, { code, ...options });
     }
 
