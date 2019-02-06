@@ -13,6 +13,7 @@ import { TopicFactory, ITopicResponse } from '../../../../models/factories/topic
 import { QuestionTypeFactory } from '../../../../models/factories/question-type-factory';
 import { IQuestionTypeResponse } from '../../../../models/entities/question-type';
 import { SimpleSubjectResponse } from '../../../../interfaces/simple-subject-response';
+import { SQF } from 'sqorn-pg/types/sq';
 
 export interface Picks {
     shows: Array<{
@@ -51,7 +52,7 @@ interface PicksQueryResponse {
     question_topic_id: number;
     question_type_id: number;
     choice_subject_id: number | null;
-    choice_score: number | null;
+    choice_score: string;
     choice_id: number;
     choice: string;
 }
@@ -59,7 +60,7 @@ interface PicksQueryResponse {
 type QueryColumns = keyof PicksQueryResponse;
 
 type PicksQueryColumns = {
-    [key in QueryColumns]: string;
+    [key in QueryColumns]: string | SQF;
 };
 
 // TODO: Add query parameter to facilitate how far back to look
@@ -91,7 +92,7 @@ export async function getUserPicks(event: hapi.Request): Promise<object> {
             question_topic_id: 'qs.topic',
             question_type_id: 'qs.type_id',
             choice_subject_id: 'c.subject_id',
-            choice_score: 'c.score',
+            choice_score: sq.l`COALESCE(c.score, 0)`,
             choice_id: 'c.choice_id',
             choice: 'c.text'
         } as PicksQueryColumns);
@@ -121,7 +122,7 @@ export async function getUserPicks(event: hapi.Request): Promise<object> {
                             },
                             choice: {
                                 choiceId: s.choice_id,
-                                score: s.choice_score,
+                                score: parseFloat(s.choice_score),
                                 subject: cSubject,
                                 text: s.choice
                             }

@@ -40,7 +40,6 @@ export async function getQuizLeaderboard(event: hapi.Request): Promise<object> {
             .on`friends_friends.account_user_id = f.friend_user_id AND friends_friends.friend_user_id = ${currentUserId}`
             .where`f.account_user_id = ${currentUserId}`;
     }
-    console.log(query.unparameterized);
 
     const result = await query;
 
@@ -50,12 +49,11 @@ export async function getQuizLeaderboard(event: hapi.Request): Promise<object> {
     }, {});
 
     const users = await UserFactory.batchLoad(result.map(r => r.user_id));
-
     const standings = users.map(async (user, standing) =>
         ({
             user: await user.toResponseObject(),
             standing: standing + 1,
-            score: parseInt(userScoreMap[user.properties.user_id], 10)
+            score: parseFloat(userScoreMap[user.properties.user_id])
         })
     );
 

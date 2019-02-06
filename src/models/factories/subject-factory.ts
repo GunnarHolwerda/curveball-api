@@ -106,7 +106,6 @@ export class SubjectFactory {
             .and(
                 sq.raw(`(json->>'scheduled')::timestamp with time zone < TO_TIMESTAMP('${endDateISO}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`)
             ).and`s.subject_id = ${3400}`;
-        console.log(query.unparameterized);
         const result = await query;
 
         return await Promise.all(result.map(r => this.instantiateInstance(r as ISubject)));
@@ -128,7 +127,6 @@ export class SubjectFactory {
             .and(sq.raw(
                 `(json->>'scheduled')::timestamp with time zone < TO_TIMESTAMP('${endDate.toISOString()}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`
             ));
-        console.log(query.unparameterized);
         const result = await query;
         return this.instantiateInstance(result[0] as ISubject);
     }
