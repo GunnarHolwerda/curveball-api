@@ -77,7 +77,7 @@ export async function getUserPicks(event: hapi.Request): Promise<object> {
         .join({ qs: QUESTION_TABLE_NAME }).on`qz.quiz_id = qs.quiz_id`
         .join({ c: CHOICES_TABLE_NAME }).on`qs.question_id = c.question_id`
         .join({ a: ANSWER_TABLE_NAME }).on`c.choice_id = a.choice_id`
-        .where`a.user_id = ${user.properties.user_id}`
+        .where`a.user_id = ${user.properties.user_id} AND a.disabled = FALSE`
         .where`qz.completed_date > now() - INTERVAL '5 days'`
         .order`qs.question_num`
         .return({

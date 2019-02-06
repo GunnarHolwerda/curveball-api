@@ -30,6 +30,10 @@ describe('GET /users/{userId}/picks', () => {
             expect(picks.shows.find(s => s.quizId === fullQuizRun.quiz.quizId)).toBeDefined('Did not find show participated in');
         });
 
+        it('should exclude disabled picks', async () => {
+            fail('Implement please.');
+        });
+
         it('should retrieve picks shows participated in that ended in the last 5 days', async () => {
             const otherQuiz = await runFullQuiz({
                 answeringUsers: [userResponse],
