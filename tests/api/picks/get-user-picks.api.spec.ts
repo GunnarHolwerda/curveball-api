@@ -31,7 +31,10 @@ describe('GET /users/{userId}/picks', () => {
         });
 
         it('should exclude disabled picks', async () => {
-            fail('Implement please.');
+            const quizResources = new QuizResources();
+            await quizResources.resetQuiz(fullQuizRun.quiz.quizId);
+            const picks = await userResources.getPicks(userResponse.user.userId);
+            expect(picks.shows.find(s => s.quizId === fullQuizRun.quiz.quizId)).toBeUndefined('Included disabled picks');
         });
 
         it('should retrieve picks shows participated in that ended in the last 5 days', async () => {

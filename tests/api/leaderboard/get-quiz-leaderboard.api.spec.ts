@@ -39,7 +39,10 @@ describe('GET /quizzes/{quizId}/leaderboard', () => {
             it('should filter to only friends of the current user', async () => {
                 friendQuizData = await runFullQuiz({ answeringUsers: [currentUser, friend] });
                 const { standings } = await quizResources.getLeaderboard(friendQuizData.quiz.quizId, { filter: 'friends' });
-                expect(standings.map(s => s.user.userId)).toEqual([friend.user.userId], 'Standings were not restricted to friends only');
+                const leaderBoardUsers = standings.map(s => s.user.userId);
+                expect(leaderBoardUsers.length).toBe(2, 'Returned more users than expected');
+                expect(leaderBoardUsers.find(u => currentUser.user.userId === u)).toBeDefined('Did not find current user');
+                expect(leaderBoardUsers.find(u => friend.user.userId === u)).toBeDefined('Did not find friend user');
             });
 
             it('should exclude friends who have not accepted the friend invite', async () => {
@@ -47,12 +50,10 @@ describe('GET /quizzes/{quizId}/leaderboard', () => {
                 friendQuizData = await runFullQuiz({ answeringUsers: [currentUser, friend, inviteOnlyUser] });
                 await userResources.addFriend(currentUser.user.userId, inviteOnlyUser.user.userId);
                 const { standings } = await quizResources.getLeaderboard(friendQuizData.quiz.quizId, { filter: 'friends' });
-                expect(standings.map(s => s.user.userId)).toEqual([friend.user.userId], 'Invites were not exluded from leaderboard');
-            });
-
-            it('should return friends with their actual standings values', async () => {
-                // TODO: Create someway to score choices without running the scorer
-                fail();
+                const leaderBoardUsers = standings.map(s => s.user.userId);
+                expect(leaderBoardUsers.length).toBe(2, 'Returned more users than expected');
+                expect(leaderBoardUsers.find(u => currentUser.user.userId === u)).toBeDefined('Did not find current user');
+                expect(leaderBoardUsers.find(u => friend.user.userId === u)).toBeDefined('Did not find friend user');
             });
         });
     });
