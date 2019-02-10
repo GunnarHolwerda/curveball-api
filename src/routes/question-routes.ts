@@ -1,10 +1,8 @@
 import * as hapi from 'hapi';
 import { IoServer } from '../models/namespaces/io-server';
 import { putQuestionSchema, putQuestions } from './handlers/questions/put-question';
-import { postQuestionTypeSchema, postQuestionType } from './handlers/questions/types/post-question-type';
 import { getQuestionTypes, getQuestionTypesQueryParams } from './handlers/questions/types/get-question-types';
 import { getQuestionTopics } from './handlers/questions/topics/get-question-topics';
-import { postQuestionCalculatorSchema, postQuestionCalculator } from './handlers/questions/calculators/post-question-calculator';
 import { devRoutes } from './helpers/dev-routes';
 
 export function questionRoutes(server: hapi.Server, _: IoServer): void {
@@ -30,28 +28,29 @@ export function questionRoutes(server: hapi.Server, _: IoServer): void {
             },
             handler: getQuestionTopics
         },
-        {
-            path: '/questions/calculator',
-            method: 'post',
-            options: {
-                auth: 'internalJwt',
-                validate: { payload: postQuestionCalculatorSchema },
-                description: 'Creates new question calculator',
-                notes: 'Creates a new question calculator using the function provided, and is associated with the topic and type specified.'
-            },
-            handler: postQuestionCalculator
-        },
-        {
-            path: '/questions/type',
-            method: 'post',
-            options: {
-                auth: 'internalJwt',
-                validate: { payload: postQuestionTypeSchema },
-                description: 'Creates new question type',
-                notes: 'Creates a new question type that can be used with questions'
-            },
-            handler: postQuestionType
-        },
+        // {
+        //     path: '/questions/calculator',
+        //     method: 'post',
+        //     options: {
+        //         auth: 'internalJwt',
+        //         validate: { payload: postQuestionCalculatorSchema },
+        //         description: 'Creates new question calculator',
+        //         notes:
+        //      'Creates a new question calculator using the function provided, and is associated with the topic and type specified.'
+        //     },
+        //     handler: postQuestionCalculator
+        // },
+        // {
+        //     path: '/questions/type',
+        //     method: 'post',
+        //     options: {
+        //         auth: 'internalJwt',
+        //         validate: { payload: postQuestionTypeSchema },
+        //         description: 'Creates new question type',
+        //         notes: 'Creates a new question type that can be used with questions'
+        //     },
+        //     handler: postQuestionType
+        // },
         {
             path: '/questions/type',
             method: 'get',

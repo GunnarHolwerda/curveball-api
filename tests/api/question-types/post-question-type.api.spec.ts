@@ -2,7 +2,7 @@ import { expectHttpError } from '../../resources/test-helpers';
 import { QuestionResources } from '../../resources/question-resources';
 import * as uuid from 'uuid/v4';
 
-describe('POST /questions/type', () => {
+xdescribe('POST /questions/type', () => {
     let questionResources: QuestionResources;
 
     beforeAll(async () => {

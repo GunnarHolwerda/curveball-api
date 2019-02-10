@@ -3,7 +3,7 @@ import { QuestionResources } from '../../resources/question-resources';
 import * as uuid from 'uuid/v4';
 import { IQuestionTypeResponse } from '../../../src/models/entities/question-type';
 
-describe('POST /questions/calculator', () => {
+xdescribe('POST /questions/calculator', () => {
     let questionResources: QuestionResources;
     let newType: IQuestionTypeResponse;
 
