@@ -2,6 +2,8 @@ import * as hapi from 'hapi';
 import * as Boom from 'boom';
 import { QuizFactory } from '../../../models/factories/quiz-factory';
 import { AnswerFactory } from '../../../models/factories/answer-factory';
+import { Database } from '../../../models/database';
+import { WINNER_TABLE_NAME } from '../../../models/entities/winner';
 
 export async function postQuizReset(event: hapi.Request): Promise<object> {
     const quizId = event.params['quizId'];
@@ -28,6 +30,10 @@ export async function postQuizReset(event: hapi.Request): Promise<object> {
 
     await quiz.cleanUpAnswers();
     await quiz.save();
+
+    const sq = Database.instance.sq;
+
+    await sq.delete.from(WINNER_TABLE_NAME).where`quiz_id = ${quiz.properties.quiz_id}`;
 
     return {
         quiz: await quiz.toResponseObject(true)
