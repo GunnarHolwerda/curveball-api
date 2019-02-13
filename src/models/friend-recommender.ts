@@ -8,6 +8,9 @@ export class FriendRecommender {
     }
 
     public async getRecommendedFriends(phones: Array<string>): Promise<Array<User>> {
+        if (phones.length === 0) {
+            return [];
+        }
         const formattedPhoneNumbers = phones
             .map(p => PhoneVerifier.getValidPhoneNumber(p))
             .filter(p => p !== null) as Array<string>;
