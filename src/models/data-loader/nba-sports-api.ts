@@ -8,9 +8,9 @@ export class NBASportsApi extends SportsApi {
     protected version = 'v5';
     private apiKey = ApplicationConfig.nbaKey;
 
-    public async getSeasonSchedule<T = NBAResponse.SeasonSchedule>(): Promise<T> {
+    public async getSeasonSchedule<T = NBAResponse.SeasonSchedule>(year: number, seasonType: string): Promise<T> {
         try {
-            const result = await axios.get<T>(this.baseApiUrl() + '/games/2017/REG/schedule.json', {
+            const result = await axios.get<T>(`${this.baseApiUrl()}/games/${year}/${seasonType}/schedule.json`, {
                 params: {
                     api_key: this.apiKey
                 }
@@ -51,5 +51,10 @@ export class NBASportsApi extends SportsApi {
             console.error(e);
             throw e;
         }
+    }
+
+    public async getHierarchy<T>(): Promise<T> {
+        // TODO: implement
+        return {} as T;
     }
 }

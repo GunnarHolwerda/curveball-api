@@ -61,7 +61,7 @@ async function updateGameData(): Promise<void> {
             continue;
         }
         console.log('Updating game');
-        // await game.updateStatistics();
+        await game.updateStatistics();
         console.log('Updating scores');
         await updateScoresForGame(game);
         counter++;

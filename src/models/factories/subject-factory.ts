@@ -163,11 +163,11 @@ export class SubjectFactory {
     private static nflFactory(sub: ISubject): Subject<ISubject> {
         switch (sub.subject_type) {
             case SubjectType.sportGame:
-                return new NFLGame(sub as ISportGame<NFLResponse.Game, NFLResponse.GameStatistics>);
+                return new NFLGame(sub as ISportGame<NFLResponse.GamesEntity, any>); // TODO: FIX THE ANY TO BE THE STATISTICS TYPE
             case SubjectType.sportPlayer:
-                return new NFLPlayer(sub as ISportPlayer<NFLResponse.Player>);
+                return new NFLPlayer(sub as ISportPlayer<NFLResponse.PlayersEntity>);
             case SubjectType.sportTeam:
-                return new NFLTeam(sub as ISportTeam<NFLResponse.Team>);
+                return new NFLTeam(sub as ISportTeam<NFLResponse.Teams>);
             default:
                 throw new Error('Unsupported NFL subject type ' + sub.subject_type);
         }

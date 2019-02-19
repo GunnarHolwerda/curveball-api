@@ -37,16 +37,20 @@ export function testingRoutes(server: hapi.Server, _: IoServer): void {
             pre: [onlyLocalPreHandler],
             validate: {
                 payload: {
-                    sport: Joi.string().description('The sport to preload')
+                    // TODO: Validate that this is a valid sport
+                    sport: Joi.string().description('The sport to preload'),
+                    year: Joi.number().optional().description('The year of the season you want to load'),
+                    // TODO: Validate a valid season type
+                    seasonType: Joi.string().optional().default('REG').description('The type of schedule to load data for')
                 }
             }
         },
         handler: async (event) => {
-            const { sport } = event.payload as { sport: Sport };
-            // TODO: Validate that this is a valid sport
-            await preloadGamesTeamsPlayers(sport);
+            const { sport, year, seasonType } = event.payload as { sport: Sport, year?: number, seasonType: string };
+            const seasonYear = year === undefined ? new Date().getFullYear() : year;
+            await preloadGamesTeamsPlayers(sport, seasonYear, seasonType);
             return {
-                message: `${sport} teams have been preloaded`
+                message: `${sport} teams from ${seasonYear} have been preloaded`
             };
         }
     });

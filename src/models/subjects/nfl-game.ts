@@ -7,21 +7,19 @@ import { NFLTeam } from './nfl-team';
 import { SimpleSubjectResponse } from '../../interfaces/simple-subject-response';
 
 export interface NFLPassingStatistics {
-    yards: number;
-    touchdowns: number;
-    interceptions: number;
-    sacks: number;
-    twoPts: number;
+    yds: number;
+    td: number;
+    int: number;
+    sk: number;
 }
 
 export interface NFLRushingStatistics {
-    yards: number;
-    touchdowns: number;
-    twoPts: number;
+    yds: number;
+    td: number;
 }
 
 export interface NFLReceivingStatistics extends NFLRushingStatistics {
-    receptions: number;
+    rec: number;
 }
 
 export interface NFLFumbleStatistics {
@@ -56,19 +54,20 @@ export interface NFLPlayerStatistics {
     fumbles: NFLFumbleStatistics;
 }
 
-export class NFLGame extends SportGame<NFLResponse.Game, NFLResponse.GameStatistics> {
+export class NFLGame extends SportGame<NFLResponse.GamesEntity, NFLResponse.GameStatistics> {
 
     getStatsForTeam(team: NFLTeam): NFLDefensiveStats {
-        const { home, away } = this.properties.statistics.statistics;
+        const { home_team: home, away_team: away } = this.properties.statistics as NFLResponse.GameStatistics;
         const teamStats = home.id === team.properties.external_id ? home : away;
-        return this.getDefensiveStats(teamStats);
+        const { touchdowns, defense } = teamStats.statistics;
+        return this.getDefensiveStats(defense.team, touchdowns.team);
     }
 
     getSportsApi(): SportsApi {
         return new NFLSportsApi();
     }
 
-    getStats<T>(type: string, team: NFLResponse.TeamStatistics, playerId: string, stats: Array<keyof T>): T {
+    getStats<T>(type: string, team: NFLResponse.Statistics, playerId: string, stats: Array<keyof T>): T {
         if (!team.hasOwnProperty(type)) {
             throw new Error('Attempting to get statistics for unknown type ' + type);
         }
@@ -80,68 +79,82 @@ export class NFLGame extends SportGame<NFLResponse.Game, NFLResponse.GameStatist
         return result as T;
     }
 
-    getKickingStats(team: NFLResponse.TeamStatistics, playerId: string): NFLKickingStatistics {
-        const pats = team.extra_points.kicks.players.find(p => p.id === playerId);
-        const fieldGoals = team.field_goals.players.find(p => p.id === playerId);
+    getKickingStats(
+        fieldGoalStats: NFLResponse.FieldGoal,
+        extraPointStats: NFLResponse.ExtraPoint,
+        playerId: string
+    ): NFLKickingStatistics {
+        const pats = extraPointStats.players!.find(p => p.id === playerId);
+        const fieldGoals = fieldGoalStats.players!.find(p => p.id === playerId);
         return {
             pats: pats ? pats.made : 0,
-            fieldGoals: fieldGoals ? fieldGoals.made : 0
+            fieldGoals: fieldGoals ? fieldGoals.made : 0 // TODO: Update to include length of kicks
         };
     }
 
-    getDefensiveStats(team: NFLResponse.TeamStatistics): NFLDefensiveStats {
-        const stats = team.defense.totals;
+    getDefensiveStats(team: NFLResponse.TeamDefenseStatistics, touchdownStats: NFLResponse.TeamTouchdownStatistics): NFLDefensiveStats {
         return {
-            touchdowns: team.touchdowns.int_return + team.touchdowns.fumble_return,
-            interceptions: stats.interceptions,
-            fumblesRecovered: stats.fumble_recoveries,
-            blockedKicks: team.defense.totals.sp_blocks,
-            sacks: stats.sacks,
-            safeties: stats.safeties
+            touchdowns: touchdownStats.int + touchdownStats.fum_ret,
+            interceptions: team.int,
+            fumblesRecovered: team.fum_rec,
+            blockedKicks: team.bk,
+            sacks: team.sack,
+            safeties: team.sfty
         };
     }
 
-    getReturnStats(team: NFLResponse.TeamStatistics, playerId: string): NFLReturnStats {
-        const kickReturn = this.getStats<{ yards: number, touchdowns: number }>('kick_returns', team, playerId, ['yards', 'touchdowns']);
-        const puntReturn = this.getStats<{ yards: number, touchdowns: number }>('punt_returns', team, playerId, ['yards', 'touchdowns']);
+    getReturnStats(
+        teamStats: NFLResponse.Statistics,
+        playerId: string
+    ): NFLReturnStats {
+        const kickReturn = this.getStats<{ yds: number, td: number }>('kick_returns', teamStats, playerId, ['yds', 'td']);
+        const puntReturn = this.getStats<{ yds: number, td: number }>('punt_returns', teamStats, playerId, ['yds', 'td']);
         return {
-            yards: kickReturn.yards + puntReturn.yards,
-            touchdowns: kickReturn.touchdowns + puntReturn.touchdowns
+            yards: kickReturn.yds + puntReturn.yds,
+            touchdowns: kickReturn.td + puntReturn.td
         };
     }
 
     getStatsForPlayer(player: NFLPlayer): NFLPlayerStatistics {
-        const { home, away } = this.properties.statistics.statistics;
+        const { home_team: home, away_team: away } = this.properties.statistics as NFLResponse.GameStatistics;
         const { parent_external_id: teamId, external_id: playerId } = player.properties;
 
         const team = home.id === teamId ? home : away;
+        const { statistics } = team;
         return {
-            passing: this.getStats<NFLPassingStatistics>('passing', team, playerId, ['yards', 'touchdowns', 'interceptions', 'sacks']),
-            rushing: this.getStats<NFLRushingStatistics>('rushing', team, playerId, ['yards', 'touchdowns']),
-            receiving: this.getStats<NFLReceivingStatistics>('receiving', team, playerId, ['yards', 'touchdowns', 'receptions']),
-            kicking: this.getKickingStats(team, playerId),
-            returning: this.getReturnStats(team, playerId),
-            fumbles: this.getStats<NFLFumbleStatistics>('fumbles', team, playerId, ['fumbles'])
+            passing: this.getStats<NFLPassingStatistics>('passing', statistics, playerId, ['yds', 'td', 'int', 'sk']),
+            rushing: this.getStats<NFLRushingStatistics>('rushing', statistics, playerId, ['yds', 'td']),
+            receiving: this.getStats<NFLReceivingStatistics>('receiving', statistics, playerId, ['yds', 'td', 'rec']),
+            kicking: this.getKickingStats(statistics.field_goal, team.statistics.extra_point, playerId),
+            returning: this.getReturnStats(statistics, playerId),
+            fumbles: this.getStats<NFLFumbleStatistics>('fumbles', statistics, playerId, ['fumbles'])
         };
     }
 
     async asQuestionResponse(): Promise<SimpleSubjectResponse> {
-        const { home, away, scheduled } = this.properties.json as NFLResponse.Game;
-        let status: 'in-progress' | 'finished' | 'not-started' = 'not-started';
-        const gameDate = new Date(Date.parse(scheduled));
-        const gameDateString = `${gameDate.getMonth() + 1}/${gameDate.getDate()}/${gameDate.getFullYear()}`;
-        let description = `${home.alias} @ ${away.alias} / ${gameDateString}`;
-        if (this.properties.statistics) {
-            const { status: currentStatus, summary, quarter, clock } = (this.properties.statistics as NFLResponse.GameStatistics);
-            const { home: h, away: a } = summary;
-            status = currentStatus !== 'closed' ? 'in-progress' : 'finished';
-            description = `${away.alias} ${a.points} @ ${home.alias} ${h.points} / ${clock} Q${quarter}`;
-        }
+        // TODO: FIXXIXIXIIXIXII May need to retrieve the box score
+        // const { home_team: home, away_team: away, scheduled } = this.properties.json as NFLResponse.GameStatistics;
+        // let status: 'in-progress' | 'finished' | 'not-started' = 'not-started';
+        // const gameDate = new Date(Date.parse(scheduled));
+        // const gameDateString = `${gameDate.getMonth() + 1}/${gameDate.getDate()}/${gameDate.getFullYear()}`;
+        // let description = `${home.alias} @ ${away.alias} / ${gameDateString}`;
+        // if (this.properties.statistics) {
+        //     const { status: currentStatus, summary, quarter, clock } = (this.properties.statistics as NFLResponse.GameStatistics);
+        //     const { home: h, away: a } = summary;
+        //     status = currentStatus !== 'closed' ? 'in-progress' : 'finished';
+        //     description = `${away.alias} ${a.points} @ ${home.alias} ${h.points} / ${clock} Q${quarter}`;
+        // }
+        // return {
+        //     subjectId: this.properties.subject_id,
+        //     headline: `${home.name} vs. ${away.name}`,
+        //     status: status,
+        //     description: description
+        // };
         return {
-            subjectId: this.properties.subject_id,
-            headline: `${home.name} vs. ${away.name}`,
-            status: status,
-            description: description
+            subjectId: 0,
+            headline: '',
+            status: 'in-progress',
+            description: ''
         };
     }
 }
