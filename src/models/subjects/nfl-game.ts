@@ -5,6 +5,8 @@ import { SportGame } from './sport-game';
 import { NFLPlayer } from './nfl-player';
 import { NFLTeam } from './nfl-team';
 import { SimpleSubjectResponse } from '../../interfaces/simple-subject-response';
+import { SubjectFactory } from '../factories/subject-factory';
+import { SubjectType } from '../../types/subject-type';
 
 export interface NFLPassingStatistics {
     yds: number;
@@ -55,6 +57,18 @@ export interface NFLPlayerStatistics {
 }
 
 export class NFLGame extends SportGame<NFLResponse.GamesEntity, NFLResponse.GameStatistics> {
+
+    get homeTeam(): Promise<NFLTeam> {
+        const { home } = this.properties.json;
+        return SubjectFactory.loadByExternalId(home, SubjectType.sportTeam)
+            .then(t => t! as NFLTeam);
+    }
+
+    get awayTeam(): Promise<NFLTeam> {
+        const { away } = this.properties.json;
+        return SubjectFactory.loadByExternalId(away, SubjectType.sportTeam)
+            .then(t => t! as NFLTeam);
+    }
 
     getStatsForTeam(team: NFLTeam): NFLDefensiveStats {
         const { home_team: home, away_team: away } = this.properties.statistics as NFLResponse.GameStatistics;

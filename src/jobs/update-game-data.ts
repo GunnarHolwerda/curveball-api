@@ -7,8 +7,14 @@ import { ChoiceFactory } from '../models/factories/choice-factory';
 type SportGameSubject = Subject<ISubject> & BasicSportGame;
 
 function loadAllGamesToday(): Promise<Array<SportGameSubject>> {
-    const startDate = new Date();
-    startDate.setTime(0);
+    const startDateTimestamp = process.argv[2];
+    let startDate = new Date();
+    if (startDateTimestamp !== undefined) {
+        startDate = new Date(Date.parse(startDateTimestamp));
+    }
+    startDate.setHours(0);
+    startDate.setMinutes(0);
+    startDate.setSeconds(0);
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + 1);
 
@@ -37,15 +43,22 @@ async function setScoresForSubjects(subjects: Array<Subject<ISubject>>): Promise
 }
 
 async function updateScoresForGame(game: SportGameSubject): Promise<void> {
-    await Promise.all([
-        setScoresForSubjects([game]),
-        game.getRelatedSubjects().then(subjects => setScoresForSubjects(subjects))
-    ]);
+    try {
+        await setScoresForSubjects([game]);
+    } catch (e) {
+        console.error('Error setting scores for subject', e);
+    }
+
+    try {
+        await game.getRelatedSubjects().then(subjects => setScoresForSubjects(subjects));
+    } catch (e) {
+        console.error('Error setting scores for related subjects', e);
+    }
 }
 
 async function updateGameData(): Promise<void> {
     // Load all games that are going on today
-    const games = await loadAllGamesToday();
+    const games = (await loadAllGamesToday()).slice(0, 1);
     if (games.length === 0) {
         console.log('No games today');
         return;
@@ -54,9 +67,9 @@ async function updateGameData(): Promise<void> {
     let skippedGames = 0;
     let counter = 0;
     for (const game of games) {
-        console.log(`Processing game ${counter + skippedGames + 1}/${games.length}`);
+        console.log(`Processing game ${game.properties.subject_id} ${counter + skippedGames + 1}/${games.length}`);
         if (game.isFinished()) {
-            console.log('Skipping game');
+            console.log('Game is completed, skipping game');
             skippedGames++;
             continue;
         }

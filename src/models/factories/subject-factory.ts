@@ -23,6 +23,7 @@ import { NBAResponse } from '../../interfaces/sports-api-responses/nba';
 import { ISportTeam } from '../subjects/sport-team';
 import { NFLResponse } from '../../interfaces/sports-api-responses/nfl';
 import { ISportGame } from '../subjects/sport-game';
+import { NFLSeason, ISportSeason } from '../subjects/nfl-season';
 
 export const SubjectTypeTableMap: { [type in SubjectType]: string } = {
     [SubjectType.sportGame]: SPORT_GAME_TABLE_NAME,
@@ -105,7 +106,7 @@ export class SubjectFactory {
             ))
             .and(
                 sq.raw(`(json->>'scheduled')::timestamp with time zone < TO_TIMESTAMP('${endDateISO}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`)
-            ).and`s.subject_id = ${3400}`;
+            );
         const result = await query;
 
         return await Promise.all(result.map(r => this.instantiateInstance(r as ISubject)));
@@ -168,6 +169,8 @@ export class SubjectFactory {
                 return new NFLPlayer(sub as ISportPlayer<NFLResponse.PlayersEntity>);
             case SubjectType.sportTeam:
                 return new NFLTeam(sub as ISportTeam<NFLResponse.Teams>);
+            case SubjectType.sportSeason:
+                return new NFLSeason(sub as ISportSeason<NFLResponse.Season>);
             default:
                 throw new Error('Unsupported NFL subject type ' + sub.subject_type);
         }
