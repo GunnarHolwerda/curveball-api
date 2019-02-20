@@ -10,8 +10,9 @@ export const putQuizSchema = Joi.object().keys({
     title: Joi.string().optional().description('The title of the quiz'),
     completed: Joi.boolean().optional().description('Whether the quiz should be marked completed or not'),
     potAmount: Joi.number().optional().description('The amount of money to be won for the quiz'),
-    auth: Joi.boolean().optional().description('If the quiz enforces correct answers.')
-}).or('active', 'title', 'completed', 'potAmount', 'auth');
+    auth: Joi.boolean().optional().description('If the quiz enforces correct answers.'),
+    completedDate: Joi.string().optional().description('ISO date timestamp of when quiz completed')
+}).or('active', 'title', 'completed', 'completedDate', 'potAmount', 'auth');
 
 export async function putQuiz(event: hapi.Request): Promise<object> {
     const quizId: string = event.params['quizId'];
