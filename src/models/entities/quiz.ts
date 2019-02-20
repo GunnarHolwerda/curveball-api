@@ -79,6 +79,10 @@ export class Quiz implements Cacheable, Analyticize {
         return QuestionFactory.loadAllForQuiz(this.properties.quiz_id);
     }
 
+    public getWinningsForNumberOfWinners(numWinners: number): number {
+        return parseFloat((this.properties.pot_amount / numWinners).toFixed(2));
+    }
+
     public async toResponseObject(withQuestions: boolean = false): Promise<IQuiz> {
         const response = {
             ...this.properties,

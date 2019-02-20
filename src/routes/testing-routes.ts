@@ -10,6 +10,8 @@ import { SubjectFactory } from '../models/factories/subject-factory';
 import { retrieveStatsAndUpdateChoices } from '../jobs/update-game-data';
 import { BasicSportGame } from '../interfaces/basic-sport-game';
 import { Subject, ISubject } from '../models/entities/subject';
+import { createWinnersForQuiz } from '../jobs/process-winners';
+import { QuizFactory } from '../models/factories/quiz-factory';
 
 export function testingRoutes(server: hapi.Server, _: IoServer): void {
     server.route({
@@ -79,6 +81,30 @@ export function testingRoutes(server: hapi.Server, _: IoServer): void {
             const didUpdate = await retrieveStatsAndUpdateChoices(subject as BasicSportGame & Subject<ISubject>);
             return {
                 updated: didUpdate
+            };
+        }
+    });
+
+    server.route({
+        path: '/test/quizzes/{quizId}/actions:process_winners',
+        method: 'POST',
+        options: {
+            auth: false,
+            tags: ['api', 'test'],
+            description: 'Process winners given a particular quizId',
+            notes: 'Runs the process winners job for a specific quiz',
+            pre: [onlyLocalPreHandler]
+        },
+        handler: async (event) => {
+            const { quizId } = event.params as { quizId: string };
+            const quiz = await QuizFactory.load(quizId);
+            if (quiz === null) {
+                throw Boom.notFound();
+            }
+            // TODO: Ensure we run this job only if all related subjects are completed
+            await createWinnersForQuiz(quiz);
+            return {
+                message: 'ok'
             };
         }
     });

@@ -21,9 +21,9 @@ export async function postQuizComplete(event: hapi.Request): Promise<object> {
             return { message: 'ok' };
         }
 
-        const amountWon = (quiz.properties.pot_amount / participants.length).toFixed(2);
+        const amountWon = quiz.getWinningsForNumberOfWinners(participants.length);
         try {
-            await Winner.batchCreate(participants, quiz, Number.parseFloat(amountWon));
+            await Winner.batchCreate(participants, quiz, amountWon);
         } catch (e) {
             console.error('Failed to create winners', e);
             throw Boom.internal();
