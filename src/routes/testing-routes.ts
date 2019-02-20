@@ -1,10 +1,15 @@
 import * as hapi from 'hapi';
+import * as Boom from 'boom';
 import { IoServer } from '../models/namespaces/io-server';
 import { onlyLocalPreHandler } from './pres/only-local';
 import * as Joi from 'joi';
 import { generateRandomAnswers } from './handlers/testing/generate-random-answers';
 import { Sport } from '../models/data-loader/sports-api';
 import { preloadGamesTeamsPlayers } from './handlers/testing/load-teams-players';
+import { SubjectFactory } from '../models/factories/subject-factory';
+import { retrieveStatsAndUpdateChoices } from '../jobs/update-game-data';
+import { BasicSportGame } from '../interfaces/basic-sport-game';
+import { Subject, ISubject } from '../models/entities/subject';
 
 export function testingRoutes(server: hapi.Server, _: IoServer): void {
     server.route({
@@ -51,6 +56,29 @@ export function testingRoutes(server: hapi.Server, _: IoServer): void {
             await preloadGamesTeamsPlayers(sport, seasonYear, seasonType);
             return {
                 message: `${sport} teams from ${seasonYear} have been preloaded`
+            };
+        }
+    });
+
+    server.route({
+        path: '/test/subject/{subjectId}/update',
+        method: 'POST',
+        options: {
+            auth: false,
+            tags: ['api', 'test'],
+            description: 'Updates scores for subject id',
+            notes: 'Test endpoint to force update of scores for a subject',
+            pre: [onlyLocalPreHandler]
+        },
+        handler: async (event) => {
+            const { subjectId } = event.params as { subjectId: string };
+            const subject = await SubjectFactory.loadById(parseInt(subjectId, 10));
+            if (subject === null) {
+                throw Boom.notFound('Unknown subject');
+            }
+            const didUpdate = await retrieveStatsAndUpdateChoices(subject as BasicSportGame & Subject<ISubject>);
+            return {
+                updated: didUpdate
             };
         }
     });

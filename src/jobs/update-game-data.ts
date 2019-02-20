@@ -56,6 +56,18 @@ async function updateScoresForGame(game: SportGameSubject): Promise<void> {
     }
 }
 
+export async function retrieveStatsAndUpdateChoices(game: SportGameSubject): Promise<boolean> {
+    if (game.isFinished()) {
+        console.log('Game is completed, skipping game');
+        return false;
+    }
+    console.log('Updating game');
+    await game.updateStatistics();
+    console.log('Updating scores');
+    await updateScoresForGame(game);
+    return true;
+}
+
 async function updateGameData(): Promise<void> {
     // Load all games that are going on today
     const games = (await loadAllGamesToday()).slice(0, 1);
@@ -68,25 +80,24 @@ async function updateGameData(): Promise<void> {
     let counter = 0;
     for (const game of games) {
         console.log(`Processing game ${game.properties.subject_id} ${counter + skippedGames + 1}/${games.length}`);
-        if (game.isFinished()) {
-            console.log('Game is completed, skipping game');
+        const didUpdate = await retrieveStatsAndUpdateChoices(game);
+        if (!didUpdate) {
             skippedGames++;
             continue;
         }
-        console.log('Updating game');
-        await game.updateStatistics();
-        console.log('Updating scores');
-        await updateScoresForGame(game);
         counter++;
     }
     console.log(`Skipped ${skippedGames}/${games.length} games`);
 }
-Database.instance.connect()
-    .then(() => updateGameData())
-    .then(() => {
-        console.log('success!');
-        process.exit(0);
-    }).catch((err) => {
-        console.error('An error occurred', err);
-        process.exit(1);
-    });
+
+if (process.argv[2] === 'run') {
+    Database.instance.connect()
+        .then(() => updateGameData())
+        .then(() => {
+            console.log('success!');
+            process.exit(0);
+        }).catch((err) => {
+            console.error('An error occurred', err);
+            process.exit(1);
+        });
+}
