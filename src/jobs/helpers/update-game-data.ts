@@ -2,6 +2,11 @@ import { Subject, ISubject } from '../../models/entities/subject';
 import { BasicSportGame } from '../../interfaces/basic-sport-game';
 import { SubjectFactory } from '../../models/factories/subject-factory';
 import { ChoiceFactory } from '../../models/factories/choice-factory';
+import { Database } from '../../models/database';
+import { QUESTION_TABLE_NAME } from '../../models/entities/question';
+import { CHOICES_TABLE_NAME } from '../../models/entities/question-choice';
+import { createWinnersForQuiz } from '../process-winners';
+import { QuizFactory } from '../../models/factories/quiz-factory';
 
 type SportGameSubject = Subject<ISubject> & BasicSportGame;
 
@@ -34,31 +39,32 @@ async function setScoresForSubjects(subjects: Array<Subject<ISubject>>): Promise
     }
 }
 
-async function updateScoresForGame(game: SportGameSubject): Promise<void> {
-    try {
-        await setScoresForSubjects([game]);
-    } catch (e) {
-        console.error('Error setting scores for subject', e);
-    }
+async function completedRelatedQuizzes(subjects: Array<Subject<ISubject>>): Promise<void> {
+    const subjectIds = subjects.map(s => s.properties.subject_id);
+    const sq = Database.instance.sq;
+    const result = await sq.from(QUESTION_TABLE_NAME)
+        .where`subject_id IN (${subjectIds.map(id => `'${id}'`).join(',')})`
+        .return`quiz_id`
+        .union(
+            sq.from({ c: CHOICES_TABLE_NAME })
+                .join({ q: QUESTION_TABLE_NAME }).where`q.question_id = c.question_id`
+                .where`subject_id IN (${subjectIds.map(id => `'${id}'`).join(',')})`
+                .return`q.quiz_id`
+        );
+    const quizzes = await QuizFactory.batchLoad(result.map(r => r.quiz_id) as Array<string>);
+    await Promise.all(quizzes.map(q => createWinnersForQuiz(q)));
+}
 
+async function updateScoresAndCompleteQuizzes(game: SportGameSubject): Promise<void> {
     try {
-        const relatedSubjects = await game.getRelatedSubjects();
+        const relatedSubjects = [...(await game.getRelatedSubjects()), game];
         await setScoresForSubjects(relatedSubjects);
+        if (game.isFinished()) {
+            await completedRelatedQuizzes(relatedSubjects);
+        }
     } catch (e) {
         console.error('Error setting scores for related subjects', e);
     }
-}
-
-export async function retrieveStatsAndUpdateChoices(game: SportGameSubject): Promise<boolean> {
-    if (game.isFinished()) {
-        console.log('Game is completed, skipping game');
-        return false;
-    }
-    console.log('Updating game');
-    await game.updateStatistics();
-    console.log('Updating scores');
-    await updateScoresForGame(game);
-    return true;
 }
 
 export async function updateGameData(): Promise<void> {
@@ -75,11 +81,13 @@ export async function updateGameData(): Promise<void> {
     for (const game of games) {
         console.log(`Processing game ${game.properties.subject_id} ${counter + skippedGames + 1}/${games.length}`);
         try {
-            const didUpdate = await retrieveStatsAndUpdateChoices(game);
-            if (!didUpdate) {
+            if (game.isFinished()) {
+                console.log('Game is completed, skipping game');
                 skippedGames++;
                 continue;
             }
+            await game.updateStatistics();
+            await updateScoresAndCompleteQuizzes(game);
             counter++;
         } catch (e) {
             console.error(`Failed to update ${game.properties.subject_id}`);

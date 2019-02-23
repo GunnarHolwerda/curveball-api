@@ -21,6 +21,7 @@ export interface IQuiz {
     created: Date;
     auth: boolean;
     deleted: boolean;
+    closed: boolean;
 }
 
 export interface IQuizResponse {
