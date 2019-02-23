@@ -7,7 +7,7 @@ import { generateRandomAnswers } from './handlers/testing/generate-random-answer
 import { Sport } from '../models/data-loader/sports-api';
 import { preloadGamesTeamsPlayers } from './handlers/testing/load-teams-players';
 import { SubjectFactory } from '../models/factories/subject-factory';
-import { retrieveStatsAndUpdateChoices } from '../jobs/update-game-data';
+import { retrieveStatsAndUpdateChoices } from '../jobs/helpers/update-game-data';
 import { BasicSportGame } from '../interfaces/basic-sport-game';
 import { Subject, ISubject } from '../models/entities/subject';
 import { createWinnersForQuiz } from '../jobs/process-winners';

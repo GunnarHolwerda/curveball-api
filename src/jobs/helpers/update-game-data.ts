@@ -1,8 +1,7 @@
-import { Subject, ISubject } from '../models/entities/subject';
-import { BasicSportGame } from '../interfaces/basic-sport-game';
-import { Database } from '../models/database';
-import { SubjectFactory } from '../models/factories/subject-factory';
-import { ChoiceFactory } from '../models/factories/choice-factory';
+import { Subject, ISubject } from '../../models/entities/subject';
+import { BasicSportGame } from '../../interfaces/basic-sport-game';
+import { SubjectFactory } from '../../models/factories/subject-factory';
+import { ChoiceFactory } from '../../models/factories/choice-factory';
 
 type SportGameSubject = Subject<ISubject> & BasicSportGame;
 
@@ -62,7 +61,7 @@ export async function retrieveStatsAndUpdateChoices(game: SportGameSubject): Pro
     return true;
 }
 
-async function updateGameData(): Promise<void> {
+export async function updateGameData(): Promise<void> {
     // Load all games that are going on today
     const games = (await loadAllGamesToday());
     if (games.length === 0) {
@@ -88,16 +87,4 @@ async function updateGameData(): Promise<void> {
         }
     }
     console.log(`Updated ${games.length - skippedGames} games. Skipped ${skippedGames}. ${errors} errors`);
-}
-
-if (process.argv[2] === 'run') {
-    Database.instance.connect()
-        .then(() => updateGameData())
-        .then(() => {
-            console.log('success!');
-            process.exit(0);
-        }).catch((err) => {
-            console.error('An error occurred', err);
-            process.exit(1);
-        });
 }
