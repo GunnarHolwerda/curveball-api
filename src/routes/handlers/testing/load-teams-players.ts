@@ -100,7 +100,11 @@ export async function preloadGamesTeamsPlayers(sport: Sport, year: number, seaso
     const rosters: Array<Roster> = [];
     for (const team of teams) {
         console.log(`Requesting ${(rosters.length + 1)}/${teams.length}:`, team.name);
-        rosters.push(await api.getTeamRoster<Roster>(team.id));
+        try {
+            rosters.push(await api.getTeamRoster<Roster>(team.id));
+        } catch (e) {
+            console.error(`Failed to load ${team.name}. Error: `, e.message);
+        }
     }
 
     console.log('Inserting into database');
