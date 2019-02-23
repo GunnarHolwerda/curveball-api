@@ -1,14 +1,9 @@
 
 import { Database } from '../database';
 import { camelizeKeys } from '../../util/camelize-keys';
+import * as _ from 'lodash';
 
 export const TOPIC_TABLE_NAME = 'topic';
-
-// interface ITopic {
-//     topic_id: number;
-//     label: string;
-//     machine_name: string;
-// }
 
 export interface ITopicResponse {
     topicId: number;
@@ -16,22 +11,31 @@ export interface ITopicResponse {
     machineName: string;
 }
 
-
 export class TopicFactory {
+    private static topicCache: { [topicId: string]: ITopicResponse } = {};
+
     public static async load(topicId: number): Promise<ITopicResponse | null> {
+        if (topicId in this.topicCache) {
+            return this.topicCache[topicId];
+        }
         const sq = Database.instance.sq;
         const result = await sq.from(TOPIC_TABLE_NAME).where`topic_id = ${topicId}`;
 
         if (result.length === 0) {
             return null;
         }
-        return camelizeKeys(result[0]) as ITopicResponse;
+        this.topicCache[topicId] = camelizeKeys(result[0]) as ITopicResponse;
+        return this.topicCache[topicId];
     }
 
     public static async loadAll(): Promise<Array<ITopicResponse>> {
         const sq = Database.instance.sq;
         const result = await sq.from(TOPIC_TABLE_NAME);
-        return result.map(r => camelizeKeys(r) as ITopicResponse);
+        result.forEach(r => {
+            const topic = camelizeKeys(r) as ITopicResponse;
+            this.topicCache[topic.topicId] = topic;
+        });
+        return _.values(this.topicCache);
     }
 
     public static async loadByName(name: string): Promise<ITopicResponse | null> {

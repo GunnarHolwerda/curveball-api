@@ -136,9 +136,13 @@ export class SubjectFactory {
         return query.join({ t: SubjectTypeTableMap[type] }).on`t.subject_id = s.subject_id`;
     }
 
-    private static async instantiateInstance(sub: ISubject): Promise<Subject<ISubject>> {
+    public static async instantiateInstance(sub: ISubject): Promise<Subject<ISubject>> {
         const topic = (await TopicFactory.load(sub.topic))!;
-        switch (topic.machineName) {
+        return this.getSubjectWithType(sub, topic.machineName);
+    }
+
+    public static getSubjectWithType(sub: ISubject, topicMachineName: string): Subject<ISubject> {
+        switch (topicMachineName) {
             case 'nfl':
                 return this.nflFactory(sub);
             case 'nba':
