@@ -14,7 +14,7 @@ export async function subjectLoader(
     const { startDate, endDate } = options;
     let query = sq.from({ s: SUBJECT_TABLE_NAME })
         .join({ g: SubjectTypeTableMap[type] }).on`g.subject_id = s.subject_id`
-        .where`s.subject_type = ${SubjectType.sportGame}`.and`s.topic = ${topic.topicId}`;
+        .where`s.subject_type = ${type}`.and`s.topic = ${topic.topicId}`;
 
     if (startDate !== undefined) {
         const startDateString = startDate.toISOString();
