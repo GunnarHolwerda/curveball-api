@@ -42,17 +42,19 @@ async function setScoresForSubjects(subjects: Array<Subject<ISubject>>): Promise
 async function completedRelatedQuizzes(subjects: Array<Subject<ISubject>>): Promise<void> {
     const subjectIds = subjects.map(s => s.properties.subject_id);
     const sq = Database.instance.sq;
-    const result = await sq.from(QUESTION_TABLE_NAME)
-        .where`subject_id IN (${subjectIds.map(id => `'${id}'`).join(',')})`
-        .return`quiz_id`
-        .union(
-            sq.from({ c: CHOICES_TABLE_NAME })
-                .join({ q: QUESTION_TABLE_NAME }).where`q.question_id = c.question_id`
-                .where`subject_id IN (${subjectIds.map(id => `'${id}'`).join(',')})`
-                .return`q.quiz_id`
-        );
+    const quizzesFromQuestions = sq.from(QUESTION_TABLE_NAME)
+        .where(sq.raw(`subject_id IN (${subjectIds.map(id => `${id}`).join(',')})`))
+        .return`quiz_id`;
+    const quizzesFromChoices = sq.from({ c: CHOICES_TABLE_NAME })
+        .join({ q: QUESTION_TABLE_NAME }).where`q.question_id = c.question_id`
+        .where(sq.raw(`subject_id IN (${subjectIds.map(id => `${id}`).join(',')})`))
+        .return`q.quiz_id`;
+    const query = quizzesFromQuestions.union(quizzesFromChoices);
+    const result = await query;
     const quizzes = await QuizFactory.batchLoad(result.map(r => r.quiz_id) as Array<string>);
-    await Promise.all(quizzes.map(q => createWinnersForQuiz(q)));
+    for (const quiz of quizzes) {
+        await createWinnersForQuiz(quiz);
+    }
 }
 
 async function updateScoresAndCompleteQuizzes(game: SportGameSubject): Promise<void> {

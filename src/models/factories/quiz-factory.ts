@@ -26,11 +26,11 @@ export class QuizFactory {
         if (result.length === 0) {
             return [];
         }
-        const reorderdUsers: Array<Row> = [];
-        result.forEach((user) => {
-            reorderdUsers[quizIdToIndexMap[user.user_id]] = user;
+        const reorderedQuizzes: Array<Row> = [];
+        result.forEach(r => {
+            reorderedQuizzes[quizIdToIndexMap[r.quiz_id]] = r;
         });
-        return reorderdUsers.map(r => new Quiz(r as IQuiz));
+        return reorderedQuizzes.map(r => new Quiz(r as IQuiz));
     }
 
     public static async loadAll(includeDeleted: boolean = false): Promise<Array<Quiz>> {
