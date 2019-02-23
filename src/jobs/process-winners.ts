@@ -18,6 +18,8 @@ export async function processWinners() {
         .where`g.json->>status = 'closed'`.or`g.statistics->>status = 'closed'`
         .return({ quiz_id: 'qz.quiz_id' });
 
+    // TODO: Need to load all subjects related to games that are finished as well
+
     const result = await query;
 
     const quizzes = await QuizFactory.batchLoad(result.map(r => r.quiz_id));

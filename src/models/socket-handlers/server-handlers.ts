@@ -8,7 +8,7 @@ export class ServerHandler extends BaseSocketHandler {
         QuizCache.getQuizzes().then((quizzes) => {
             console.log('Emitting active quizzes');
             socket.emit('active_quizzes', quizzes);
-        });
+        }).catch(console.error);
     }
 
     protected get cachePrefix(): string {

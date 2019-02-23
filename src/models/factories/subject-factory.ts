@@ -32,6 +32,10 @@ export const SubjectTypeTableMap: { [type in SubjectType]: string } = {
     [SubjectType.sportTeam]: SPORT_TEAM_TABLE_NAME,
 };
 
+const scheduledCondition = (date: Date, operator: string) => {
+    return `(json->>'scheduled')::timestamp with time zone ${operator} TO_TIMESTAMP('${date.toISOString()}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`;
+};
+
 export class SubjectFactory {
 
     public static async loadById(subjectId: number): Promise<Subject<ISubject> | null> {
@@ -112,22 +116,17 @@ export class SubjectFactory {
         return await Promise.all(result.map(r => this.instantiateInstance(r as ISubject)));
     }
 
-    public static async loadSportGameForTeamOnDay(teamExternalId: string, date: Date): Promise<Subject<ISubject>> {
-        const startDate = new Date(date.getTime());
-        startDate.setTime(0);
-        const endDate = new Date(startDate.getTime());
-        endDate.setDate(startDate.getDate() + 1);
+    public static async loadSportGameForTeamClosestToToday(teamExternalId: string, date: Date): Promise<Subject<ISubject>> {
+        const endDate = new Date(date.getTime());
+        const startDate = new Date(endDate.getTime());
+        startDate.setDate(endDate.getDate() - 1);
         const sq = Database.instance.sq;
         const query = sq.from({ s: SUBJECT_TABLE_NAME })
             .join({ game: SPORT_GAME_TABLE_NAME }).on`game.subject_id = s.subject_id`
-            .where(sq.raw(`json -> 'home' ->> 'id' = ${teamExternalId}`))
-            .or(sq.raw(`json -> 'away' ->> 'id' = ${teamExternalId}`))
-            .and(sq.raw(
-                `(json->>'scheduled')::timestamp with time zone >= TO_TIMESTAMP('${startDate.toISOString()}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`
-            ))
-            .and(sq.raw(
-                `(json->>'scheduled')::timestamp with time zone < TO_TIMESTAMP('${endDate.toISOString()}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`
-            ));
+            .where(sq.raw(`${scheduledCondition(startDate, '>=')} AND ${scheduledCondition(endDate, '<')}`))
+            .and(sq.raw(`json -> 'home' ->> 'id' = '${teamExternalId}' OR json -> 'away' ->> 'id' = '${teamExternalId}'`))
+            .order`(json->>'scheduled')::timestamp with time zone DESC`
+            .limit(1);
         const result = await query;
         return this.instantiateInstance(result[0] as ISubject);
     }

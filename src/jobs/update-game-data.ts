@@ -7,16 +7,9 @@ import { ChoiceFactory } from '../models/factories/choice-factory';
 type SportGameSubject = Subject<ISubject> & BasicSportGame;
 
 function loadAllGamesToday(): Promise<Array<SportGameSubject>> {
-    const startDateTimestamp = process.argv[2];
-    let startDate = new Date();
-    if (startDateTimestamp !== undefined) {
-        startDate = new Date(Date.parse(startDateTimestamp));
-    }
-    startDate.setHours(0);
-    startDate.setMinutes(0);
-    startDate.setSeconds(0);
     const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 1);
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - 1);
 
     return SubjectFactory.loadAllSportsGamesBetweenDate(startDate, endDate) as Promise<Array<SportGameSubject>>;
 }
@@ -50,7 +43,8 @@ async function updateScoresForGame(game: SportGameSubject): Promise<void> {
     }
 
     try {
-        await game.getRelatedSubjects().then(subjects => setScoresForSubjects(subjects));
+        const relatedSubjects = await game.getRelatedSubjects();
+        await setScoresForSubjects(relatedSubjects);
     } catch (e) {
         console.error('Error setting scores for related subjects', e);
     }
@@ -70,7 +64,7 @@ export async function retrieveStatsAndUpdateChoices(game: SportGameSubject): Pro
 
 async function updateGameData(): Promise<void> {
     // Load all games that are going on today
-    const games = (await loadAllGamesToday()).slice(0, 1);
+    const games = (await loadAllGamesToday());
     if (games.length === 0) {
         console.log('No games today');
         return;
@@ -78,16 +72,22 @@ async function updateGameData(): Promise<void> {
 
     let skippedGames = 0;
     let counter = 0;
+    let errors = 0;
     for (const game of games) {
         console.log(`Processing game ${game.properties.subject_id} ${counter + skippedGames + 1}/${games.length}`);
-        const didUpdate = await retrieveStatsAndUpdateChoices(game);
-        if (!didUpdate) {
-            skippedGames++;
-            continue;
+        try {
+            const didUpdate = await retrieveStatsAndUpdateChoices(game);
+            if (!didUpdate) {
+                skippedGames++;
+                continue;
+            }
+            counter++;
+        } catch (e) {
+            console.error(`Failed to update ${game.properties.subject_id}`);
+            errors++;
         }
-        counter++;
     }
-    console.log(`Skipped ${skippedGames}/${games.length} games`);
+    console.log(`Updated ${games.length - skippedGames} games. Skipped ${skippedGames}. ${errors} errors`);
 }
 
 if (process.argv[2] === 'run') {

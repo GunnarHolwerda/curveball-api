@@ -15,7 +15,7 @@
     "lint": "echo 'Linting app'; tslint -p src/tsconfig.app.json && echo 'Linting tests'; tslint -p tests/tsconfig.test.json",
     "compile": "echo 'Compiling app'; rimraf dist && tsc -p src/tsconfig.app.json && echo 'Compiling tests'; tsc -p tests/tsconfig.test.json",
     "detect-circular-dependencies": "npx madge --circular --extensions ts ./",
-    "update-game-data": "ts-node src/jobs/update-game-data.ts"
+    "update-game-data": "ts-node src/jobs/update-game-data.ts run"
   },
   "pre-commit": [
     "lint",

@@ -38,7 +38,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
             const { quiz } = (req.payload as { quiz: { quizId: string } });
             const quizId = quiz.quizId;
             const quizNamespace = new QuizNamespace(ioServer.getNamespace(quizId), quiz as IQuizResponse);
-            quizNamespace.start();
+            await quizNamespace.start();
             ioServer.server.emit(ServerEvents.quizStart, { quiz });
             return {
                 quizId: quizNamespace.quizId
