@@ -25,7 +25,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/users_force_login',
             method: 'post',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 validate: { payload: postUserForceLoginSchema },
                 description: 'Force login as a certain phone number',
                 notes: 'Bypasses the text verification for logging in, user must already exist'
@@ -36,7 +36,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes',
             method: 'post',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 validate: { payload: postQuizzesSchema },
                 description: 'Create a Quiz',
                 notes: 'Creates a quiz'
@@ -47,7 +47,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes/{quizId}',
             method: 'put',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 validate: { payload: putQuizSchema },
                 description: 'Update quiz information',
                 notes: 'Updates the metadata for a quiz'
@@ -58,7 +58,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes/{quizId}',
             method: 'delete',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 description: 'Delete a quiz',
                 notes: 'Marks the quiz as deleted, will no longer be returned by ' +
                     'endpoints to retrieve lists of quizzes, but can still be accessed'
@@ -69,7 +69,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes/{quizId}',
             method: 'get',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 description: 'Retrieve quiz information',
                 notes: 'Returns full quiz information with question data'
             },
@@ -79,7 +79,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes/{quizId}/questions',
             method: 'post',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 validate: { payload: postQuestionsSchema },
                 description: 'Add questions to quiz',
                 notes: 'Creates and adds questions to a quiz'
@@ -90,7 +90,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes/{quizId}/questions',
             method: 'get',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 description: 'Get all questions for quiz',
                 notes: 'Retrieves all questions for a quiz and their full choice information'
             },
@@ -109,7 +109,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes/{quizId}/start',
             method: 'post',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 description: 'Start a quiz',
                 notes: 'Marks quiz as active, starts the first question and returns it'
             },
@@ -130,7 +130,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes/{quizId}/questions/{questionId}/start',
             method: 'post',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 description: 'Start a question',
                 notes: 'Marks question as sent and returns it'
             },
@@ -140,7 +140,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes/{quizId}/questions/{questionId}/results',
             method: 'get',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 description: 'Retrieve results for a question',
                 notes: 'Calculate total number of answers for each choice of a question and get data'
             },
@@ -150,7 +150,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes',
             method: 'get',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 description: 'Retrieve quizzes',
                 notes: 'Get all quizzes'
             },
@@ -160,7 +160,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes/{quizId}/users',
             method: 'get',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 description: 'Retrieve users still alive in quiz',
                 notes: 'Determines which users have answered all questions up to most recently sent and returns them'
             },
@@ -170,7 +170,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes/{quizId}/reset',
             method: 'post',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 description: 'Reset all quiz data',
                 notes: 'Removes all answers for quiz, marks all questions as unsent, and removes completed from quiz'
             },
@@ -180,7 +180,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             path: '/quizzes/{quizId}/complete',
             method: 'post',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 description: 'Finish a quiz',
                 notes: 'Mark quiz as completed'
             },
@@ -210,7 +210,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
         } else {
             options.tags = ['api'];
         }
-        if (options.auth === 'internalJwt') {
+        if (options.auth === 'accountJwt') {
             options.tags.push('internal');
         }
         r.options = options;

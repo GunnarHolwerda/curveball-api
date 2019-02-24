@@ -14,7 +14,7 @@ export const devRoutes = (routes: Array<hapi.ServerRoute>): Array<hapi.ServerRou
         } else {
             options.tags = ['api'];
         }
-        if (options.auth === 'internalJwt') {
+        if (options.auth === 'accountJwt') {
             options.tags.push('internal');
         }
         r.options = options;

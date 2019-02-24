@@ -11,7 +11,7 @@ export function questionRoutes(server: hapi.Server, _: IoServer): void {
             path: '/questions/{questionId}',
             method: 'put',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 validate: { payload: putQuestionSchema },
                 description: 'Update question information',
                 notes: 'Updates question metadata'
@@ -22,7 +22,7 @@ export function questionRoutes(server: hapi.Server, _: IoServer): void {
             path: '/questions/topics',
             method: 'get',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 description: 'Retrieve all available topics for questions',
                 notes: 'Will return all available topics for associating with a question'
             },
@@ -32,7 +32,7 @@ export function questionRoutes(server: hapi.Server, _: IoServer): void {
         //     path: '/questions/calculator',
         //     method: 'post',
         //     options: {
-        //         auth: 'internalJwt',
+        //         auth: 'accountJwt',
         //         validate: { payload: postQuestionCalculatorSchema },
         //         description: 'Creates new question calculator',
         //         notes:
@@ -44,7 +44,7 @@ export function questionRoutes(server: hapi.Server, _: IoServer): void {
         //     path: '/questions/type',
         //     method: 'post',
         //     options: {
-        //         auth: 'internalJwt',
+        //         auth: 'accountJwt',
         //         validate: { payload: postQuestionTypeSchema },
         //         description: 'Creates new question type',
         //         notes: 'Creates a new question type that can be used with questions'
@@ -55,7 +55,7 @@ export function questionRoutes(server: hapi.Server, _: IoServer): void {
             path: '/questions/type',
             method: 'get',
             options: {
-                auth: 'internalJwt',
+                auth: 'accountJwt',
                 description: 'Retrieves all question types',
                 notes: 'Returns all currently created question types',
                 validate: { query: getQuestionTypesQueryParams }

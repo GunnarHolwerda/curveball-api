@@ -1,6 +1,7 @@
 import { Database } from '../database';
 import * as bcrypt from 'bcrypt';
 import { AccountFactory } from '../factories/account-factory';
+import { createAccountJWT } from '../jwt';
 
 export interface IAccount {
     id: number;
@@ -30,5 +31,16 @@ export class Account {
             email, password: hashedPassword, network_name: networkName
         }).return`id`;
         return (await AccountFactory.load(result[0].id))!;
+    }
+
+    public isCorrectPassword(password: string): boolean {
+        return bcrypt.compareSync(password, this.properties.password);
+    }
+
+    public generateJwt(): string {
+        return createAccountJWT({
+            accountId: this.properties.id,
+            networkName: this.properties.network_name
+        });
     }
 }
