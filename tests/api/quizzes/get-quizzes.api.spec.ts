@@ -1,12 +1,14 @@
-import { QuizResources } from '../../resources/quiz-resources';
 import uuid = require('uuid');
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
+import { AccountResources } from '../../resources/account-resources';
 
 
 describe('GET /quizzes', () => {
-    let quizResources: QuizResources;
+    let quizResources: QuizManagementResources;
 
     beforeAll(async () => {
-        quizResources = new QuizResources();
+        const account = await (new AccountResources()).createAndLoginToAccount();
+        quizResources = new QuizManagementResources(account.token);
     });
 
     it('should retrieve all quizzes', async () => {

@@ -22,6 +22,7 @@ export interface IQuiz {
     auth: boolean;
     deleted: boolean;
     closed: boolean;
+    account_id: string;
 }
 
 export interface IQuizResponse {

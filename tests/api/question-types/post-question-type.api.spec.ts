@@ -1,12 +1,14 @@
 import { expectHttpError } from '../../resources/test-helpers';
-import { QuestionResources } from '../../resources/question-resources';
+import { QuestionManagementResources } from '../../resources/question-management-resources';
 import * as uuid from 'uuid/v4';
+import { AccountResources } from '../../resources/account-resources';
 
 xdescribe('POST /questions/type', () => {
-    let questionResources: QuestionResources;
+    let questionResources: QuestionManagementResources;
 
     beforeAll(async () => {
-        questionResources = new QuestionResources();
+        const { token } = await (new AccountResources()).createAndLoginToAccount();
+        questionResources = new QuestionManagementResources(token);
     });
 
     it('should create new question type', async () => {

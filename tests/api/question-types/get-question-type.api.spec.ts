@@ -1,11 +1,13 @@
-import { QuestionResources } from '../../resources/question-resources';
+import { QuestionManagementResources } from '../../resources/question-management-resources';
 import { KnownQuestionTypes } from '../../../src/models/entities/question-type';
+import { AccountResources } from '../../resources/account-resources';
 
 describe('GET /questions/type', () => {
-    let questionResources: QuestionResources;
+    let questionResources: QuestionManagementResources;
 
     beforeAll(async () => {
-        questionResources = new QuestionResources();
+        const { token } = await (new AccountResources()).createAndLoginToAccount();
+        questionResources = new QuestionManagementResources(token);
     });
 
     describe('?forTopic', () => {

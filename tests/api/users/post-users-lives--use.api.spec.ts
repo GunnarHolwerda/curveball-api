@@ -9,9 +9,12 @@ import { expectHttpError } from '../../resources/test-helpers';
 import { QuestionResponse } from '../../resources/quiz-resources';
 import { QuizResources } from '../../resources/quiz-resources';
 import { QuizStartResponse } from '../../resources/quiz-resources';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
+import { AccountResources } from '../../resources/account-resources';
 
 describe('POST /users/{userId}/lives:use', () => {
     let quizResources: QuizResources;
+    let quizManagement: QuizManagementResources;
     let userResources: UserResources;
     let questions: QuestionResponse;
     let userResponse: UserTokenResponse;
@@ -33,17 +36,22 @@ describe('POST /users/{userId}/lives:use', () => {
         }
     ];
 
+    beforeAll(async () => {
+        const account = await (new AccountResources()).createAndLoginToAccount();
+        quizManagement = new QuizManagementResources(account.token);
+    });
+
     beforeEach(async () => {
         quizResources = new QuizResources();
-        const response = await quizResources.createQuiz({
+        const response = await quizManagement.createQuiz({
             title: uuid(),
             potAmount: 500,
         });
         const qPayload = {
             questions: quizQuestions
         };
-        questions = await quizResources.addQuestions(response.quiz.quizId, qPayload);
-        startResponse = await quizResources.startQuiz(response.quiz.quizId);
+        questions = await quizManagement.addQuestions(response.quiz.quizId, qPayload);
+        startResponse = await quizManagement.startQuiz(response.quiz.quizId);
         userResources = new UserResources();
         userResponse = await userResources.getNewUser();
         await userResources.getNewUser(userResponse.user.username);
@@ -95,7 +103,7 @@ describe('POST /users/{userId}/lives:use', () => {
 
         it('should return 403 if next question was already sent', async () => {
             const { quiz } = startResponse;
-            await quizResources.startQuestion(quiz.quizId, questions.questions[1].questionId);
+            await quizManagement.startQuestion(quiz.quizId, questions.questions[1].questionId);
             await expectHttpError(userResources.useLife(userResponse.user.userId, qt), 403, 'Question was already sent');
         });
     });

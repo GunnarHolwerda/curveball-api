@@ -3,6 +3,7 @@ import * as Joi from 'joi';
 import * as hapi from 'hapi';
 import { IQuizResponse, IQuiz, Quiz } from '../../../models/entities/quiz';
 import { QuizFactory } from '../../../models/factories/quiz-factory';
+import { AccountJwtClaims } from '../../../interfaces/account-jwt-claims';
 
 export const postQuizzesSchema = Joi.object().keys({
     title: Joi.string().required().description('The title of the quiz'),
@@ -18,7 +19,9 @@ export interface PostQuizPayload {
 
 export async function postQuizzes(event: hapi.Request): Promise<object> {
     const quizParams = event.payload as IQuizResponse;
+    const { accountId } = event.auth.credentials as AccountJwtClaims;
     const newQuiz: Partial<IQuiz> = {
+        account_id: accountId,
         title: quizParams.title,
         auth: quizParams.auth,
         pot_amount: quizParams.potAmount

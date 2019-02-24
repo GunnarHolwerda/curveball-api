@@ -15,23 +15,11 @@ import { answerQuestion, questionsAnswerSchema } from './handlers/quizzes/questi
 import { postQuestionStart } from './handlers/quizzes/questions/post-question--start';
 import { postQuestions, postQuestionsSchema } from './handlers/quizzes/questions/post-questions';
 import { getQuizUsers } from './handlers/quizzes/users/get-quiz-users';
-import { postUserForceLogin, postUserForceLoginSchema } from './handlers/users/post-user--forcelogin';
 import { qtPreRouteHandler } from './pres/qt-access';
 import { getQuizLeaderboard } from './handlers/quizzes/leaderboard/get-quiz-leaderboard';
 
 export function quizRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
-        {
-            path: '/users_force_login',
-            method: 'post',
-            options: {
-                auth: 'accountJwt',
-                validate: { payload: postUserForceLoginSchema },
-                description: 'Force login as a certain phone number',
-                notes: 'Bypasses the text verification for logging in, user must already exist'
-            },
-            handler: postUserForceLogin
-        },
         {
             path: '/quizzes',
             method: 'post',

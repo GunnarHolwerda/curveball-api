@@ -8,6 +8,7 @@ import { Sport } from '../models/data-loader/sports-api';
 import { preloadGamesTeamsPlayers } from './handlers/testing/load-teams-players';
 import { createWinnersForQuiz } from '../jobs/process-winners';
 import { QuizFactory } from '../models/factories/quiz-factory';
+import { postUserForceLoginSchema, postUserForceLogin } from './handlers/users/post-user--forcelogin';
 
 export function testingRoutes(server: hapi.Server, _: IoServer): void {
     server.route({
@@ -80,5 +81,19 @@ export function testingRoutes(server: hapi.Server, _: IoServer): void {
                 message: 'ok'
             };
         }
+    });
+
+    server.route({
+        path: '/test/users_force_login',
+        method: 'post',
+        options: {
+            auth: false,
+            tags: ['api', 'test'],
+            validate: { payload: postUserForceLoginSchema },
+            description: 'Force login as a certain phone number',
+            notes: 'Bypasses the text verification for logging in, user must already exist',
+            pre: [onlyLocalPreHandler]
+        },
+        handler: postUserForceLogin
     });
 }

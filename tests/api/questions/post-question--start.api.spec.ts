@@ -2,15 +2,18 @@ import * as uuid from 'uuid';
 
 import { mockManualQuestionsPayload } from '../mock-data';
 import { expectHttpError } from '../../resources/test-helpers';
-import { QuizResources, QuestionResponse, QuizStartResponse } from '../../resources/quiz-resources';
+import { QuestionResponse, QuizStartResponse } from '../../resources/quiz-resources';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
+import { AccountResources } from '../../resources/account-resources';
 
 describe('POST /quizzes/{quizId}/questions/{questionId}:start', () => {
-    let quizResources: QuizResources;
+    let quizResources: QuizManagementResources;
     let questions: QuestionResponse;
     let startResponse: QuizStartResponse;
 
     beforeAll(async () => {
-        quizResources = new QuizResources();
+        const account = await (new AccountResources()).createAndLoginToAccount();
+        quizResources = new QuizManagementResources(account.token);
         const response = await quizResources.createQuiz({
             title: uuid(),
             potAmount: 500,

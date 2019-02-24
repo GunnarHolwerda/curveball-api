@@ -1,17 +1,20 @@
 import * as uuid from 'uuid';
-import { QuizResources, QuestionResponse } from '../../resources/quiz-resources';
+import { QuestionResponse } from '../../resources/quiz-resources';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
-import { QuestionResources } from '../../resources/question-resources';
+import { QuestionManagementResources } from '../../resources/question-management-resources';
+import { AccountResources } from '../../resources/account-resources';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
 
 describe('PUT /questions/{questionId}', () => {
-    let quizResources: QuizResources;
-    let questionResources: QuestionResources;
+    let quizResources: QuizManagementResources;
+    let questionResources: QuestionManagementResources;
     let quiz: IQuizResponse;
     let questionResponse: QuestionResponse;
 
     beforeAll(async () => {
-        quizResources = new QuizResources();
-        questionResources = new QuestionResources();
+        const account = await (new AccountResources()).createAndLoginToAccount();
+        quizResources = new QuizManagementResources(account.token);
+        questionResources = new QuestionManagementResources(account.token);
         const response = await quizResources.createQuiz({
             title: uuid(),
             potAmount: 500,
