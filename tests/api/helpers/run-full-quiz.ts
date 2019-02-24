@@ -6,12 +6,13 @@ import * as uuid from 'uuid/v4';
 import { QuestionsPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
 import { QuizManagementResources } from '../../resources/quiz-management-resources';
-import { AccountResources } from '../../resources/account-resources';
+import { AccountResources, AccountLoginResponse } from '../../resources/account-resources';
 
 export interface QuizResult {
     quiz: IQuizResponse;
     questions: QuestionsPayload;
     quizStart: QuizStartResponse;
+    account: AccountLoginResponse;
 }
 
 export interface FullQuizParameters {
@@ -68,6 +69,7 @@ export async function runFullQuiz(params: Partial<FullQuizParameters> = {}): Pro
     await quizResources.completeQuiz(quiz.quizId);
 
     return {
+        account,
         quiz: response.quiz,
         questions: questions,
         quizStart: startedQuiz

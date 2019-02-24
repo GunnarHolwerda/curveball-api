@@ -17,6 +17,7 @@ import { postQuestions, postQuestionsSchema } from './handlers/quizzes/questions
 import { getQuizUsers } from './handlers/quizzes/users/get-quiz-users';
 import { qtPreRouteHandler } from './pres/qt-access';
 import { getQuizLeaderboard } from './handlers/quizzes/leaderboard/get-quiz-leaderboard';
+import { accountQuizVerification } from './pres/account-quiz-verification';
 
 export function quizRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -36,6 +37,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             method: 'put',
             options: {
                 auth: 'accountJwt',
+                pre: [accountQuizVerification],
                 validate: { payload: putQuizSchema },
                 description: 'Update quiz information',
                 notes: 'Updates the metadata for a quiz'
@@ -47,6 +49,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             method: 'delete',
             options: {
                 auth: 'accountJwt',
+                pre: [accountQuizVerification],
                 description: 'Delete a quiz',
                 notes: 'Marks the quiz as deleted, will no longer be returned by ' +
                     'endpoints to retrieve lists of quizzes, but can still be accessed'
@@ -58,6 +61,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             method: 'get',
             options: {
                 auth: 'accountJwt',
+                pre: [accountQuizVerification],
                 description: 'Retrieve quiz information',
                 notes: 'Returns full quiz information with question data'
             },
@@ -68,6 +72,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             method: 'post',
             options: {
                 auth: 'accountJwt',
+                pre: [accountQuizVerification],
                 validate: { payload: postQuestionsSchema },
                 description: 'Add questions to quiz',
                 notes: 'Creates and adds questions to a quiz'
@@ -79,6 +84,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             method: 'get',
             options: {
                 auth: 'accountJwt',
+                pre: [accountQuizVerification],
                 description: 'Get all questions for quiz',
                 notes: 'Retrieves all questions for a quiz and their full choice information'
             },
@@ -98,6 +104,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             method: 'post',
             options: {
                 auth: 'accountJwt',
+                pre: [accountQuizVerification],
                 description: 'Start a quiz',
                 notes: 'Marks quiz as active, starts the first question and returns it'
             },
@@ -119,6 +126,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             method: 'post',
             options: {
                 auth: 'accountJwt',
+                pre: [accountQuizVerification],
                 description: 'Start a question',
                 notes: 'Marks question as sent and returns it'
             },
@@ -129,6 +137,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             method: 'get',
             options: {
                 auth: 'accountJwt',
+                pre: [accountQuizVerification],
                 description: 'Retrieve results for a question',
                 notes: 'Calculate total number of answers for each choice of a question and get data'
             },
@@ -149,6 +158,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             method: 'get',
             options: {
                 auth: 'accountJwt',
+                pre: [accountQuizVerification],
                 description: 'Retrieve users still alive in quiz',
                 notes: 'Determines which users have answered all questions up to most recently sent and returns them'
             },
@@ -159,6 +169,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             method: 'post',
             options: {
                 auth: 'accountJwt',
+                pre: [accountQuizVerification],
                 description: 'Reset all quiz data',
                 notes: 'Removes all answers for quiz, marks all questions as unsent, and removes completed from quiz'
             },
@@ -169,6 +180,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
             method: 'post',
             options: {
                 auth: 'accountJwt',
+                pre: [accountQuizVerification],
                 description: 'Finish a quiz',
                 notes: 'Mark quiz as completed'
             },
@@ -198,7 +210,7 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
         } else {
             options.tags = ['api'];
         }
-        if (options.auth === 'accountJwt') {
+        if (options.auth === 'ine') {
             options.tags.push('internal');
         }
         r.options = options;

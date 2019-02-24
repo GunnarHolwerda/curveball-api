@@ -36,7 +36,8 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:start', () => {
         });
 
         it('should return 404 if quiz does not exist', async () => {
-            await expectHttpError(quizResources.startQuestion('banana', questions.questions[1].questionId), 404);
+            const otherQuiz = await quizResources.createQuiz({ title: uuid(), potAmount: 100 });
+            await expectHttpError(quizResources.startQuestion(otherQuiz.quiz.quizId, questions.questions[1].questionId), 404);
         });
     });
 });

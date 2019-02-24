@@ -4,20 +4,17 @@ import { nflSpreadQuestionPayload } from '../mock-data';
 import { expectHttpError } from '../../resources/test-helpers';
 import * as uuid from 'uuid/v4';
 import { QuizManagementResources } from '../../resources/quiz-management-resources';
-import { AccountResources, AccountLoginResponse } from '../../resources/account-resources';
 
 describe('GET /users/{userId}/picks', () => {
     let userResponse: UserTokenResponse;
     let userResources: UserResources;
     let fullQuizRun: QuizResult;
-    let account: AccountLoginResponse;
 
     beforeAll(async () => {
         userResources = new UserResources();
         userResponse = await userResources.getNewUser();
         // userResponse = await userResources.verifyUser('e5d2b59e-1d9b-4ca9-a36c-adb209ecf719');
         userResources = new UserResources(userResponse.token);
-        account = await (new AccountResources).createAndLoginToAccount();
     });
 
     describe('Manual Questions', () => {
@@ -34,7 +31,7 @@ describe('GET /users/{userId}/picks', () => {
         });
 
         it('should exclude disabled picks', async () => {
-            const quizResources = new QuizManagementResources(account.token);
+            const quizResources = new QuizManagementResources(fullQuizRun.account.token);
             await quizResources.resetQuiz(fullQuizRun.quiz.quizId);
             const picks = await userResources.getPicks(userResponse.user.userId);
             expect(picks.shows.find(s => s.quizId === fullQuizRun.quiz.quizId)).toBeUndefined('Included disabled picks');
@@ -45,7 +42,7 @@ describe('GET /users/{userId}/picks', () => {
                 answeringUsers: [userResponse],
                 authenticateQuiz: false
             });
-            const quizResources = new QuizManagementResources(account.token);
+            const quizResources = new QuizManagementResources(otherQuiz.account.token);
             const futureDate = new Date();
             futureDate.setDate(futureDate.getDate() - 10);
             await quizResources.updateQuiz(otherQuiz.quiz.quizId, { completedDate: futureDate.toISOString() });

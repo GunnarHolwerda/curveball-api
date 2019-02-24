@@ -6,7 +6,6 @@ import { expectHttpError } from '../../resources/test-helpers';
 import { QuestionsPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
 import { IChoiceResponse } from '../../../src/models/entities/question-choice';
 import { runFullQuiz } from '../helpers/run-full-quiz';
-import { AccountResources } from '../../resources/account-resources';
 import { QuizManagementResources } from '../../resources/quiz-management-resources';
 
 
@@ -16,9 +15,8 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
     let startedQuiz: QuizStartResponse;
 
     beforeAll(async () => {
-        const account = await (new AccountResources()).createAndLoginToAccount();
-        quizManagement = new QuizManagementResources(account.token);
         const result = await runFullQuiz({ numberOfAnswers: TotalAnswers, questions: mockManualQuestionsPayload });
+        quizManagement = new QuizManagementResources(result.account.token);
         startedQuiz = result.quizStart;
     });
 
@@ -50,12 +48,13 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
 
     it('should return 404 question does not belong to quiz', async () => {
         const { firstQuestion } = startedQuiz;
-        await expectHttpError(quizManagement.getQuestionResults('wonder', firstQuestion.questionId), 404);
+        const otherQuiz = await quizManagement.createQuiz({ title: uuid(), potAmount: 100 });
+        await expectHttpError(quizManagement.getQuestionResults(otherQuiz.quiz.quizId, firstQuestion.questionId), 404);
     });
 
     it('should return 404 if question does not exist', async () => {
-        const { quiz } = startedQuiz;
-        await expectHttpError(quizManagement.getQuestionResults(quiz.quizId, uuid()), 404);
+        const otherQuiz = await quizManagement.createQuiz({ title: uuid(), potAmount: 100 });
+        await expectHttpError(quizManagement.getQuestionResults(otherQuiz.quiz.quizId, uuid()), 404);
     });
 
     describe('Answerless questions', () => {

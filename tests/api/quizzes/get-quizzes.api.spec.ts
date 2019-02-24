@@ -2,7 +2,6 @@ import uuid = require('uuid');
 import { QuizManagementResources } from '../../resources/quiz-management-resources';
 import { AccountResources } from '../../resources/account-resources';
 
-
 describe('GET /quizzes', () => {
     let quizResources: QuizManagementResources;
 
@@ -14,6 +13,15 @@ describe('GET /quizzes', () => {
     it('should retrieve all quizzes', async () => {
         const response = await quizResources.allQuizzes();
         expect(response.quizzes.length).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should only return quizzes owned by the current account', async () => {
+        const firstAccountQuiz = await quizResources.createQuiz({ title: uuid(), potAmount: 100 });
+        const otherAccount = await (new AccountResources()).createAndLoginToAccount();
+        const otherQuizManagement = new QuizManagementResources(otherAccount.token);
+        const { quizzes } = await otherQuizManagement.allQuizzes();
+        expect(quizzes.find(q => q.quizId === firstAccountQuiz.quiz.quizId))
+            .toBeUndefined('Returned quizzes were not restricted by account');
     });
 
     it('should exclude deleted quizzes', async () => {
