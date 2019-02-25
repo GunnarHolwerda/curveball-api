@@ -1,4 +1,4 @@
 export interface AccountJwtClaims {
-    accountId: string;
-    networkName: string;
+    accountId: number;
+    networkId: number;
 }

@@ -2,12 +2,15 @@ import { Database } from '../database';
 import * as bcrypt from 'bcrypt';
 import { AccountFactory } from '../factories/account-factory';
 import { createAccountJWT } from '../jwt';
+import { Omit } from 'lodash';
 
 export interface IAccount {
     id: number;
     email: string;
     password: string;
-    network_name: string;
+    first_name: string;
+    last_name: string;
+    network_id: number;
 }
 
 export interface IAccountResponse {
@@ -24,11 +27,12 @@ export class Account {
         this.properties = { ...this._account };
     }
 
-    public static async create(email: string, password: string, networkName: string): Promise<Account> {
+    public static async create(properties: Omit<IAccount, 'id'>): Promise<Account> {
+        const { password, email, first_name, last_name, network_id } = properties;
         const sq = Database.instance.sq;
         const hashedPassword = bcrypt.hashSync(password, 10);
         const result = await sq.from(ACCOUNT_TABLE_NAME).insert({
-            email, password: hashedPassword, network_name: networkName
+            email, password: hashedPassword, first_name, last_name, network_id
         }).return`id`;
         return (await AccountFactory.load(result[0].id))!;
     }
@@ -40,7 +44,7 @@ export class Account {
     public generateJwt(): string {
         return createAccountJWT({
             accountId: this.properties.id,
-            networkName: this.properties.network_name
+            networkId: this.properties.network_id
         });
     }
 }

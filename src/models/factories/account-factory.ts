@@ -19,13 +19,4 @@ export class AccountFactory {
         }
         return new Account(result[0] as IAccount);
     }
-
-    public static async loadByNetworkName(networkName: string): Promise<Account | null> {
-        const sq = Database.instance.sq;
-        const result = await sq.from(ACCOUNT_TABLE_NAME).where`network_name = ${networkName}`;
-        if (result.length === 0) {
-            return null;
-        }
-        return new Account(result[0] as IAccount);
-    }
 }

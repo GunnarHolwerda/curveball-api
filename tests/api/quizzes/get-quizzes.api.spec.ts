@@ -15,7 +15,8 @@ describe('GET /quizzes', () => {
         expect(response.quizzes.length).toBeGreaterThanOrEqual(0);
     });
 
-    it('should only return quizzes owned by the current account', async () => {
+    // As of now networks and accounts are 1 to 1, I don't think this will be the case in the future
+    it('should only return quizzes owned by the current network', async () => {
         const firstAccountQuiz = await quizResources.createQuiz({ title: uuid(), potAmount: 100 });
         const otherAccount = await (new AccountResources()).createAndLoginToAccount();
         const otherQuizManagement = new QuizManagementResources(otherAccount.token);

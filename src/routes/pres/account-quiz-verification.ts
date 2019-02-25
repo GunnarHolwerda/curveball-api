@@ -6,7 +6,7 @@ import { AccountJwtClaims } from '../../interfaces/account-jwt-claims';
 export const accountQuizVerification: RouteOptionsPreObject = {
     method: async (req: Request, _1: ResponseToolkit): Promise<boolean> => {
         const { quizId } = req.params as { quizId?: string };
-        const { accountId } = req.auth.credentials as AccountJwtClaims;
+        const { networkId } = req.auth.credentials as AccountJwtClaims;
         if (quizId === undefined) {
             throw Boom.internal('Url is malformed for verifying quiz');
         }
@@ -15,7 +15,7 @@ export const accountQuizVerification: RouteOptionsPreObject = {
             throw Boom.notFound();
         }
 
-        if (quiz.properties.account_id !== accountId) {
+        if (quiz.properties.network_id !== networkId) {
             throw Boom.forbidden();
         }
 

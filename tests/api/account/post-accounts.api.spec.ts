@@ -22,8 +22,11 @@ describe('POST /accounts', () => {
 
         it('should return 409 if attempting to create account with network name already used', async () => {
             const duplicatedNetworkName = uuid();
-            await accountResources.createAccount(`${uuid()}@example.com`, uuid(), duplicatedNetworkName);
-            await expectHttpError(accountResources.createAccount(`${uuid()}@example.com`, uuid(), duplicatedNetworkName), 409);
+            await accountResources.createAccount(`${uuid()}@example.com`, uuid(), { network: { name: duplicatedNetworkName } });
+            await expectHttpError(
+                accountResources.createAccount(`${uuid()}@example.com`, uuid(), { network: { name: duplicatedNetworkName } }),
+                409
+            );
         });
 
         it('should return 400 if email address is invalid', async () => {

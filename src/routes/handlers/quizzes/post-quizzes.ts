@@ -19,9 +19,9 @@ export interface PostQuizPayload {
 
 export async function postQuizzes(event: hapi.Request): Promise<object> {
     const quizParams = event.payload as IQuizResponse;
-    const { accountId } = event.auth.credentials as AccountJwtClaims;
+    const { networkId } = event.auth.credentials as AccountJwtClaims;
     const newQuiz: Partial<IQuiz> = {
-        account_id: accountId,
+        network_id: networkId,
         title: quizParams.title,
         auth: quizParams.auth,
         pot_amount: quizParams.potAmount

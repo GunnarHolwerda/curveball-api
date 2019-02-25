@@ -33,11 +33,11 @@ export class QuizFactory {
         return reorderedQuizzes.map(r => new Quiz(r as IQuiz));
     }
 
-    public static async loadAllForAccount(accountId: string, includeDeleted: boolean = false): Promise<Array<Quiz>> {
+    public static async loadAllForNetwork(networkId: number, includeDeleted: boolean = false): Promise<Array<Quiz>> {
         const q = Database.instance.sq;
         let query = q.from(QUIZZES_TABLE_NAME)
             .where`deleted = ${false}`
-            .where`account_id = ${accountId}`
+            .where`network_id = ${networkId}`
             .order({ by: 'created', sort: 'desc' });
         if (includeDeleted) {
             query = query.or`deleted = ${true}`;

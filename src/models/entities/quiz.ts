@@ -22,7 +22,7 @@ export interface IQuiz {
     auth: boolean;
     deleted: boolean;
     closed: boolean;
-    account_id: string;
+    network_id: number;
 }
 
 export interface IQuizResponse {
