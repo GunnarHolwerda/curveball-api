@@ -6,28 +6,29 @@ import { expectHttpError } from '../../resources/test-helpers';
 import { QuestionsPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
 import { IChoiceResponse } from '../../../src/models/entities/question-choice';
 import { runFullQuiz } from '../helpers/run-full-quiz';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
 
 
 describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
     const TotalAnswers = 15;
-    let quizResources: QuizResources;
+    let quizManagement: QuizManagementResources;
     let startedQuiz: QuizStartResponse;
 
     beforeAll(async () => {
-        quizResources = new QuizResources();
         const result = await runFullQuiz({ numberOfAnswers: TotalAnswers, questions: mockManualQuestionsPayload });
+        quizManagement = new QuizManagementResources(result.account.token);
         startedQuiz = result.quizStart;
     });
 
     it('should retrieve correct stats for answer results for a question', async () => {
         const { quiz, firstQuestion } = startedQuiz;
-        const results = await quizResources.getQuestionResults(quiz.quizId, firstQuestion.questionId);
+        const results = await quizManagement.getQuestionResults(quiz.quizId, firstQuestion.questionId);
         expect(results.totalAnswers).toBe(TotalAnswers);
     });
 
     it('should return the number of answers for each question', async () => {
         const { quiz, firstQuestion } = startedQuiz;
-        const { results } = await quizResources.getQuestionResults(quiz.quizId, firstQuestion.questionId);
+        const { results } = await quizManagement.getQuestionResults(quiz.quizId, firstQuestion.questionId);
         let numberOfChoicesReturned = 0;
         for (const choiceId in results) {
             if (results.hasOwnProperty(choiceId)) {
@@ -40,19 +41,20 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
 
     it('should return the correctAnswer for the question', async () => {
         const { quiz, firstQuestion } = startedQuiz;
-        const results = await quizResources.getQuestionResults(quiz.quizId, firstQuestion.questionId);
+        const results = await quizManagement.getQuestionResults(quiz.quizId, firstQuestion.questionId);
         const correctAnswerText = mockManualQuestionsPayload.questions[0].choices.find(c => c.isAnswer!)!.text!;
         expect(results.correctAnswer).toBe(firstQuestion.choices.find(c => c.text === correctAnswerText)!.choiceId);
     });
 
     it('should return 404 question does not belong to quiz', async () => {
         const { firstQuestion } = startedQuiz;
-        await expectHttpError(quizResources.getQuestionResults('wonder', firstQuestion.questionId), 404);
+        const otherQuiz = await quizManagement.createQuiz({ title: uuid(), potAmount: 100 });
+        await expectHttpError(quizManagement.getQuestionResults(otherQuiz.quiz.quizId, firstQuestion.questionId), 404);
     });
 
     it('should return 404 if question does not exist', async () => {
-        const { quiz } = startedQuiz;
-        await expectHttpError(quizResources.getQuestionResults(quiz.quizId, uuid()), 404);
+        const otherQuiz = await quizManagement.createQuiz({ title: uuid(), potAmount: 100 });
+        await expectHttpError(quizManagement.getQuestionResults(otherQuiz.quiz.quizId, uuid()), 404);
     });
 
     describe('Answerless questions', () => {
@@ -60,7 +62,7 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
 
         beforeAll(async () => {
             const userResources = new UserResources();
-            const response = await quizResources.createQuiz({
+            const response = await quizManagement.createQuiz({
                 title: uuid(),
                 potAmount: 500,
             });
@@ -69,8 +71,8 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
                     return { ...q, choices: q.choices.map(c => ({ ...c, isAnswer: false })) };
                 })
             };
-            await quizResources.addQuestions(response.quiz.quizId, questionsPayload);
-            startedQuiz = await quizResources.startQuiz(response.quiz.quizId);
+            await quizManagement.addQuestions(response.quiz.quizId, questionsPayload);
+            startedQuiz = await quizManagement.startQuiz(response.quiz.quizId);
             const { firstQuestion, quiz } = startedQuiz;
             const answerPromises: Array<Promise<any>> = [];
             for (let i = 0; i < TotalAnswers; i++) {
@@ -89,7 +91,7 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
 
         it('should not return the correctAnswer if there is none', async () => {
             const { quiz, firstQuestion } = startedQuiz;
-            const results = await quizResources.getQuestionResults(quiz.quizId, firstQuestion.questionId);
+            const results = await quizManagement.getQuestionResults(quiz.quizId, firstQuestion.questionId);
             expect(results.correctAnswer, 'Question without answer returned a correctAnswer in the results').toBeUndefined();
         });
     });

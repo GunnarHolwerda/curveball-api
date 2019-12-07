@@ -1,9 +1,9 @@
 import { UserResources, UserTokenResponse } from '../../resources/user-resources';
 import { runFullQuiz, QuizResult } from '../helpers/run-full-quiz';
 import { nflSpreadQuestionPayload } from '../mock-data';
-import { QuizResources } from '../../resources/quiz-resources';
 import { expectHttpError } from '../../resources/test-helpers';
 import * as uuid from 'uuid/v4';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
 
 describe('GET /users/{userId}/picks', () => {
     let userResponse: UserTokenResponse;
@@ -13,7 +13,6 @@ describe('GET /users/{userId}/picks', () => {
     beforeAll(async () => {
         userResources = new UserResources();
         userResponse = await userResources.getNewUser();
-        // userResponse = await userResources.verifyUser('e5d2b59e-1d9b-4ca9-a36c-adb209ecf719');
         userResources = new UserResources(userResponse.token);
     });
 
@@ -31,7 +30,7 @@ describe('GET /users/{userId}/picks', () => {
         });
 
         it('should exclude disabled picks', async () => {
-            const quizResources = new QuizResources();
+            const quizResources = new QuizManagementResources(fullQuizRun.account.token);
             await quizResources.resetQuiz(fullQuizRun.quiz.quizId);
             const picks = await userResources.getPicks(userResponse.user.userId);
             expect(picks.shows.find(s => s.quizId === fullQuizRun.quiz.quizId), 'Included disabled picks').toBeUndefined();
@@ -42,10 +41,10 @@ describe('GET /users/{userId}/picks', () => {
                 answeringUsers: [userResponse],
                 authenticateQuiz: false
             });
-            const quizResources = new QuizResources();
-            const pastDate = new Date();
-            pastDate.setDate(pastDate.getDate() - 10);
-            await quizResources.updateQuiz(otherQuiz.quiz.quizId, { completedDate: pastDate.toISOString() });
+            const quizResources = new QuizManagementResources(otherQuiz.account.token);
+            const futureDate = new Date();
+            futureDate.setDate(futureDate.getDate() - 10);
+            await quizResources.updateQuiz(otherQuiz.quiz.quizId, { completedDate: futureDate.toISOString() });
             const picks = await userResources.getPicks(userResponse.user.userId);
             expect(picks.shows.find(s => s.quizId === fullQuizRun.quiz.quizId), 'Did not find show ended just now').toBeDefined();
             expect(picks.shows.find(s => s.quizId === otherQuiz.quiz.quizId), 'Found show that ended 10 days ago').toBeUndefined();

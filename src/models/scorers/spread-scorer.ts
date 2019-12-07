@@ -30,7 +30,7 @@ export class SpreadScorer extends Scorer {
         }
 
         const difference = underdogTeamPoints - favoredTeamPoints;
-        const line = -1 * Math.abs(parseInt(choice.properties.text, 10));
+        const line = -1 * Math.abs(parseInt(choice.properties.data.spread, 10));
 
         if (difference + line === 0) {
             return 0;
@@ -41,7 +41,7 @@ export class SpreadScorer extends Scorer {
             // Covered
             return selectionIsFavored ? 0 : 1;
         } else {
-            throw new Error('Spread miscalculation');
+            throw new Error(`Spread miscalculation\nDifference: ${difference}\nLine: ${line}`);
         }
     }
 }

@@ -14,7 +14,7 @@ ENV PGPASSWORD password
 ENV PGDATABASE curveball
 ENV QT_SECRET ExtraSecret
 ENV NBA_API_KEY pbpasfw9nmq6naunn6eat3nj
-ENV NFL_API_KEY 3juucw2np47mdprsnrah2sn9
+ENV NFL_API_KEY peg49d2u6kdwst5qdjv8txks
 ENV MIXPANEL_TOKEN 948d03478fe4f2bf1527edb7f2c9a2c9
 COPY package*.json ./
 RUN npm install --no-save

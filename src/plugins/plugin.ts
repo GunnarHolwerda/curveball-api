@@ -46,12 +46,11 @@ export default class Plugins {
             validate: validate,
             verifyOptions: { algorithms: ['HS256'] },
         });
-        server.auth.strategy('internalJwt', 'jwt',
-            {
-                key: ApplicationConfig.internalSecret,
-                validate: validate,
-                verifyOptions: { algorithms: ['HS256'] },
-            });
+        server.auth.strategy('accountJwt', 'jwt', {
+            key: ApplicationConfig.accountSecret,
+            validate: validate,
+            verifyOptions: { algorithms: ['HS256'] },
+        });
         server.auth.default('jwt');
     }
 

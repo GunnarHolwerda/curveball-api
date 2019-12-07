@@ -1,17 +1,28 @@
-import { QuizResources } from '../../resources/quiz-resources';
 import uuid = require('uuid');
-
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
+import { AccountResources } from '../../resources/account-resources';
 
 describe('GET /quizzes', () => {
-    let quizResources: QuizResources;
+    let quizResources: QuizManagementResources;
 
     beforeAll(async () => {
-        quizResources = new QuizResources();
+        const account = await (new AccountResources()).createAndLoginToAccount();
+        quizResources = new QuizManagementResources(account.token);
     });
 
     it('should retrieve all quizzes', async () => {
         const response = await quizResources.allQuizzes();
         expect(response.quizzes.length).toBeGreaterThanOrEqual(0);
+    });
+
+    // As of now networks and accounts are 1 to 1, I don't think this will be the case in the future
+    it('should only return quizzes owned by the current network', async () => {
+        const firstAccountQuiz = await quizResources.createQuiz({ title: uuid(), potAmount: 100 });
+        const otherAccount = await (new AccountResources()).createAndLoginToAccount();
+        const otherQuizManagement = new QuizManagementResources(otherAccount.token);
+        const { quizzes } = await otherQuizManagement.allQuizzes();
+        expect(quizzes.find(q => q.quizId === firstAccountQuiz.quiz.quizId), 'Returned quizzes were not restricted by account')
+            .toBeUndefined();
     });
 
     it('should exclude deleted quizzes', async () => {

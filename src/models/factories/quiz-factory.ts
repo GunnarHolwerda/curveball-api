@@ -1,5 +1,6 @@
 import { Quiz, IQuiz, QUIZZES_TABLE_NAME } from '../entities/quiz';
 import { Database } from '../database';
+import { Row } from 'sqorn-pg/types/methods';
 
 export class QuizFactory {
 
@@ -12,9 +13,32 @@ export class QuizFactory {
         return new Quiz(result[0] as IQuiz);
     }
 
-    public static async loadAll(includeDeleted: boolean = false): Promise<Array<Quiz>> {
+    public static async batchLoad(quizIds: Array<string>): Promise<Array<Quiz>> {
+        if (quizIds.length === 0) {
+            return [];
+        }
+        const sq = Database.instance.sq;
+        const quizIdToIndexMap: { [quizId: string]: number } = quizIds.reduce((carry, id, index) => {
+            carry[id] = index;
+            return carry;
+        }, {});
+        const result = await sq.from(QUIZZES_TABLE_NAME).where(sq.raw(`quiz_id IN (${quizIds.map(i => `'${i}'`).join(',')})`));
+        if (result.length === 0) {
+            return [];
+        }
+        const reorderedQuizzes: Array<Row> = [];
+        result.forEach(r => {
+            reorderedQuizzes[quizIdToIndexMap[r.quiz_id]] = r;
+        });
+        return reorderedQuizzes.map(r => new Quiz(r as IQuiz));
+    }
+
+    public static async loadAllForNetwork(networkId: number, includeDeleted: boolean = false): Promise<Array<Quiz>> {
         const q = Database.instance.sq;
-        let query = q.from(QUIZZES_TABLE_NAME).where`deleted = ${false}`.order({ by: 'created', sort: 'desc' });
+        let query = q.from(QUIZZES_TABLE_NAME)
+            .where`deleted = ${false}`
+            .where`network_id = ${networkId}`
+            .order({ by: 'created', sort: 'desc' });
         if (includeDeleted) {
             query = query.or`deleted = ${true}`;
         }

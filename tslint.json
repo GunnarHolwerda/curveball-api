@@ -32,6 +32,7 @@
             140
         ],
         "member-access": false,
+        "no-floating-promises": true,
         "member-ordering": [
             true,
             {

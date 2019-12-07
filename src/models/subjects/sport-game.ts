@@ -73,12 +73,8 @@ export abstract class SportGame<TJson, TStats> extends Subject<ISportGame<TJson,
     }
 
     async getRelatedSubjects(): Promise<Array<Subject<ISubject>>> {
-        const teams = await Promise.all([this.homeTeam, this.awayTeam]);
-        const players = await this.players;
-        return [
-            ...teams,
-            ...players
-        ];
+        const [home, away, players] = await Promise.all([this.homeTeam, this.awayTeam, this.players]);
+        return [home, away, ...players];
     }
 
     isFinished(): boolean {

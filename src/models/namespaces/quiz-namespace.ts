@@ -11,9 +11,13 @@ export class QuizNamespace extends Room {
         super(_namespace, new QuizSocketHandlers(quiz));
     }
 
-    public start(): void {
-        QuizCache.addQuiz(this.quiz);
-        super.start();
+    public async start(): Promise<void> {
+        try {
+            await QuizCache.addQuiz(this.quiz);
+        } catch (e) {
+            console.error(`Failed to add ${this.quizId} to quizCache`, e);
+        }
+        await super.start();
     }
 
     public get quizId(): string {

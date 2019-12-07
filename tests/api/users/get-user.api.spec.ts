@@ -22,7 +22,7 @@ describe('GET /users/{userId}', () => {
     it('should return the stats object', async () => {
         const response = await userResources.getUser(user.userId);
         expect(response.stats, 'Stats object was not returned').toBeTruthy();
-        expect(response.stats.winnings, 'Winnings were not 0 for a user who has no wins').toBe('0');
+        expect(response.stats.winnings, 'Winnings were not 0 for a user who has no wins').toBe(0);
         expect(response.stats.wins, 'Wins were not 0 for a user who has no wins').toBe(0);
     });
 

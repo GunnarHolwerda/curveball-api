@@ -1,925 +1,618 @@
 export namespace NFLResponse {
-    export interface Reference {
+    export interface Season {
+        season: number;
+        type: string;
+        weeks: Array<WeeksEntity>;
+    }
+    export interface WeeksEntity {
         id: string;
-        origin: string;
+        number: number;
+        games: Array<GamesEntity>;
+        bye_week?: Array<string>;
+    }
+    export interface GamesEntity {
+        id: string;
+        scheduled: string;
+        home_rotation: string;
+        away_rotation: string;
+        home: string;
+        away: string;
+        status: string;
+        venue: Venue;
+        broadcast: Broadcast;
+        weather: Weather;
     }
 
-    export interface Franchise {
+    export interface Broadcast {
+        network: string;
+        satellite?: string | null;
+        internet?: string | null;
+    }
+    export interface Weather {
+        temperature: number;
+        condition: string;
+        humidity: number;
+        wind: Wind;
+    }
+    export interface Wind {
+        speed: number;
+        direction: string;
+    }
+
+    export interface TeamHierarchy {
+        league: string;
+        conferences: Array<ConferencesEntity>;
+    }
+    export interface ConferencesEntity {
         id: string;
         name: string;
-        alias: string;
-        references: Array<Reference>;
+        divisions: Array<DivisionsEntity>;
     }
-
-    export interface Venue {
+    export interface DivisionsEntity {
         id: string;
         name: string;
-        city: string;
-        state: string;
-        country: string;
-        zip: string;
-        address: string;
-        capacity: number;
-        surface: string;
-        roof_type: string;
+        teams: Array<Teams>;
     }
-
-    export interface Division {
-        id: string;
-        name: string;
-        alias: string;
-    }
-
-    export interface Conference {
-        id: string;
-        name: string;
-        alias: string;
-    }
-
-    export interface Reference2 {
-        id: string;
-        origin: string;
-    }
-
-    export interface Coach {
-        id: string;
-        full_name: string;
-        first_name: string;
-        last_name: string;
-        position: string;
-    }
-
-    export interface Team {
+    export interface Teams {
         id: string;
         name: string;
         market: string;
-        alias: string;
-        sr_id: string;
+        venue: Venue;
     }
-
-    export interface Draft {
-        year: number;
-        round: number;
-        number: number;
-        team: Team;
-    }
-
-    export interface Reference3 {
+    export interface Venue {
         id: string;
-        origin: string;
-    }
-
-    export interface Player {
-        id: string;
+        country: string;
         name: string;
-        jersey: string;
-        last_name: string;
-        first_name: string;
-        abbr_name: string;
-        preferred_name: string;
-        birth_date: string;
-        weight: number;
-        height: number;
-        position: string;
-        birth_place: string;
-        high_school: string;
-        college: string;
-        college_conf: string;
-        rookie_year: number;
-        status: string;
-        draft: Draft;
-        references: Array<Reference3>;
+        city: string;
+        state: string;
+        capacity: number;
+        surface: string;
+        type: string;
+        zip?: string | null;
+        address: string;
     }
 
     export interface Roster {
         id: string;
         name: string;
         market: string;
-        alias: string;
-        sr_id: string;
-        franchise: Franchise;
-        venue: Venue;
-        division: Division;
-        conference: Conference;
-        references: Array<Reference2>;
-        coaches: Array<Coach>;
-        players: Array<Player>;
-        _comment: string;
+        players: Array<PlayersEntity>;
+        coaches: Array<CoachesEntity>;
     }
-
-    export interface Venue {
+    export interface PlayersEntity {
         id: string;
-        name: string;
-        city: string;
-        state: string;
-        country: string;
-        zip: string;
-        address: string;
-        capacity: number;
-        surface: string;
-        roof_type: string;
-        sr_id: string;
-    }
-
-    export interface Team {
-        id: string;
-        name: string;
-        alias: string;
-    }
-
-    export interface Broadcast {
-        network: string;
-        satellite: string;
-        internet: string;
-    }
-
-    export interface Period {
-        period_type: string;
-        id: string;
-        number: number;
-        sequence: number;
-        home_points: number;
-        away_points: number;
-    }
-
-    export interface Scoring {
-        home_points: number;
-        away_points: number;
-        periods: Array<Period>;
-    }
-
-    export interface Game {
-        id: string;
+        name_full: string;
+        name_first: string;
+        name_last: string;
+        name_abbr: string;
+        birthdate: string;
+        birth_place: string;
+        high_school?: string | null;
+        height: number;
+        weight: number;
+        college: string;
+        position: string;
+        jersey_number: number;
         status: string;
-        reference: string;
-        number: number;
-        scheduled: string;
-        attendance: number;
-        utc_offset: number;
-        entry_mode: string;
-        weather: string;
-        venue: Venue;
-        home: Team;
-        away: Team;
-        broadcast: Broadcast;
-        scoring: Scoring;
+        salary: number;
+        experience?: string | null;
+        draft_pick?: string | null;
+        draft_round?: string | null;
+        draft_year?: number | null;
+        draft_team?: string | null;
     }
-
-    export interface Week {
+    export interface CoachesEntity {
         id: string;
-        sequence: number;
-        title: string;
-        games: Array<Game>;
-    }
-
-    export interface SeasonSchedule {
-        id: string;
-        year: number;
-        type: string;
-        name: string;
-        weeks: Array<Week>;
-        _comment: string;
+        name_full: string;
+        name_first: string;
+        name_last: string;
+        name_abbr: string;
+        position: string;
+        status: string;
+        salary: number;
     }
 
     export interface PlayerStatistic {
         id: string;
         name: string;
-        jersey: string;
-        reference: string;
+        jersey: number;
         position: string;
-    }
-
-    export interface Season {
-        id: string;
-        year: number;
-        type: string;
-        name: string;
-    }
-
-    export interface Week {
-        id: string;
-        sequence: number;
-        title: string;
-    }
-
-    export interface Venue {
-        id: string;
-        name: string;
-        city: string;
-        state: string;
-        country: string;
-        zip: string;
-        address: string;
-        capacity: number;
-        surface: string;
-        roof_type: string;
-    }
-
-    export interface Home {
-        id: string;
-        name: string;
-        market: string;
-        alias: string;
-        reference: string;
-        sr_id: string;
-        used_timeouts: number;
-        remaining_timeouts: number;
-        points: number;
-    }
-
-    export interface Away {
-        id: string;
-        name: string;
-        market: string;
-        alias: string;
-        reference: string;
-        sr_id: string;
-        used_timeouts: number;
-        remaining_timeouts: number;
-        points: number;
-    }
-
-    export interface Summary {
-        season: Season;
-        week: Week;
-        venue: Venue;
-        home: Home;
-        away: Away;
-    }
-
-    export interface Totals {
-        avg_yards: number;
-        attempts: number;
-        touchdowns: number;
-        tlost: number;
-        tlost_yards: number;
-        yards: number;
-        longest: number;
-        longest_touchdown: number;
-        redzone_attempts: number;
-        broken_tackles: number;
-        kneel_downs: number;
-        scrambles: number;
-        yards_after_contact: number;
-    }
-
-    export interface ReceivingTotals {
-        targets: number;
-        receptions: number;
-        avg_yards: number;
-        yards: number;
-        touchdowns: number;
-        yards_after_catch: number;
-        longest: number;
-        longest_touchdown: number;
-        redzone_targets: number;
-        air_yards: number;
-        broken_tackles: number;
-        dropped_passes: number;
-        catchable_passes: number;
-        yards_after_contact: number;
-    }
-
-    export interface ReceivingStatistics extends PlayerStatistic {
-        receptions: number;
-        targets: number;
-        yards: number;
-        avg_yards: number;
-        longest: number;
-        touchdowns: number;
-        longest_touchdown: number;
-        yards_after_catch: number;
-        redzone_targets: number;
-        air_yards: number;
-        broken_tackles: number;
-        dropped_passes: number;
-        catchable_passes: number;
-        yards_after_contact: number;
-    }
-
-    export interface Receiving {
-        totals: ReceivingTotals;
-        players: Array<ReceivingStatistics>;
-    }
-
-    export interface PuntingTotals {
-        attempts: number;
-        yards: number;
-        net_yards: number;
-        blocked: number;
-        touchbacks: number;
-        inside_20: number;
-        return_yards: number;
-        avg_net_yards: number;
-        avg_yards: number;
-        longest: number;
-        hang_time: number;
-        avg_hang_time: number;
-    }
-
-    export interface PuntingStatistics extends PlayerStatistic {
-        attempts: number;
-        yards: number;
-        avg_yards: number;
-        blocked: number;
-        longest: number;
-        touchbacks: number;
-        inside_20: number;
-        avg_net_yards: number;
-        return_yards: number;
-        net_yards: number;
-        hang_time: number;
-        avg_hang_time: number;
-    }
-
-    export interface Punts {
-        totals: PuntingTotals;
-        players: Array<PuntingStatistics>;
-    }
-
-    export interface PuntReturnTotals {
-        avg_yards: number;
-        yards: number;
-        longest: number;
-        touchdowns: number;
-        longest_touchdown: number;
-        faircatches: number;
-        number: number;
-    }
-
-    export interface PuntReturnStatistics extends PlayerStatistic {
-        yards: number;
-        avg_yards: number;
-        touchdowns: number;
-        longest: number;
-        faircatches: number;
-        longest_touchdown: number;
-        number: number;
-    }
-
-    export interface PuntReturns {
-        totals: PuntReturnTotals;
-        players: Array<PuntReturnStatistics>;
-    }
-
-    export interface PenaltyTotals {
-        penalties: number;
-        yards: number;
-    }
-
-    export interface PenaltyStatistics extends PlayerStatistic {
-        position: string;
-        penalties: number;
-        yards: number;
-    }
-
-    export interface Penalties {
-        totals: PenaltyTotals;
-        players: Array<PenaltyStatistics>;
-    }
-
-    export interface PassingTotals {
-        attempts: number;
-        completions: number;
-        cmp_pct: number;
-        interceptions: number;
-        sack_yards: number;
-        rating: number;
-        touchdowns: number;
-        avg_yards: number;
-        sacks: number;
-        longest: number;
-        longest_touchdown: number;
-        air_yards: number;
-        redzone_attempts: number;
-        net_yards: number;
-        yards: number;
-        throw_aways: number;
-        poor_throws: number;
-        defended_passes: number;
-        dropped_passes: number;
-        spikes: number;
-        blitzes: number;
-        hurries: number;
-        knockdowns: number;
-        pocket_time: number;
-    }
-
-    export interface PassingStatistics extends PlayerStatistic {
-        attempts: number;
-        completions: number;
-        cmp_pct: number;
-        yards: number;
-        avg_yards: number;
-        sacks: number;
-        sack_yards: number;
-        touchdowns: number;
-        longest: number;
-        interceptions: number;
-        rating: number;
-        longest_touchdown: number;
-        air_yards: number;
-        redzone_attempts: number;
-        throw_aways: number;
-        poor_throws: number;
-        defended_passes: number;
-        dropped_passes: number;
-        spikes: number;
-        blitzes: number;
-        hurries: number;
-        knockdowns: number;
-        pocket_time: number;
-        avg_pocket_time: number;
-    }
-
-    export interface Passing {
-        totals: PassingTotals;
-        players: Array<PassingStatistics>;
-    }
-
-    export interface ReturnTotals {
-        yards: number;
-        touchdowns: number;
-        blk_fg_touchdowns: number;
-        blk_punt_touchdowns: number;
-        fg_return_touchdowns: number;
-        ez_rec_touchdowns: number;
-        number: number;
-    }
-
-    export interface MiscReturns {
-        totals: ReturnTotals;
-        players: Array<any>;
-    }
-
-    export interface KickoffTotals {
-        endzone: number;
-        inside_20: number;
-        return_yards: number;
-        touchbacks: number;
-        yards: number;
-        out_of_bounds: number;
-        number: number;
-        onside_attempts: number;
-        onside_successes: number;
-        squib_kicks: number;
-        total_endzone: number;
-    }
-
-    export interface KickoffStatistics extends PlayerStatistic {
-        endzone: number;
-        inside_20: number;
-        return_yards: number;
-        touchbacks: number;
-        yards: number;
-        out_of_bounds: number;
-        number: number;
-        onside_attempts: number;
-        onside_successes: number;
-        squib_kicks: number;
-        total_endzone: number;
-    }
-
-    export interface Kickoffs {
-        totals: KickoffTotals;
-        players: Array<KickoffStatistics>;
-    }
-
-    export interface KickReturnTotals {
-        avg_yards: number;
-        yards: number;
-        longest: number;
-        touchdowns: number;
-        longest_touchdown: number;
-        faircatches: number;
-        number: number;
-    }
-
-    export interface KickReturnStatistics extends PlayerStatistic {
-        avg_yards: number;
-        yards: number;
-        longest: number;
-        touchdowns: number;
-        longest_touchdown: number;
-        faircatches: number;
-        number: number;
-    }
-
-    export interface KickReturns {
-        totals: KickReturnTotals;
-        players: Array<KickReturnStatistics>;
-    }
-
-    export interface InterceptionReturnTotals {
-        avg_yards: number;
-        yards: number;
-        longest: number;
-        touchdowns: number;
-        longest_touchdown: number;
-        number: number;
-    }
-
-    export interface InterceptionReturnStatistics extends PlayerStatistic {
-        avg_yards: number;
-        yards: number;
-        longest: number;
-        touchdowns: number;
-        longest_touchdown: number;
-        number: number;
-    }
-
-    export interface IntReturns {
-        totals: InterceptionReturnTotals;
-        players: Array<InterceptionReturnStatistics>;
-    }
-
-    export interface FumbleTotals {
-        fumbles: number;
-        lost_fumbles: number;
-        own_rec: number;
-        own_rec_yards: number;
-        opp_rec: number;
-        opp_rec_yards: number;
-        out_of_bounds: number;
-        forced_fumbles: number;
-        own_rec_tds: number;
-        opp_rec_tds: number;
-        ez_rec_tds: number;
-    }
-
-    export interface FumblePlayerStatistics extends PlayerStatistic {
-        fumbles: number;
-        lost_fumbles: number;
-        own_rec: number;
-        own_rec_yards: number;
-        opp_rec: number;
-        opp_rec_yards: number;
-        out_of_bounds: number;
-        forced_fumbles: number;
-        own_rec_tds: number;
-        opp_rec_tds: number;
-        ez_rec_tds: number;
-    }
-
-    export interface Fumbles {
-        totals: FumbleTotals;
-        players: Array<FumblePlayerStatistics>;
-    }
-
-    export interface FieldGoalTotals {
-        attempts: number;
-        made: number;
-        blocked: number;
-        yards: number;
-        avg_yards: number;
-        longest: number;
-        net_attempts: number;
-    }
-
-    export interface FieldGoalStatistics extends PlayerStatistic {
-        attempts: number;
-        made: number;
-        blocked: number;
-        yards: number;
-        avg_yards: number;
-        longest: number;
-    }
-
-    export interface FieldGoals {
-        totals: FieldGoalTotals;
-        players: Array<FieldGoalStatistics>;
-    }
-
-    export interface ExtraPointTotals {
-        attempts: number;
-        blocked: number;
-        made: number;
-    }
-
-    export interface ExtraPointStatistics extends PlayerStatistic {
-        attempts: number;
-        blocked: number;
-        made: number;
-    }
-
-    export interface Kicks {
-        totals: ExtraPointTotals;
-        players: Array<ExtraPointStatistics>;
-    }
-
-    export interface ConversionTotals {
-        pass_attempts: number;
-        pass_successes: number;
-        rush_attempts: number;
-        rush_successes: number;
-        defense_attempts: number;
-        defense_successes: number;
-        turnover_successes: number;
-    }
-
-    export interface Conversions {
-        totals: ConversionTotals;
-        players: Array<any>;
-    }
-
-    export interface ExtraPoints {
-        kicks: Kicks;
-        conversions: Conversions;
-    }
-
-    export interface DefensiveTotals {
-        tackles: number;
-        assists: number;
-        combined: number;
-        sacks: number;
-        sack_yards: number;
-        interceptions: number;
-        passes_defended: number;
-        forced_fumbles: number;
-        fumble_recoveries: number;
-        qb_hits: number;
-        tloss: number;
-        tloss_yards: number;
-        safeties: number;
-        sp_tackles: number;
-        sp_assists: number;
-        sp_forced_fumbles: number;
-        sp_fumble_recoveries: number;
-        sp_blocks: number;
-        misc_tackles: number;
-        misc_assists: number;
-        misc_forced_fumbles: number;
-        misc_fumble_recoveries: number;
-        def_targets: number;
-        def_comps: number;
-        blitzes: number;
-        hurries: number;
-        knockdowns: number;
-        missed_tackles: number;
-    }
-
-    export interface DefensiveStatistics extends PlayerStatistic {
-        tackles: number;
-        assists: number;
-        combined: number;
-        sacks: number;
-        sack_yards: number;
-        interceptions: number;
-        passes_defended: number;
-        forced_fumbles: number;
-        fumble_recoveries: number;
-        qb_hits: number;
-        tloss: number;
-        tloss_yards: number;
-        safeties: number;
-        sp_tackles: number;
-        sp_assists: number;
-        sp_forced_fumbles: number;
-        sp_fumble_recoveries: number;
-        sp_blocks: number;
-        misc_tackles: number;
-        misc_assists: number;
-        misc_forced_fumbles: number;
-        misc_fumble_recoveries: number;
-        def_targets: number;
-        def_comps: number;
-        blitzes: number;
-        hurries: number;
-        knockdowns: number;
-        missed_tackles: number;
-    }
-
-    export interface Defense {
-        totals: DefensiveTotals;
-        players: Array<DefensiveStatistics>;
-    }
-
-    export interface Goaltogo {
-        attempts: number;
-        successes: number;
-        pct: number;
-    }
-
-    export interface Redzone {
-        attempts: number;
-        successes: number;
-        pct: number;
-    }
-
-    export interface Thirddown {
-        attempts: number;
-        successes: number;
-        pct: number;
-    }
-
-    export interface Fourthdown {
-        attempts: number;
-        successes: number;
-        pct: number;
-    }
-
-    export interface Efficiency {
-        goaltogo: Goaltogo;
-        redzone: Redzone;
-        thirddown: Thirddown;
-        fourthdown: Fourthdown;
-    }
-
-    export interface FirstDowns {
-        pass: number;
-        penalty: number;
-        rush: number;
-        total: number;
-    }
-
-    export interface Interceptions {
-        return_yards: number;
-        returned: number;
-        number: number;
-    }
-
-    export interface Touchdowns {
-        pass: number;
-        rush: number;
-        total_return: number;
-        total: number;
-        fumble_return: number;
-        int_return: number;
-        kick_return: number;
-        punt_return: number;
-        other: number;
-    }
-
-    export interface TeamSummary {
-        possession_time: string;
-        avg_gain: number;
-        safeties: number;
-        turnovers: number;
-        play_count: number;
-        rush_plays: number;
-        total_yards: number;
-        fumbles: number;
-        lost_fumbles: number;
-        penalties: number;
-        penalty_yards: number;
-        return_yards: number;
-    }
-
-    export interface RushingTotals {
-        avg_yards: number;
-        attempts: number;
-        touchdowns: number;
-        tlost: number;
-        tlost_yards: number;
-        yards: number;
-        longest: number;
-        longest_touchdown: number;
-        redzone_attempts: number;
-        broken_tackles: number;
-        kneel_downs: number;
-        scrambles: number;
-        yards_after_contact: number;
-    }
-
-    export interface RushingStatistics extends PlayerStatistic {
-        avg_yards: number;
-        attempts: number;
-        touchdowns: number;
-        yards: number;
-        longest: number;
-        longest_touchdown: number;
-        redzone_attempts: number;
-        tlost: number;
-        tlost_yards: number;
-        broken_tackles: number;
-        kneel_downs: number;
-        scrambles: number;
-        yards_after_contact: number;
-    }
-
-    export interface Rushing {
-        totals: RushingTotals;
-        players: Array<RushingStatistics>;
-    }
-
-    export interface MiscReturnTotals {
-        yards: number;
-        touchdowns: number;
-        blk_fg_touchdowns: number;
-        blk_punt_touchdowns: number;
-        fg_return_touchdowns: number;
-        ez_rec_touchdowns: number;
-        number: number;
-    }
-
-    export interface MiscReturns {
-        totals: MiscReturnTotals;
-        players: Array<any>;
-    }
-
-    export interface Goaltogo2 {
-        attempts: number;
-        successes: number;
-        pct: number;
-    }
-
-    export interface Redzone2 {
-        attempts: number;
-        successes: number;
-        pct: number;
-    }
-
-    export interface Thirddown2 {
-        attempts: number;
-        successes: number;
-        pct: number;
-    }
-
-    export interface Fourthdown2 {
-        attempts: number;
-        successes: number;
-        pct: number;
-    }
-
-    export interface Efficiency {
-        goaltogo: Goaltogo2;
-        redzone: Redzone2;
-        thirddown: Thirddown2;
-        fourthdown: Fourthdown2;
-    }
-
-    export interface FirstDowns {
-        pass: number;
-        penalty: number;
-        rush: number;
-        total: number;
-    }
-
-    export interface Interceptions {
-        return_yards: number;
-        returned: number;
-        number: number;
-    }
-
-    export interface Touchdowns {
-        pass: number;
-        rush: number;
-        total_return: number;
-        total: number;
-        fumble_return: number;
-        int_return: number;
-        kick_return: number;
-        punt_return: number;
-        other: number;
-    }
-
-    export interface TeamStatistics {
-        id: string;
-        name: string;
-        market: string;
-        alias: string;
-        reference: string;
-        sr_id: string;
-        summary: TeamSummary;
-        rushing: Rushing;
-        receiving: Receiving;
-        punts: Punts;
-        punt_returns: PuntReturns;
-        penalties: Penalties;
-        passing: Passing;
-        misc_returns: MiscReturns;
-        kickoffs: Kickoffs;
-        kick_returns: KickReturns;
-        int_returns: IntReturns;
-        fumbles: Fumbles;
-        field_goals: FieldGoals;
-        extra_points: ExtraPoints;
-        defense: Defense;
-        efficiency: Efficiency;
-        first_downs: FirstDowns;
-        interceptions: Interceptions;
-        touchdowns: Touchdowns;
-    }
-
-    export interface Statistics {
-        home: TeamStatistics;
-        away: TeamStatistics;
     }
 
     export interface GameStatistics {
         id: string;
+        scheduled: string;
         status: string;
-        reference: string;
-        number: number;
-        scheduled: Date;
-        attendance: number;
-        utc_offset: number;
-        entry_mode: string;
-        weather: string;
-        clock: string;
-        quarter: number;
-        summary: Summary;
+        home_team: HomeTeam;
+        away_team: AwayTeam;
+    }
+    export interface HomeTeam {
+        id: string;
+        name: string;
+        market: string;
+        remaining_challenges: number;
+        remaining_timeouts: number;
+        points: number;
         statistics: Statistics;
-        _comment: string;
+    }
+    export interface Statistics {
+        touchdowns: Touchdowns;
+        third_down_efficiency: ThirdDownEfficiencyOrFourthDownEfficiency;
+        rushing: Rushing;
+        redzone_efficiency: RedzoneEfficiencyOrGoalEfficiency;
+        receiving: Receiving;
+        punting: Punting;
+        punt_return: PuntReturnOrKickReturn;
+        penalty: Penalty;
+        passing: Passing;
+        kickoffs: Kickoffs;
+        kick_return: PuntReturnOrKickReturn;
+        goal_efficiency: RedzoneEfficiencyOrGoalEfficiency;
+        fumbles: Fumbles;
+        fourth_down_efficiency: ThirdDownEfficiencyOrFourthDownEfficiency;
+        first_downs: FirstDowns;
+        field_goal: FieldGoal;
+        extra_point: ExtraPoint;
+        defense: Defense;
+    }
+    export interface Touchdowns {
+        team: TeamTouchdownStatistics;
+        players?: Array<PlayerTouchdownStatistics> | null;
+    }
+    export interface TeamTouchdownStatistics {
+        pass: number;
+        rush: number;
+        int: number;
+        fum_ret: number;
+        punt_ret: number;
+        kick_ret: number;
+        fg_ret: number;
+        other: number;
+    }
+    export interface PlayerTouchdownStatistics extends PlayerStatistic {
+        pass: number;
+        rush: number;
+        int: number;
+        fum_ret: number;
+        punt_ret: number;
+        kick_ret: number;
+        fg_ret: number;
+        other: number;
+    }
+    export interface ThirdDownEfficiencyOrFourthDownEfficiency {
+        team: TeamThirdAndFourthDownEfficiency;
+    }
+    export interface TeamThirdAndFourthDownEfficiency {
+        att: number;
+        conv: number;
+        pct: number;
+        pass: number;
+        rush: number;
+        pen: number;
+    }
+    export interface Rushing {
+        team: TeamRushingStatistics;
+        players?: Array<PlayerRushingStatistics> | null;
+    }
+    export interface TeamRushingStatistics {
+        att: number;
+        yds: number;
+        avg: number;
+        lg: number;
+        td: number;
+        fd: number;
+        fd_pct: number;
+        sfty: number;
+        rz_att: number;
+        fum: number;
+        yds_10_pls: number;
+        yds_20_pls: number;
+        yds_30_pls: number;
+        yds_40_pls: number;
+        yds_50_pls: number;
+    }
+    export interface PlayerRushingStatistics extends PlayerStatistic {
+        att: number;
+        yds: number;
+        avg: number;
+        lg: number;
+        td: number;
+        fd: number;
+        fd_pct: number;
+        sfty: number;
+        rz_att: number;
+        fum: number;
+        yds_10_pls: number;
+        yds_20_pls: number;
+        yds_30_pls: number;
+        yds_40_pls: number;
+        yds_50_pls: number;
+    }
+    export interface RedzoneEfficiencyOrGoalEfficiency {
+        team: TeamRedzoneEfficiency;
+    }
+    export interface TeamRedzoneEfficiency {
+        att: number;
+        td: number;
+        pct: number;
+    }
+    export interface Receiving {
+        team: TeamReceivingStats;
+        players?: Array<PlayerReceivingStats> | null;
+    }
+    export interface TeamReceivingStats {
+        tar: number;
+        rec: number;
+        yds: number;
+        yac: number;
+        fd: number;
+        avg: number;
+        td: number;
+        lg: number;
+        rz_tar: number;
+        fum: number;
+        yds_10_pls: number;
+        yds_20_pls: number;
+        yds_30_pls: number;
+        yds_40_pls: number;
+        yds_50_pls: number;
+    }
+    export interface PlayerReceivingStats extends PlayerStatistic {
+        tar: number;
+        rec: number;
+        yds: number;
+        yac: number;
+        fd: number;
+        avg: number;
+        td: number;
+        lg: number;
+        rz_tar: number;
+        fum: number;
+        yds_10_pls: number;
+        yds_20_pls: number;
+        yds_30_pls: number;
+        yds_40_pls: number;
+        yds_50_pls: number;
+    }
+    export interface Punting {
+        team: TeamPuntingStats;
+        players?: Array<PlayerPuntingStats> | null;
+    }
+    export interface TeamPuntingStats {
+        punts: number;
+        yds: number;
+        net_yds: number;
+        lg: number;
+        blk: number;
+        in20: number;
+        tb: number;
+        ret: number;
+        sfty: number;
+        avg: number;
+        net_avg: number;
+        ret_yds: number;
+        avg_ret: number;
+        in20_pct: number;
+        tb_pct: number;
+    }
+    export interface PlayerPuntingStats extends PlayerStatistic {
+        punts: number;
+        yds: number;
+        net_yds: number;
+        lg: number;
+        blk: number;
+        in20: number;
+        tb: number;
+        ret: number;
+        sfty: number;
+        avg: number;
+        net_avg: number;
+        ret_yds: number;
+        avg_ret: number;
+        in20_pct: number;
+        tb_pct: number;
+    }
+    export interface PuntReturnOrKickReturn {
+        team: TeamReturnStats;
+        players?: Array<PlayerReturnStatistics> | null;
+    }
+    export interface TeamReturnStats {
+        returns: number;
+        yds: number;
+        fc: number;
+        lg: number;
+        td: number;
+        avg: number;
+        yds_10_pls: number;
+        yds_20_pls: number;
+        yds_30_pls: number;
+        yds_40_pls: number;
+        yds_50_pls: number;
+    }
+    export interface PlayerReturnStatistics extends PlayerStatistic {
+        returns: number;
+        yds: number;
+        fc: number;
+        lg: number;
+        td: number;
+        avg: number;
+        yds_10_pls: number;
+        yds_20_pls: number;
+        yds_30_pls: number;
+        yds_40_pls: number;
+        yds_50_pls: number;
+    }
+    export interface Penalty {
+        team: TeamPenaltyStatistics;
+        players?: Array<PlayerPenaltyStatistics> | null;
+    }
+    export interface TeamPenaltyStatistics {
+        num: number;
+        yds: number;
+        fd: number;
+    }
+    export interface PlayerPenaltyStatistics extends PlayerStatistic {
+        num: number;
+        yds: number;
+        fd: number;
+    }
+    export interface Passing {
+        team: TeamPassingStatistics;
+        players?: Array<PlayerPassingStatistics> | null;
+    }
+    export interface TeamPassingStatistics {
+        att: number;
+        cmp: number;
+        yds: number;
+        lg: number;
+        sk: number;
+        sk_yds: number;
+        td: number;
+        int: number;
+        int_td: number;
+        fd: number;
+        sfty: number;
+        rz_att: number;
+        rating: number;
+        avg: number;
+        cmp_pct: number;
+        cmp_avg: number;
+        td_pct: number;
+        int_pct: number;
+        yds_10_pls: number;
+        yds_20_pls: number;
+        yds_30_pls: number;
+        yds_40_pls: number;
+        yds_50_pls: number;
+    }
+    export interface PlayerPassingStatistics extends PlayerStatistic {
+        att: number;
+        cmp: number;
+        yds: number;
+        lg: number;
+        sk: number;
+        sk_yds: number;
+        td: number;
+        int: number;
+        int_td: number;
+        fd: number;
+        sfty: number;
+        rz_att: number;
+        rating: number;
+        avg: number;
+        cmp_pct: number;
+        cmp_avg: number;
+        td_pct: number;
+        int_pct: number;
+        yds_10_pls: number;
+        yds_20_pls: number;
+        yds_30_pls: number;
+        yds_40_pls: number;
+        yds_50_pls: number;
+    }
+    export interface Kickoffs {
+        team: TeamKickoffStatistics;
+        players?: Array<PlayerKickoffStatistics> | null;
+    }
+    export interface TeamKickoffStatistics {
+        kicks: number;
+        yds: number;
+        net_yds: number;
+        lg: number;
+        endzone: number;
+        in20: number;
+        tb: number;
+        ret: number;
+        avg: number;
+        net_avg: number;
+        ret_yds: number;
+        avg_ret: number;
+        in20_pct: number;
+        tb_pct: number;
+    }
+    export interface PlayerKickoffStatistics extends PlayerStatistic {
+        kicks: number;
+        yds: number;
+        net_yds: number;
+        lg: number;
+        endzone: number;
+        in20: number;
+        tb: number;
+        ret: number;
+        avg: number;
+        net_avg: number;
+        ret_yds: number;
+        in20_pct: number;
+        tb_pct: number;
+    }
+    export interface Fumbles {
+        team: TeamFumbleStatistics;
+        players?: Array<PlayerFumbleStatistics> | null;
+    }
+    export interface TeamFumbleStatistics {
+        fum: number;
+        lost: number;
+        oob: number;
+        own_rec: number;
+        own_rec_yds: number;
+        own_rec_td: number;
+        force_fum: number;
+        opp_rec: number;
+        opp_rec_yds: number;
+        opp_rec_td: number;
+    }
+    export interface PlayerFumbleStatistics extends PlayerStatistic {
+        fum: number;
+        lost: number;
+        oob: number;
+        own_rec: number;
+        own_rec_yds: number;
+        own_rec_td: number;
+        force_fum: number;
+        opp_rec: number;
+        opp_rec_yds: number;
+        opp_rec_td: number;
+    }
+    export interface FirstDowns {
+        team: TeamFirstDownStatistics;
+        players?: Array<PlayerFirstDownStatistics> | null;
+    }
+    export interface TeamFirstDownStatistics {
+        num: number;
+        pass: number;
+        rush: number;
+        pen: number;
+    }
+    export interface PlayerFirstDownStatistics extends PlayerStatistic {
+        num: number;
+        pass: number;
+        rush: number;
+        pen: number;
+    }
+    export interface FieldGoal {
+        team: TeamFieldGoalStats;
+        players?: Array<PlayerFieldGoalStats> | null;
+    }
+    export interface TeamFieldGoalStats {
+        att: number;
+        made: number;
+        pct: number;
+        lg: number;
+        att_19: number;
+        made_19: number;
+        att_29: number;
+        made_29: number;
+        att_39: number;
+        made_39: number;
+        att_49: number;
+        made_49: number;
+        att_50: number;
+        made_50: number;
+    }
+    export interface PlayerFieldGoalStats extends PlayerStatistic {
+        att: number;
+        made: number;
+        pct: number;
+        lg: number;
+        blk: number;
+        att_19: number;
+        made_19: number;
+        att_29: number;
+        made_29: number;
+        att_39: number;
+        made_39: number;
+        att_49: number;
+        made_49: number;
+        att_50: number;
+        made_50: number;
+    }
+    export interface ExtraPoint {
+        team: TeamExtraPointStatistics;
+        players?: Array<PlayerExtraPointStatistics> | null;
+    }
+    export interface TeamExtraPointStatistics {
+        att: number;
+        made: number;
+        pct: number;
+        blk: number;
+    }
+    export interface PlayerExtraPointStatistics extends PlayerStatistic {
+        att: number;
+        made: number;
+        pct: number;
+        blk: number;
+    }
+    export interface Defense {
+        team: TeamDefenseStatistics;
+        players?: Array<PlayerDefenseStatistics> | null;
+    }
+    export interface TeamDefenseStatistics {
+        tackle: number;
+        ast: number;
+        comb: number;
+        tlost: number;
+        sack: number;
+        sack_yds: number;
+        sfty: number;
+        int: number;
+        int_yds: number;
+        int_lg: number;
+        int_td: number;
+        force_fum: number;
+        fum_rec: number;
+        fum_td: number;
+        qh: number;
+        pd: number;
+        bk: number;
+        sfty_1pt: number;
+        sp_tackle: number;
+        sp_ast: number;
+        sp_comb: number;
+        sp_force_fum: number;
+        sp_fum_rec: number;
+        misc_tackle: number;
+        misc_ast: number;
+        misc_comb: number;
+        misc_force_fum: number;
+        misc_fum_rec: number;
+    }
+    export interface PlayerDefenseStatistics extends PlayerStatistic {
+        tackle: number;
+        ast: number;
+        comb: number;
+        tlost: number;
+        sack: number;
+        sack_yds: number;
+        sfty: number;
+        int: number;
+        int_yds: number;
+        int_lg: number;
+        int_td: number;
+        force_fum: number;
+        fum_rec: number;
+        fum_td: number;
+        qh: number;
+        pd: number;
+        bk: number;
+        sfty_1pt: number;
+        sp_tackle: number;
+        sp_ast: number;
+        sp_comb: number;
+        sp_force_fum: number;
+        sp_fum_rec: number;
+        misc_tackle: number;
+        misc_ast: number;
+        misc_comb: number;
+        misc_force_fum: number;
+        misc_fum_rec: number;
+    }
+    export interface AwayTeam {
+        id: string;
+        name: string;
+        market: string;
+        remaining_challenges: number;
+        remaining_timeouts: number;
+        points: number;
+        statistics: Statistics;
     }
 }

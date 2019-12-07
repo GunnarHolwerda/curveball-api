@@ -1,6 +1,6 @@
 import * as Randomstring from 'randomstring';
 import { IUserResponse, DevVerificationCode } from '../../src/models/entities/user';
-import { ApiResources } from './test-resources';
+import { ApiResources } from './api-resources';
 import { generatePhone } from '../../src/util/generate-phone';
 import { IFriendResponse } from '../../src/models/entities/friend';
 import { IFriendInviteResponse } from '../../src/models/entities/friend-invite';
@@ -104,10 +104,6 @@ export class UserResources extends ApiResources {
         const config = { ...this.config! };
         config.headers.QT = `Bearer ${qt}`;
         return this.post<{ token: string }>(`/users/${userId}/lives/use`, undefined, config);
-    }
-
-    public async forceLogin(phone: string): Promise<UserTokenResponse> {
-        return this.makeInternalRequest(() => this.post<UserTokenResponse>(`/users_force_login`, { phone }, this.config));
     }
 
     public async addFriend(userId: string, friendUserId: string): Promise<{ friend: IFriendResponse }> {

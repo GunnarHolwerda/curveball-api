@@ -7,10 +7,14 @@ import { UserTokenResponse, UserResources } from '../../resources/user-resources
 import { QuestionPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
 import { QTClaims, BaseClaims } from '../../../src/types/qt';
 import { expectHttpError } from '../../resources/test-helpers';
-import { QuestionResources } from '../../resources/question-resources';
+import { QuestionManagementResources } from '../../resources/question-management-resources';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
+import { AccountResources, AccountLoginResponse } from '../../resources/account-resources';
 
 describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
+    let account: AccountLoginResponse;
     let quizResources: QuizResources;
+    let quizManagement: QuizManagementResources;
     let questions: QuestionResponse;
     let userResponse: UserTokenResponse;
     let startResponse: QuizStartResponse;
@@ -30,14 +34,19 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
         }
     ];
 
+    beforeAll(async () => {
+        account = await (new AccountResources()).createAndLoginToAccount();
+        quizManagement = new QuizManagementResources(account.token);
+    });
+
     beforeEach(async () => {
         quizResources = new QuizResources();
-        const response = await quizResources.createQuiz({
+        const response = await quizManagement.createQuiz({
             title: uuid(),
             potAmount: 500,
         });
-        questions = await quizResources.addQuestions(response.quiz.quizId, { questions: quizQuestions });
-        startResponse = await quizResources.startQuiz(response.quiz.quizId);
+        questions = await quizManagement.addQuestions(response.quiz.quizId, { questions: quizQuestions });
+        startResponse = await quizManagement.startQuiz(response.quiz.quizId);
         const userResources = new UserResources();
         userResponse = await userResources.getNewUser();
         quizResources.token = userResponse.token;
@@ -73,7 +82,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
         let response: any = { token: undefined };
         for (const question of questions.questions) {
             if (question.questionNum !== 1) {
-                await quizResources.startQuestion(quiz.quizId, question.questionId);
+                await quizManagement.startQuestion(quiz.quizId, question.questionId);
             }
             response = await quizResources.answerQuestion(
                 quiz.quizId,
@@ -87,13 +96,13 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
 
     describe('No Authentication Quizzes', () => {
         beforeEach(async () => {
-            const response = await quizResources.createQuiz({
+            const response = await quizManagement.createQuiz({
                 title: uuid(),
                 potAmount: 500,
                 auth: false
             });
-            questions = await quizResources.addQuestions(response.quiz.quizId, { questions: quizQuestions });
-            startResponse = await quizResources.startQuiz(response.quiz.quizId);
+            questions = await quizManagement.addQuestions(response.quiz.quizId, { questions: quizQuestions });
+            startResponse = await quizManagement.startQuiz(response.quiz.quizId);
             const userResources = new UserResources();
             userResponse = await userResources.getNewUser();
             quizResources.token = userResponse.token;
@@ -107,7 +116,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
                 getWrongAnswer(firstQuestion.questionId)
             );
             expect(result.token, 'Did not get token back for not authenticated quiz').toBeTruthy();
-            await quizResources.startQuestion(quiz.quizId, questions.questions[1].questionId);
+            await quizManagement.startQuestion(quiz.quizId, questions.questions[1].questionId);
             const question = questions.questions[1];
             result = await quizResources.answerQuestion(
                 quiz.quizId,
@@ -118,8 +127,8 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
         });
 
         it('should return 403 if submitting to quiz that does not match QT', async () => {
-            const otherQuiz = (await quizResources.createQuiz({ title: uuid(), potAmount: 20 })).quiz;
-            await quizResources.addQuestions(otherQuiz.quizId, { questions: quizQuestions });
+            const otherQuiz = (await quizManagement.createQuiz({ title: uuid(), potAmount: 20 })).quiz;
+            await quizManagement.addQuestions(otherQuiz.quizId, { questions: quizQuestions });
             const { firstQuestion } = startResponse;
             await expectHttpError(quizResources.answerQuestion(
                 otherQuiz.quizId,
@@ -141,8 +150,8 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
 
         it('should return 403 if submitting to quiz that does not match iss', async () => {
             const { firstQuestion } = startResponse;
-            const response = await quizResources.createQuiz({ title: uuid(), potAmount: 10 });
-            await quizResources.addQuestions(response.quiz.quizId, { questions: quizQuestions });
+            const response = await quizManagement.createQuiz({ title: uuid(), potAmount: 10 });
+            await quizManagement.addQuestions(response.quiz.quizId, { questions: quizQuestions });
             await expectHttpError(quizResources.answerQuestion(
                 response.quiz.quizId,
                 firstQuestion.questionId,
@@ -207,7 +216,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
         it('should return 403 if question is expired', async () => {
             const { quiz, firstQuestion } = startResponse;
             const originalDate = firstQuestion.expired;
-            const questionResources = new QuestionResources();
+            const questionResources = new QuestionManagementResources(account.token);
             const oldDate = new Date();
             oldDate.setDate(oldDate.getDate() - 1);
             const quizToken = (await quizResources.getQuizAccess(quiz.quizId)).token!;

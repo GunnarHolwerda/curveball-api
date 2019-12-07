@@ -23,12 +23,17 @@ import { NBAResponse } from '../../interfaces/sports-api-responses/nba';
 import { ISportTeam } from '../subjects/sport-team';
 import { NFLResponse } from '../../interfaces/sports-api-responses/nfl';
 import { ISportGame } from '../subjects/sport-game';
+import { NFLSeason, ISportSeason } from '../subjects/nfl-season';
 
 export const SubjectTypeTableMap: { [type in SubjectType]: string } = {
     [SubjectType.sportGame]: SPORT_GAME_TABLE_NAME,
     [SubjectType.sportSeason]: SPORT_SEASON_TABLE_NAME,
     [SubjectType.sportPlayer]: SPORT_PLAYER_TABLE_NAME,
     [SubjectType.sportTeam]: SPORT_TEAM_TABLE_NAME,
+};
+
+const scheduledCondition = (date: Date, operator: string) => {
+    return `(json->>'scheduled')::timestamp with time zone ${operator} TO_TIMESTAMP('${date.toISOString()}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`;
 };
 
 export class SubjectFactory {
@@ -105,28 +110,23 @@ export class SubjectFactory {
             ))
             .and(
                 sq.raw(`(json->>'scheduled')::timestamp with time zone < TO_TIMESTAMP('${endDateISO}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`)
-            ).and`s.subject_id = ${3400}`;
+            );
         const result = await query;
 
         return await Promise.all(result.map(r => this.instantiateInstance(r as ISubject)));
     }
 
-    public static async loadSportGameForTeamOnDay(teamExternalId: string, date: Date): Promise<Subject<ISubject>> {
-        const startDate = new Date(date.getTime());
-        startDate.setTime(0);
-        const endDate = new Date(startDate.getTime());
-        endDate.setDate(startDate.getDate() + 1);
+    public static async loadSportGameForTeamClosestToToday(teamExternalId: string, date: Date): Promise<Subject<ISubject>> {
+        const endDate = new Date(date.getTime());
+        const startDate = new Date(endDate.getTime());
+        startDate.setDate(endDate.getDate() - 1);
         const sq = Database.instance.sq;
         const query = sq.from({ s: SUBJECT_TABLE_NAME })
             .join({ game: SPORT_GAME_TABLE_NAME }).on`game.subject_id = s.subject_id`
-            .where(sq.raw(`json -> 'home' ->> 'id' = ${teamExternalId}`))
-            .or(sq.raw(`json -> 'away' ->> 'id' = ${teamExternalId}`))
-            .and(sq.raw(
-                `(json->>'scheduled')::timestamp with time zone >= TO_TIMESTAMP('${startDate.toISOString()}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`
-            ))
-            .and(sq.raw(
-                `(json->>'scheduled')::timestamp with time zone < TO_TIMESTAMP('${endDate.toISOString()}', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`
-            ));
+            .where(sq.raw(`${scheduledCondition(startDate, '>=')} AND ${scheduledCondition(endDate, '<')}`))
+            .and(sq.raw(`json -> 'home' ->> 'id' = '${teamExternalId}' OR json -> 'away' ->> 'id' = '${teamExternalId}'`))
+            .order`(json->>'scheduled')::timestamp with time zone DESC`
+            .limit(1);
         const result = await query;
         return this.instantiateInstance(result[0] as ISubject);
     }
@@ -135,9 +135,13 @@ export class SubjectFactory {
         return query.join({ t: SubjectTypeTableMap[type] }).on`t.subject_id = s.subject_id`;
     }
 
-    private static async instantiateInstance(sub: ISubject): Promise<Subject<ISubject>> {
+    public static async instantiateInstance(sub: ISubject): Promise<Subject<ISubject>> {
         const topic = (await TopicFactory.load(sub.topic))!;
-        switch (topic.machineName) {
+        return this.getSubjectWithType(sub, topic.machineName);
+    }
+
+    public static getSubjectWithType(sub: ISubject, topicMachineName: string): Subject<ISubject> {
+        switch (topicMachineName) {
             case 'nfl':
                 return this.nflFactory(sub);
             case 'nba':
@@ -163,11 +167,13 @@ export class SubjectFactory {
     private static nflFactory(sub: ISubject): Subject<ISubject> {
         switch (sub.subject_type) {
             case SubjectType.sportGame:
-                return new NFLGame(sub as ISportGame<NFLResponse.Game, NFLResponse.GameStatistics>);
+                return new NFLGame(sub as ISportGame<NFLResponse.GamesEntity, any>); // TODO: FIX THE ANY TO BE THE STATISTICS TYPE
             case SubjectType.sportPlayer:
-                return new NFLPlayer(sub as ISportPlayer<NFLResponse.Player>);
+                return new NFLPlayer(sub as ISportPlayer<NFLResponse.PlayersEntity>);
             case SubjectType.sportTeam:
-                return new NFLTeam(sub as ISportTeam<NFLResponse.Team>);
+                return new NFLTeam(sub as ISportTeam<NFLResponse.Teams>);
+            case SubjectType.sportSeason:
+                return new NFLSeason(sub as ISportSeason<NFLResponse.Season>);
             default:
                 throw new Error('Unsupported NFL subject type ' + sub.subject_type);
         }

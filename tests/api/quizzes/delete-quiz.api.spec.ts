@@ -1,14 +1,19 @@
-import { QuizResources } from '../../resources/quiz-resources';
 import * as uuid from 'uuid';
 import { expectHttpError } from '../../resources/test-helpers';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
+import { AccountResources } from '../../resources/account-resources';
 
 describe('DELETE /quizes/{quizId}', () => {
     let quiz: IQuizResponse;
-    let quizResources: QuizResources;
+    let quizResources: QuizManagementResources;
+
+    beforeAll(async () => {
+        const account = await (new AccountResources()).createAndLoginToAccount();
+        quizResources = new QuizManagementResources(account.token);
+    });
 
     beforeEach(async () => {
-        quizResources = new QuizResources();
         quiz = (await quizResources.createQuiz({
             title: uuid(),
             potAmount: 100,

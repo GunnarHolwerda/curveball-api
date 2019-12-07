@@ -12,11 +12,15 @@ export class IoServer extends Room {
         super(_server.of('/'), new ServerHandler());
     }
 
-    public start(): void {
+    public async start(): Promise<void> {
         if (ApplicationConfig.nodeEnv !== Environment.prod) {
-            QuizCache.clear();
+            try {
+                await QuizCache.clear();
+            } catch (e) {
+                console.error(`Failed to clear quiz cache`);
+            }
         }
-        super.start();
+        await super.start();
     }
 
     public get server(): socketio.Server {

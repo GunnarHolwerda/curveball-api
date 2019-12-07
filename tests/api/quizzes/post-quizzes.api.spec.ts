@@ -1,18 +1,20 @@
 import * as uuid from 'uuid';
 
 import { expectHttpError } from '../../resources/test-helpers';
-import { QuizResources } from '../../resources/quiz-resources';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
+import { AccountResources } from '../../resources/account-resources';
 
 describe('POST /quizzes', () => {
-    let quizResources: QuizResources;
+    let quizManagement: QuizManagementResources;
 
     beforeAll(async () => {
-        quizResources = new QuizResources();
+        const account = await (new AccountResources()).createAndLoginToAccount();
+        quizManagement = new QuizManagementResources(account.token);
     });
 
     it('should create a quiz', async () => {
         const quizTitle = uuid();
-        const response = await quizResources.createQuiz({
+        const response = await quizManagement.createQuiz({
             title: quizTitle,
             potAmount: 500,
         });
@@ -22,7 +24,7 @@ describe('POST /quizzes', () => {
     });
 
     it('should set auth correctly', async () => {
-        const { quiz } = await quizResources.createQuiz({
+        const { quiz } = await quizManagement.createQuiz({
             title: uuid(),
             potAmount: 300,
             auth: false
@@ -32,6 +34,6 @@ describe('POST /quizzes', () => {
 
     it('should return 400 if not all required parameters provided', async () => {
         // @ts-ignore
-        await expectHttpError(quizResources.createQuiz({ title: uuid() }), 400);
+        await expectHttpError(quizManagement.createQuiz({ title: uuid() }), 400);
     });
 });

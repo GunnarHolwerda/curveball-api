@@ -5,11 +5,14 @@ import { UserResources, UserTokenResponse } from '../../resources/user-resources
 import * as uuid from 'uuid/v4';
 import { QuestionsPayload } from '../../../src/routes/handlers/quizzes/questions/post-questions';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
+import { AccountResources, AccountLoginResponse } from '../../resources/account-resources';
 
 export interface QuizResult {
     quiz: IQuizResponse;
     questions: QuestionsPayload;
     quizStart: QuizStartResponse;
+    account: AccountLoginResponse;
 }
 
 export interface FullQuizParameters {
@@ -30,7 +33,8 @@ export async function runFullQuiz(params: Partial<FullQuizParameters> = {}): Pro
         authenticateQuiz,
     } = buildParamsWithDefaults(params);
     const participants = [...answeringUsers, ...(await generateUsers(numberOfAnswers - answeringUsers.length))];
-    const quizResources = new QuizResources();
+    const account = await (new AccountResources()).createAndLoginToAccount();
+    const quizResources = new QuizManagementResources(account.token);
     const response = await quizResources.createQuiz({
         title: uuid(),
         potAmount: 500,
@@ -65,6 +69,7 @@ export async function runFullQuiz(params: Partial<FullQuizParameters> = {}): Pro
     await quizResources.completeQuiz(quiz.quizId);
 
     return {
+        account,
         quiz: response.quiz,
         questions: questions,
         quizStart: startedQuiz

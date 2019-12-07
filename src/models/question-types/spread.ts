@@ -1,20 +1,21 @@
-import { SubjectSupplier } from '../../interfaces/subject-supplier';
+import { SubjectSupplier, SubjectSupplierOptions } from '../../interfaces/subject-supplier';
 import { QuestionType } from '../entities/question-type';
 import { Subject, ISubject } from '../entities/subject';
 import { ITopicResponse } from '../factories/topic-factory';
-import { SubjectFactory } from '../factories/subject-factory';
 import { SubjectType } from '../../types/subject-type';
+import { subjectLoader } from './loaders/subject-loader';
+
 
 export class SpreadQuestionType extends QuestionType implements SubjectSupplier {
     isSubjectSupplier(): boolean {
         return true;
     }
 
-    questionSubjects(topic: ITopicResponse): Promise<Array<Subject<ISubject>>> {
-        return SubjectFactory.loadAllByTypeAndTopic(SubjectType.sportGame, topic.topicId);
+    questionSubjects(topic: ITopicResponse, options: SubjectSupplierOptions): Promise<Array<Subject<ISubject>>> {
+        return subjectLoader(topic, SubjectType.sportGame, options);
     }
 
-    choiceSubjects(topic: ITopicResponse): Promise<Array<Subject<ISubject>>> {
-        return SubjectFactory.loadAllByTypeAndTopic(SubjectType.sportTeam, topic.topicId);
+    choiceSubjects(topic: ITopicResponse, options: SubjectSupplierOptions): Promise<Array<Subject<ISubject>>> {
+        return subjectLoader(topic, SubjectType.sportTeam, options);
     }
 }

@@ -50,7 +50,7 @@ export abstract class SportTeam<T> extends Subject<ISportTeam<T>> {
         );
     }
 
-    gameOnDay(date: Date): Promise<SportGame<any, any>> {
-        return SubjectFactory.loadSportGameForTeamOnDay(this.properties.external_id, date) as Promise<SportGame<any, any>>;
+    mostRecentGame(date: Date): Promise<SportGame<any, any>> {
+        return SubjectFactory.loadSportGameForTeamClosestToToday(this.properties.external_id, date) as Promise<SportGame<any, any>>;
     }
 }

@@ -1,5 +1,5 @@
-import { Environment } from '../../types/environments';
-import { ApplicationConfig } from '../config';
+// import { Environment } from '../../types/environments';
+// import { ApplicationConfig } from '../config';
 
 export enum Sport {
     NFL = 'nfl',
@@ -19,16 +19,27 @@ export abstract class SportsApi {
         });
     }
 
-    public abstract getSeasonSchedule<T>(): Promise<T>;
+    public abstract getSeasonSchedule<T>(year: number, scheduleType: string): Promise<T>;
     public abstract getGameStats<T>(gameId: string): Promise<T>;
     public abstract getTeamRoster<T>(teamId: string): Promise<T>;
+    public abstract getHierarchy<T>(): Promise<T>;
+
+    protected includeLanguage(): boolean {
+        return true;
+    }
 
     protected baseApiUrl(): string {
-        let accessLevel = 'trial';
-        if (ApplicationConfig.nodeEnv === Environment.local) {
-            accessLevel = 'simulation';
+        const accessLevel = '';
+        // if (ApplicationConfig.nodeEnv === Environment.local) {
+        //     accessLevel = '/simulation';
+        // }
+
+        const version = this.version !== '' ? `/${this.version}` : '';
+        let path = `${this.baseUrl}/${this.sportPath}${accessLevel}${version}`;
+        if (this.includeLanguage()) {
+            path += '/en';
         }
 
-        return `${this.baseUrl}/${this.sportPath}/${accessLevel}/${this.version}/en`;
+        return path;
     }
 }

@@ -7,9 +7,12 @@ import { IQuestionResponse } from '../../../src/models/entities/question';
 import { IUserResponse } from '../../../src/models/entities/user';
 import { UserTokenResponse, UserResources } from '../../resources/user-resources';
 import { expectHttpError } from '../../resources/test-helpers';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
+import { AccountResources } from '../../resources/account-resources';
 
 describe('GET /quizzes/{quizId}/users', () => {
     let quizResources: QuizResources;
+    let quizManagement: QuizManagementResources;
     let quiz: IQuizResponse;
     let questions: Array<IQuestionResponse>;
     let rightUser: IUserResponse;
@@ -19,9 +22,14 @@ describe('GET /quizzes/{quizId}/users', () => {
     let startResponse: QuizStartResponse;
     let wrongUserQt: string;
 
+    beforeAll(async () => {
+        const account = await (new AccountResources()).createAndLoginToAccount();
+        quizManagement = new QuizManagementResources(account.token);
+    });
+
     beforeEach(async () => {
         quizResources = new QuizResources();
-        const response = await quizResources.createQuiz({
+        const response = await quizManagement.createQuiz({
             title: uuid(),
             potAmount: 500,
         });
@@ -43,8 +51,8 @@ describe('GET /quizzes/{quizId}/users', () => {
                 }
             ]
         };
-        questions = (await quizResources.addQuestions(response.quiz.quizId, qPayload)).questions;
-        startResponse = await quizResources.startQuiz(response.quiz.quizId);
+        questions = (await quizManagement.addQuestions(response.quiz.quizId, qPayload)).questions;
+        startResponse = await quizManagement.startQuiz(response.quiz.quizId);
         const { firstQuestion } = startResponse;
         userResources = new UserResources();
         wrongUserResponse = await userResources.getNewUser();
@@ -71,18 +79,18 @@ describe('GET /quizzes/{quizId}/users', () => {
     });
 
     it('should return users who have not submitted an incorrect answer', async () => {
-        const { users } = await quizResources.getCurrentParticipants(quiz.quizId);
+        const { users } = await quizManagement.getCurrentParticipants(quiz.quizId);
         expect(users.find(u => u.userId === rightUser.userId), 'Unable to find user who only submitted correct answers').toBeDefined();
         expect(users.find(u => u.userId === wrongUser.userId), 'Found user who answered incorrectly').toBeUndefined();
     });
 
     it('should return 404 if quiz does not exist', async () => {
-        await expectHttpError(quizResources.getCurrentParticipants(uuid()), 404);
+        await expectHttpError(quizManagement.getCurrentParticipants(uuid()), 404);
     });
 
     it('should only return users who have answered the most recently sent question', async () => {
-        await quizResources.startQuestion(quiz.quizId, questions[1].questionId);
-        const { users } = await quizResources.getCurrentParticipants(quiz.quizId);
+        await quizManagement.startQuestion(quiz.quizId, questions[1].questionId);
+        const { users } = await quizManagement.getCurrentParticipants(quiz.quizId);
         expect(users.length, 'Did not filter out users who had not answered all questions').toBe(0);
     });
 
@@ -90,7 +98,7 @@ describe('GET /quizzes/{quizId}/users', () => {
         await userResources.getNewUser(wrongUser.username);
         userResources.token = wrongUserResponse.token;
         await userResources.useLife(wrongUser.userId, wrongUserQt);
-        const { users } = await quizResources.getCurrentParticipants(quiz.quizId);
+        const { users } = await quizManagement.getCurrentParticipants(quiz.quizId);
         expect(users.find(u => u.userId === rightUser.userId), 'Unable to find user who only submitted correct answers').toBeDefined();
         expect(users.find(u => u.userId === wrongUser.userId), 'User who used life was excluded').toBeDefined();
     });

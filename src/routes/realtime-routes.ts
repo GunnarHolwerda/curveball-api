@@ -22,7 +22,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
         path: '/realtime/quizzes',
         method: 'POST',
         options: {
-            auth: 'internalJwt',
+            auth: 'accountJwt',
             tags: ['api', 'internal'],
             description: 'Create a quizroom',
             notes: 'Creates a quiz namespace to host all events for the quiz',
@@ -38,7 +38,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
             const { quiz } = (req.payload as { quiz: { quizId: string } });
             const quizId = quiz.quizId;
             const quizNamespace = new QuizNamespace(ioServer.getNamespace(quizId), quiz as IQuizResponse);
-            quizNamespace.start();
+            await quizNamespace.start();
             ioServer.server.emit(ServerEvents.quizStart, { quiz });
             return {
                 quizId: quizNamespace.quizId
@@ -50,7 +50,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
         path: '/realtime/quizzes/{quizId}',
         method: 'GET',
         options: {
-            auth: 'internalJwt',
+            auth: 'accountJwt',
             tags: ['api', 'internal'],
             description: 'Get a quizroom',
             notes: 'Returns quizId of quiz room if it exists 404 if it does not',
@@ -69,7 +69,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
         path: '/realtime/quizzes/{quizId}:connected',
         method: 'GET',
         options: {
-            auth: 'internalJwt',
+            auth: 'accountJwt',
             tags: ['api', 'internal'],
             description: 'Get number of connected users to a quiz room',
             notes: 'Returns the number of users that are currently connected to the quiz room',
@@ -90,7 +90,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
         path: '/realtime/quizzes/{quizId}/{eventType}:emit',
         method: 'POST',
         options: {
-            auth: 'internalJwt',
+            auth: 'accountJwt',
             validate: {
                 params: {
                     quizId: Joi.string().required().description('The id for the quiz to emit to'),
@@ -118,7 +118,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
         path: '/realtime/quizzes/{quizId}',
         method: 'DELETE',
         options: {
-            auth: 'internalJwt',
+            auth: 'accountJwt',
             tags: ['api', 'internal'],
             description: 'Delete a quizroom',
             notes: 'Removes a quizroom and disconnects all users',

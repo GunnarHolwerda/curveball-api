@@ -1,16 +1,17 @@
 import * as uuid from 'uuid';
-
 import { expectHttpError } from '../../resources/test-helpers';
-import { QuizResources } from '../../resources/quiz-resources';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
+import { AccountResources } from '../../resources/account-resources';
 
 describe('PUT /quizzes', () => {
-    let quizResources: QuizResources;
+    let quizManagement: QuizManagementResources;
     let quiz: IQuizResponse;
 
     beforeAll(async () => {
-        quizResources = new QuizResources();
-        const response = await quizResources.createQuiz({
+        const account = await (new AccountResources()).createAndLoginToAccount();
+        quizManagement = new QuizManagementResources(account.token);
+        const response = await quizManagement.createQuiz({
             title: uuid(),
             potAmount: 500,
         });
@@ -19,7 +20,7 @@ describe('PUT /quizzes', () => {
 
     it('should update a quiz', async () => {
         const quizTitle = uuid();
-        const response = await quizResources.updateQuiz(quiz.quizId, {
+        const response = await quizManagement.updateQuiz(quiz.quizId, {
             title: quizTitle,
             active: true,
         });
@@ -29,6 +30,6 @@ describe('PUT /quizzes', () => {
 
     it('should return 400 if no parameters provided', async () => {
         // @ts-ignore
-        await expectHttpError(quizResources.updateQuiz(quiz.quizId, {}), 400);
+        await expectHttpError(quizManagement.updateQuiz(quiz.quizId, {}), 400);
     });
 });

@@ -13,7 +13,7 @@ export class QuizSocketHandlers extends BaseSocketHandler {
     }
 
     protected async disconnect(socket: Socket): Promise<void> {
-        super.disconnect(socket);
+        await super.disconnect(socket);
     }
 
     protected get cachePrefix(): string {

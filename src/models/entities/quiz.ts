@@ -21,6 +21,8 @@ export interface IQuiz {
     created: Date;
     auth: boolean;
     deleted: boolean;
+    closed: boolean;
+    network_id: number;
 }
 
 export interface IQuizResponse {
@@ -77,6 +79,10 @@ export class Quiz implements Cacheable, Analyticize {
 
     public async getQuestions(): Promise<Array<Question>> {
         return QuestionFactory.loadAllForQuiz(this.properties.quiz_id);
+    }
+
+    public getWinningsForNumberOfWinners(numWinners: number): number {
+        return parseFloat((this.properties.pot_amount / numWinners).toFixed(2));
     }
 
     public async toResponseObject(withQuestions: boolean = false): Promise<IQuiz> {

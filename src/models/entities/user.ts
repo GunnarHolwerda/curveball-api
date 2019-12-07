@@ -95,7 +95,7 @@ export class User implements Analyticize {
         return await PowerupFactory.loadAvailableForUser(this.properties.user_id);
     }
 
-    public async stats(): Promise<{ wins: number, winnings: string }> {
+    public async stats(): Promise<{ wins: number, winnings: number }> {
         const sq = Database.instance.sq;
         const queryResult = await sq.from(WINNER_TABLE_NAME)
             .where`user_id = ${this.properties.user_id}`
@@ -105,7 +105,7 @@ export class User implements Analyticize {
 
         return {
             wins: Number.parseInt(result['wins'], 10),
-            winnings: result['winnings'] ? Number.parseFloat(result['winnings']).toFixed(2) : '0'
+            winnings: result['winnings'] ? Number.parseFloat(result['winnings']) : 0
         };
     }
 

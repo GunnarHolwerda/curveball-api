@@ -64,15 +64,6 @@ export class ApiResources {
         };
     }
 
-    protected async makeInternalRequest<T>(request: () => Promise<T>): Promise<T> {
-        const originalToken = this.token;
-        this.token = GetEnvConfigValue('testInternalToken') as string;
-        console.log(this.token);
-        const result = await request();
-        this.token = originalToken;
-        return result;
-    }
-
     public set token(value: string | undefined) {
         this._token = value;
         this.initializeConfig(value);

@@ -7,9 +7,12 @@ import { IUserResponse } from '../../../src/models/entities/user';
 import { QuizResources, QuizStartResponse } from '../../resources/quiz-resources';
 import { UserTokenResponse, UserResources } from '../../resources/user-resources';
 import { expectHttpError } from '../../resources/test-helpers';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
+import { AccountResources } from '../../resources/account-resources';
 
 describe('POST /quizzes/{quizId}/complete', () => {
     let quizResources: QuizResources;
+    let quizManagement: QuizManagementResources;
     let quiz: IQuizResponse;
     let questions: Array<IQuestionResponse>;
     let rightUser: IUserResponse;
@@ -20,9 +23,14 @@ describe('POST /quizzes/{quizId}/complete', () => {
     let startResponse: QuizStartResponse;
     // let wrongUserQt: string;
 
+    beforeAll(async () => {
+        const account = await (new AccountResources()).createAndLoginToAccount();
+        quizManagement = new QuizManagementResources(account.token);
+    });
+
     beforeEach(async () => {
         quizResources = new QuizResources();
-        const response = await quizResources.createQuiz({
+        const response = await quizManagement.createQuiz({
             title: uuid(),
             potAmount: 500,
         });
@@ -44,8 +52,8 @@ describe('POST /quizzes/{quizId}/complete', () => {
                 }
             ]
         };
-        questions = (await quizResources.addQuestions(response.quiz.quizId, qPayload)).questions;
-        startResponse = await quizResources.startQuiz(response.quiz.quizId);
+        questions = (await quizManagement.addQuestions(response.quiz.quizId, qPayload)).questions;
+        startResponse = await quizManagement.startQuiz(response.quiz.quizId);
         const { firstQuestion } = startResponse;
         userResources = new UserResources();
         wrongUserResponse = await userResources.getNewUser();
@@ -72,7 +80,7 @@ describe('POST /quizzes/{quizId}/complete', () => {
     });
 
     it('should return 404 if quiz does not exist', async () => {
-        await expectHttpError(quizResources.completeQuiz(uuid()), 404);
+        await expectHttpError(quizManagement.completeQuiz(uuid()), 404);
     });
 
     // TODO: Resurrect these tests once we have endpoint to get data about completed quiz
@@ -97,14 +105,14 @@ describe('POST /quizzes/{quizId}/complete', () => {
     // });
 
     it('should mark quiz as completed and inactive', async () => {
-        await quizResources.completeQuiz(quiz.quizId);
-        const { quiz: completedQuiz } = await quizResources.getQuiz(quiz.quizId);
+        await quizManagement.completeQuiz(quiz.quizId);
+        const { quiz: completedQuiz } = await quizManagement.getQuiz(quiz.quizId);
         expect(completedQuiz.active, 'Quiz was not marked inactive after completion').toBeFalsy();
         expect(completedQuiz.completedDate, 'Quiz was not marked as complete after completion').toBeTruthy();
     });
 
     it('should update the users stats', async () => {
-        await quizResources.completeQuiz(quiz.quizId);
+        await quizManagement.completeQuiz(quiz.quizId);
         userResources.token = rightUserResponse.token;
         const userInfo = await userResources.getUser(rightUser.userId);
         expect(userInfo.stats.wins, 'Did not mark the user as a winner').toBe(1);

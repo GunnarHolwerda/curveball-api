@@ -58,7 +58,7 @@ async function start() {
         const io = socketio(server.listener, { pingInterval: 5000, pingTimeout: 25000 });
         io.adapter(redisAdapter({ host: ApplicationConfig.redisHost, port: ApplicationConfig.redisPort }));
         ioServer = new IoServer(io);
-        ioServer.start();
+        await ioServer.start();
         registerRoutes(server, ioServer);
         await Database.instance.connect();
         await server.start();
@@ -70,7 +70,7 @@ async function start() {
     }
 }
 
-start();
+start().catch(console.error);
 
 process.on('SIGINT', () => {
     process.exit();

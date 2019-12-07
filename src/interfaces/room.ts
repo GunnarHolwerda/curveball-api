@@ -15,7 +15,7 @@ export abstract class Room {
         return this._namespace;
     }
 
-    public start(): void {
+    public async start(): Promise<void> {
         this._namespace.on('connection', socketioJwt.authorize({
             secret: ApplicationConfig.jwtSecret,
             decodedPropertyName: 'user',
@@ -23,6 +23,8 @@ export abstract class Room {
         })).on('authenticated', (socket: Socket) => {
             this.numConnected.then(count => {
                 socket.emit(QuizEvents.numConnected, count);
+            }).catch(e => {
+                console.error(`Error retrieving num connected users for ${this.namespace}`, e);
             });
             socket.broadcast.emit(QuizEvents.userConnected);
             this.socketHandlers.register(socket);

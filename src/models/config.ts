@@ -22,7 +22,7 @@ export class ApplicationConfig {
         return process.env.JWT_SECRET!;
     }
 
-    public static get internalSecret(): string {
+    public static get accountSecret(): string {
         return process.env.INTERNAL_SECRET!;
     }
 

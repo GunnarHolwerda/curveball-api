@@ -2,25 +2,28 @@ import * as uuid from 'uuid';
 
 import { mockManualQuestionsPayload } from '../mock-data';
 import { expectHttpError } from '../../resources/test-helpers';
-import { QuizResources, QuizResponse, QuizStartResponse } from '../../resources/quiz-resources';
+import { QuizResponse, QuizStartResponse } from '../../resources/quiz-resources';
 import { IQuizResponse } from '../../../src/models/entities/quiz';
+import { QuizManagementResources } from '../../resources/quiz-management-resources';
+import { AccountResources } from '../../resources/account-resources';
 
 describe('POST /quizzes/{quizId}:start', () => {
-    let quizResources: QuizResources;
+    let quizManagement: QuizManagementResources;
     let quizResponse: QuizResponse;
     let quiz: IQuizResponse;
     let startedQuiz: QuizStartResponse;
 
     beforeAll(async () => {
-        quizResources = new QuizResources();
+        const account = await (new AccountResources()).createAndLoginToAccount();
+        quizManagement = new QuizManagementResources(account.token);
         const quizTitle = uuid();
-        quizResponse = await quizResources.createQuiz({
+        quizResponse = await quizManagement.createQuiz({
             title: quizTitle,
             potAmount: 500,
         });
         quiz = quizResponse.quiz;
-        await quizResources.addQuestions(quiz.quizId, mockManualQuestionsPayload);
-        startedQuiz = await quizResources.startQuiz(quiz.quizId);
+        await quizManagement.addQuestions(quiz.quizId, mockManualQuestionsPayload);
+        startedQuiz = await quizManagement.startQuiz(quiz.quizId);
     });
 
     it('should start a quiz, return first question and token', async () => {
@@ -37,19 +40,19 @@ describe('POST /quizzes/{quizId}:start', () => {
     });
 
     it('should return 200 if starting the same quiz that is already active', async () => {
-        await quizResources.startQuiz(quiz.quizId);
+        await quizManagement.startQuiz(quiz.quizId);
     });
 
     it('should return 400 if starting quiz with no questions', async () => {
-        const otherQuiz = await quizResources.createQuiz({
+        const otherQuiz = await quizManagement.createQuiz({
             title: uuid(),
             potAmount: 500,
         });
-        await expectHttpError(quizResources.startQuiz(otherQuiz.quiz.quizId), 400, 'Cannot start quiz with zero questions');
+        await expectHttpError(quizManagement.startQuiz(otherQuiz.quiz.quizId), 400, 'Cannot start quiz with zero questions');
     });
 
     it('should return 404 if quiz started does not exist', async () => {
-        await quizResources.updateQuiz(quiz.quizId, { active: false });
-        await expectHttpError(quizResources.startQuiz(uuid()), 404);
+        await quizManagement.updateQuiz(quiz.quizId, { active: false });
+        await expectHttpError(quizManagement.startQuiz(uuid()), 404);
     });
 });
