@@ -32,8 +32,14 @@ const Demos: { [roomName: string]: DemoScript } = {
     'slamball_demo': SlamballDemoScript
 };
 
+type TimeoutFunc = (callback: (...args: Array<any>) => void, ms: number, ...args: Array<any>) => NodeJS.Timeout;
+
 export class DemoSocketHandlers extends BaseSocketHandler {
-    constructor(private quiz: IQuizResponse, private demos: { [roomName: string]: DemoScript } = Demos) {
+    constructor(
+        private quiz: IQuizResponse,
+        private demos: { [roomName: string]: DemoScript } = Demos,
+        private timeoutCallback: TimeoutFunc = setTimeout
+    ) {
         super();
     }
 
@@ -59,7 +65,7 @@ export class DemoSocketHandlers extends BaseSocketHandler {
     }
 
     private queueDemoQuestion(socket: Socket, question: DemoQuestion, msDelay: number): void {
-        setTimeout(() => {
+        this.timeoutCallback(() => {
             socket.emit('question', question);
         }, msDelay);
     }
