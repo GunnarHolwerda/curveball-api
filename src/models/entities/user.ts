@@ -111,9 +111,9 @@ export class User implements Analyticize {
 
     public toResponseObject(fieldsToOmit: Array<string> = ['password', 'phone']): IUserResponse {
         const response = {
-            ...(omit(this.properties, fieldsToOmit))
+            ...(omit<IUserResponse>(this.properties, fieldsToOmit))
         };
-        return camelizeKeys(response) as IUserResponse;
+        return camelizeKeys(response);
     }
 
     public analyticsProperties(): AnalyticsProperties {

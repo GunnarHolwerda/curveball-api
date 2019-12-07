@@ -1,10 +1,10 @@
 import { BaseSocketHandler } from './base-socket-handler';
 import { Socket } from '../../interfaces/socket';
-import { IQuizResponse } from '../entities/quiz';
 import { DemoScript, DemoQuestion } from '../../interfaces/demo-script';
 
 const SlamballDemoScript: DemoScript = {
     videoUrl: 'test.mp4',
+    name: 'slamball_demo',
     schedule: [35000, 90000, 125000, 185000],
     script: [
         {
@@ -28,32 +28,26 @@ const SlamballDemoScript: DemoScript = {
     ]
 };
 
-const Demos: { [roomName: string]: DemoScript } = {
-    'slamball_demo': SlamballDemoScript
+export const Demos: { [roomName: string]: DemoScript } = {
+    [SlamballDemoScript.name]: SlamballDemoScript
 };
 
 type TimeoutFunc = (callback: (...args: Array<any>) => void, ms: number, ...args: Array<any>) => NodeJS.Timeout;
 
 export class DemoSocketHandlers extends BaseSocketHandler {
-    constructor(
-        private quiz: IQuizResponse,
-        private demos: { [roomName: string]: DemoScript } = Demos,
-        private timeoutCallback: TimeoutFunc = setTimeout
-    ) {
+    constructor(private demo: DemoScript, private timeoutCallback: TimeoutFunc = setTimeout) {
         super();
     }
 
     public register(socket: Socket): void {
         super.register(socket);
-        socket.on('connect', () => {
-            const demo = this.demos[socket.nsp.name];
-            socket.emit('video', { url: demo.videoUrl });
-            for (let questionIndex = 0; questionIndex < demo.script.length; questionIndex++) {
-                const msDelay = demo.schedule[questionIndex];
-                const question = demo.script[questionIndex];
-                this.queueDemoQuestion(socket, question, msDelay);
-            }
-        });
+        const { videoUrl, schedule, script } = this.demo;
+        socket.emit('video', { url: videoUrl });
+        for (let questionIndex = 0; questionIndex < script.length; questionIndex++) {
+            const msDelay = schedule[questionIndex];
+            const question = script[questionIndex];
+            this.queueDemoQuestion(socket, question, msDelay);
+        }
     }
 
     protected async disconnect(socket: Socket): Promise<void> {
@@ -61,7 +55,7 @@ export class DemoSocketHandlers extends BaseSocketHandler {
     }
 
     protected get cachePrefix(): string {
-        return this.quiz.quizId;
+        return this.demo.videoUrl;
     }
 
     private queueDemoQuestion(socket: Socket, question: DemoQuestion, msDelay: number): void {

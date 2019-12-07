@@ -5,6 +5,7 @@ import { mock, anything, verify, instance, anyString, when } from 'ts-mockito';
 
 const TestDemoScript: DemoScript = {
     videoUrl: 'test.mp4',
+    name: 'test',
     schedule: [1000, 2000],
     script: [
         {
@@ -38,8 +39,7 @@ describe('DemoSocketHandlers', () => {
 
     beforeEach(() => {
         socketHandlers = new DemoSocketHandlers(
-            {} as any,
-            { 'test': TestDemoScript },
+            TestDemoScript,
             (callback, msDelay) => {
                 queuedMessages.push({ msDelay, callback });
                 return setTimeout(() => { }, 0);
@@ -59,7 +59,7 @@ describe('DemoSocketHandlers', () => {
                 eventHandlers[eventName](data);
             }
         });
-        when(mockSocket.nsp).thenReturn({ name: 'test' } as any);
+        when(mockSocket.nsp).thenReturn({ name: TestDemoScript.name } as any);
         socket = instance(mockSocket);
     });
 
@@ -68,14 +68,8 @@ describe('DemoSocketHandlers', () => {
         eventHandlers = {};
     });
 
-    it('should wire up connect event when registering', () => {
+    it('should emit video event when a new socket registers', () => {
         socketHandlers.register(socket);
-        verify(mockSocket.on('connect', anything())).once();
-    });
-
-    it('should emit video event on connect event', () => {
-        socketHandlers.register(socket);
-        socket.emit('connect');
         verify(mockSocket.emit('video', anything())).once();
     });
 

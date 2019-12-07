@@ -7,8 +7,24 @@ import { QuizNamespace } from '../models/namespaces/quiz-namespace';
 import { QuizCache } from '../models/quiz-cache';
 import { ServerEvents } from '../types/events';
 import { IQuizResponse } from '../models/entities/quiz';
+import { Demos } from '../models/socket-handlers/demo-socket-handler';
+import { DemoNamespace } from '../models/namespaces/demo-namespace';
+import { Room } from '../interfaces/room';
 
-async function getNamespace(quizId: string, ioServer: IoServer): Promise<QuizNamespace | null> {
+function isDemoRoom(quizId: string): boolean {
+    return quizId in Demos;
+}
+
+function getDemoNamespace(quizId: string, ioServer: IoServer): Room | null {
+    const namespace = ioServer.getNamespace(quizId);
+    return new DemoNamespace(namespace, Demos[quizId]);
+}
+
+async function getNamespace(quizId: string, ioServer: IoServer): Promise<Room | null> {
+    if (isDemoRoom(quizId)) {
+        return getDemoNamespace(quizId, ioServer);
+    }
+
     const quiz = await QuizCache.getQuiz(quizId);
     if (!quiz) {
         return null;
