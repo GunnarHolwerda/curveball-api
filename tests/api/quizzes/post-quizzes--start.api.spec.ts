@@ -29,7 +29,7 @@ describe('POST /quizzes/{quizId}:start', () => {
     });
 
     it('should return the question with the questionNum of 1', async () => {
-        expect(startedQuiz.firstQuestion.questionNum).toBe(1, 'First question was not the first question');
+        expect(startedQuiz.firstQuestion.questionNum, 'First question was not the first question').toBe(1);
     });
 
     it('should start the first question', async () => {

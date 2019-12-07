@@ -8,10 +8,10 @@ import { snakifyKeys } from '../../../util/snakify-keys';
 export const putQuizSchema = Joi.object().keys({
     active: Joi.boolean().optional().description('If the quiz is currently in progress'),
     title: Joi.string().optional().description('The title of the quiz'),
-    completed: Joi.boolean().optional().description('Whether the quiz should be marked completed or not'),
+    completedDate: Joi.string().isoDate().optional().description('ISO timestamp of date the quiz was completed'),
     potAmount: Joi.number().optional().description('The amount of money to be won for the quiz'),
     auth: Joi.boolean().optional().description('If the quiz enforces correct answers.')
-}).or('active', 'title', 'completed', 'potAmount', 'auth');
+}).or('active', 'title', 'completedDate', 'potAmount', 'auth');
 
 export async function putQuiz(event: hapi.Request): Promise<object> {
     const quizId: string = event.params['quizId'];
@@ -25,9 +25,9 @@ export async function putQuiz(event: hapi.Request): Promise<object> {
     for (const property in quizParams) {
         if (quiz.properties.hasOwnProperty(property)) {
             const value = quizParams[property];
-            if (property === 'completed' && value) {
-                quiz.properties.completed_date = new Date();
-            } else if (property === 'completed' && !value) {
+            if (property === 'completedDate' && value) {
+                quiz.properties.completed_date = new Date(Date.parse(value));
+            } else if (property === 'completedDate' && !value) {
                 quiz.properties.completed_date = null;
             } else {
                 quiz.properties[property] = quizParams[property];

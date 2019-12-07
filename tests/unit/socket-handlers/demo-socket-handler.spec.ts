@@ -83,12 +83,12 @@ describe('DemoSocketHandlers', () => {
         socketHandlers.register(socket);
         socket.emit('connect');
 
-        expect(queuedMessages.length).toEqual(TestDemoScript.schedule.length, 'Did not queue all questions in script');
+        expect(queuedMessages.length, 'Did not queue all questions in script').toEqual(TestDemoScript.schedule.length);
         for (let i = 0; i < queuedMessages.length; i++) {
             const queuedMessage = queuedMessages[i];
             const expectedDelay = TestDemoScript.schedule[i];
             const expectedQuestion = TestDemoScript.script[i];
-            expect(queuedMessage.msDelay).toEqual(expectedDelay, `Delay does not match expected delay for question ${i}`);
+            expect(queuedMessage.msDelay, `Delay does not match expected delay for question ${i}`).toEqual(expectedDelay);
 
             queuedMessage.callback();
             verify(mockSocket.emit('question', expectedQuestion)).once();

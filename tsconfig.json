@@ -47,8 +47,8 @@
         "suppressImplicitAnyIndexErrors": true,
         "types": [
             "node",
-            "jasmine",
-            "jest"
+            "jest",
+            "jest-expect-message"
         ]
     },
     "exclude": [

@@ -29,9 +29,9 @@ describe('POST /test/answers:generate', () => {
         for (const choiceId in result) {
             if (result.hasOwnProperty(choiceId)) {
                 sumOfDistribution += result[choiceId];
-                expect(result[choiceId]).toBeLessThan(1, 'One choice was given all the answers');
+                expect(result[choiceId], 'One choice was given all the answers').toBeLessThan(1);
             }
         }
-        expect(sumOfDistribution).toBe(1, 'Distribution did not add up to 100%');
+        expect(sumOfDistribution, 'Distribution did not add up to 100%').toBe(1);
     });
 });

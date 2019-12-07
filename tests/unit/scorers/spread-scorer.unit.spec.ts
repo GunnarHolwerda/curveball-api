@@ -70,9 +70,9 @@ xdescribe('SpreadScorer', () => {
     it('should return 0 if the game results in a push', async () => {
         expect(await scorer.calculateScoreForSubject(
             createMockTeam(homeTeamId), createMockChoice('+2', homeTeamId)
-        )).toBe(0, 'Underdog got points');
+        ), 'Underdog got points').toBe(0);
         expect(await scorer.calculateScoreForSubject(
             createMockTeam(awayTeamId), createMockChoice('-2', awayTeamId)
-        )).toBe(0, 'Favorite got points');
+        ), 'Favorite got points').toBe(0);
     });
 });

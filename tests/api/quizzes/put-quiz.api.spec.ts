@@ -23,8 +23,8 @@ describe('PUT /quizzes', () => {
             title: quizTitle,
             active: true,
         });
-        expect(response.quiz.active).toBeTruthy('Active was not updated properly');
-        expect(response.quiz.title).toBe(quizTitle, 'Title was not updated');
+        expect(response.quiz.active, 'Active was not updated properly').toBeTruthy();
+        expect(response.quiz.title, 'Title was not updated').toBe(quizTitle);
     });
 
     it('should return 400 if no parameters provided', async () => {

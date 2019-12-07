@@ -19,7 +19,7 @@ xdescribe('POST /questions/calculator', () => {
             functionName: uuid(),
             typeId: newType.id
         });
-        expect(calculator).toBeTruthy('Calculator was not created correctly');
+        expect(calculator, 'Calculator was not created correctly').toBeTruthy();
     });
 
     describe('Error handling', () => {

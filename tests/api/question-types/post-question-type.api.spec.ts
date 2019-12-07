@@ -12,7 +12,7 @@ xdescribe('POST /questions/type', () => {
     it('should create new question type', async () => {
         const { type } = await questionResources.createType(uuid(), uuid());
         const { types } = await questionResources.getTypes();
-        expect(types.find(t => t.id === type.id)).toBeTruthy('Did not create new question type');
+        expect(types.find(t => t.id === type.id), 'Did not create new question type').toBeTruthy();
     });
 
     describe('Error handling', () => {

@@ -60,18 +60,18 @@ describe('POST /users/{userId}/lives:use', () => {
     it('should use a life for the question properly', async () => {
         const response = await userResources.useLife(userResponse.user.userId, qt);
         const lives = await userResources.getLives(userResponse.user.userId);
-        expect(response.token).toBeDefined('QT token was not returned by response');
-        expect(lives).toBe(0, 'Lives were not reduced by 1 after using a life');
+        expect(response.token, 'QT token was not returned by response').toBeDefined();
+        expect(lives, 'Lives were not reduced by 1 after using a life').toBe(0);
     });
 
     it('should have proper qt claims for the next question', async () => {
         const { quiz } = startResponse;
         const response = await userResources.useLife(userResponse.user.userId, qt);
         const claims: QTClaims & BaseClaims = jwt.decode(response.token) as QTClaims & BaseClaims;
-        expect(claims.iss).toBe(quiz.quizId, 'iss claim was not quizId');
-        expect(claims.sub).toBe(questions.questions[1].questionId, 'sub claim was not set to next question');
-        expect(claims.aud).toBe(userResponse.user.userId, 'aud claim was not set to userId');
-        expect(claims.lifeUsed).toBe(true, 'lifeUsed was false when a life was used');
+        expect(claims.iss, 'iss claim was not quizId').toBe(quiz.quizId);
+        expect(claims.sub, 'sub claim was not set to next question').toBe(questions.questions[1].questionId);
+        expect(claims.aud, 'aud claim was not set to userId').toBe(userResponse.user.userId);
+        expect(claims.lifeUsed, 'lifeUsed was false when a life was used').toBe(true);
     });
 
     describe('Authorization', () => {

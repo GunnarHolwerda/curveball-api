@@ -78,8 +78,8 @@ describe('POST /quizzes/{quizId}/complete', () => {
     // TODO: Resurrect these tests once we have endpoint to get data about completed quiz
     // it('should return users who have not submitted an incorrect answer', async () => {
     //     const { users } = await quizResources.completeQuiz(quiz.quizId);
-    //     expect(users.find(u => u.userId === rightUser.userId)).toBeDefined('Unable to find user who only submitted correct answers');
-    //     expect(users.find(u => u.userId === wrongUser.userId)).toBeUndefined('Found user who answered incorrectly');
+    //     expect(users.find(u => u.userId === rightUser.userId), 'Unable to find user who only submitted correct answers').toBeDefined();
+    //     expect(users.find(u => u.userId === wrongUser.userId), 'Found user who answered incorrectly').toBeUndefined();
     // });
 
     // it('should include users who used a life', async () => {
@@ -87,27 +87,27 @@ describe('POST /quizzes/{quizId}/complete', () => {
     //     userResources.token = wrongUserResponse.token;
     //     await userResources.useLife(wrongUser.userId, wrongUserQt);
     //     const { users } = await quizResources.completeQuiz(quiz.quizId);
-    //     expect(users.find(u => u.userId === rightUser.userId)).toBeDefined('Unable to find user who only submitted correct answers');
-    //     expect(users.find(u => u.userId === wrongUser.userId)).toBeDefined('User who used life was excluded');
+    //     expect(users.find(u => u.userId === rightUser.userId), 'Unable to find user who only submitted correct answers').toBeDefined();
+    //     expect(users.find(u => u.userId === wrongUser.userId), 'User who used life was excluded').toBeDefined();
     // });
 
     // it('should return the amount won', async () => {
     //     const { amountWon, users } = await quizResources.completeQuiz(quiz.quizId);
-    //     expect(amountWon).toBe((quiz.potAmount / users.length).toFixed(2), 'Amount won was not divided among winning users correctly');
+    //     expect(amountWon, 'Amount won was not divided among winning users correctly').toBe((quiz.potAmount / users.length).toFixed(2));
     // });
 
     it('should mark quiz as completed and inactive', async () => {
         await quizResources.completeQuiz(quiz.quizId);
         const { quiz: completedQuiz } = await quizResources.getQuiz(quiz.quizId);
-        expect(completedQuiz.active).toBeFalsy('Quiz was not marked inactive after completion');
-        expect(completedQuiz.completedDate).toBeTruthy('Quiz was not marked as complete after completion');
+        expect(completedQuiz.active, 'Quiz was not marked inactive after completion').toBeFalsy();
+        expect(completedQuiz.completedDate, 'Quiz was not marked as complete after completion').toBeTruthy();
     });
 
     it('should update the users stats', async () => {
         await quizResources.completeQuiz(quiz.quizId);
         userResources.token = rightUserResponse.token;
         const userInfo = await userResources.getUser(rightUser.userId);
-        expect(userInfo.stats.wins).toBe(1, 'Did not mark the user as a winner');
-        expect(userInfo.stats.winnings).toBeGreaterThan(0, 'Winnings were not attributed to the user');
+        expect(userInfo.stats.wins, 'Did not mark the user as a winner').toBe(1);
+        expect(userInfo.stats.winnings, 'Winnings were not attributed to the user').toBeGreaterThan(0);
     });
 });

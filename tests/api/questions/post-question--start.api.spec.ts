@@ -22,8 +22,8 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:start', () => {
     it('should start question properly', async () => {
         const { quiz } = startResponse;
         const startedQuestion = await quizResources.startQuestion(quiz.quizId, questions.questions[1].questionId);
-        expect(startedQuestion.question.expired).toBeDefined('Question was not set to expire after starting');
-        expect(startedQuestion.question.sent).toBeDefined('Question was not marked as sent');
+        expect(startedQuestion.question.expired, 'Question was not set to expire after starting').toBeDefined();
+        expect(startedQuestion.question.sent, 'Question was not marked as sent').toBeDefined();
     });
 
     describe('Validation', () => {

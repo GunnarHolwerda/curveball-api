@@ -11,14 +11,14 @@ describe('POST /users', () => {
 
     it('should return userId', async () => {
         const response = await userResources.createUser();
-        expect(response.userId).toBeTruthy('Login did not return token');
+        expect(response.userId, 'Login did not return token').toBeTruthy();
     });
 
     it('should return a userId if the user for a phone already exists', async () => {
         const phone = generatePhone();
         const firstUser = await userResources.createUser(phone);
         const sameUser = await userResources.createUser(phone);
-        expect(firstUser.userId).toBe(sameUser.userId, 'Did not return same user for same phone number');
+        expect(firstUser.userId, 'Did not return same user for same phone number').toBe(sameUser.userId);
     });
 
     it('should return 400 if phone number is not supplied', async () => {
@@ -44,7 +44,7 @@ describe('POST /users', () => {
             userResources.token = referrer.token;
 
             const lives = await userResources.getLives(referrer.user.userId);
-            expect(lives).toBe(1, 'Referrer did not receive one life for referring');
+            expect(lives, 'Referrer did not receive one life for referring').toBe(1);
         });
 
         it('should return 400 if providing a bad referral code', async () => {
@@ -65,8 +65,8 @@ describe('POST /users', () => {
             const invitedUser = await userResources.verifyUser(userId);
             const invitedUserResources = new UserResources(invitedUser.token);
             const { requests } = await invitedUserResources.getFriends(invitedUser.user.userId);
-            expect(requests.incoming.map(i => i.friend.userId).sort())
-                .toEqual(invitingUsers.map(u => u.user.userId).sort(), 'Did not create incoming friend request for all invites');
+            expect(requests.incoming.map(i => i.friend.userId).sort(), 'Did not create incoming friend request for all invites')
+                .toEqual(invitingUsers.map(u => u.user.userId).sort());
         });
     });
 });

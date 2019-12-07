@@ -32,11 +32,11 @@ describe('POST /quizzes/{quizId}/reset', () => {
 
     it('should mark the quiz as inactive, set all answers to disabled, and all questions should not be sent', async () => {
         const resetQuiz = await quizResources.resetQuiz(quiz.quizId);
-        expect(resetQuiz.quiz.active).toBeFalsy('Reset quiz was not set to inactive');
+        expect(resetQuiz.quiz.active, 'Reset quiz was not set to inactive').toBeFalsy();
         for (const question of resetQuiz.quiz.questions) {
-            expect(question.sent).toBeNull('All questions were not sent to unsent');
+            expect(question.sent, 'All questions were not sent to unsent').toBeNull();
             const results = await quizResources.getQuestionResults(quiz.quizId, question.questionId);
-            expect(results.totalAnswers).toBe(0, 'All answers were not disabled');
+            expect(results.totalAnswers, 'All answers were not disabled').toBe(0);
         }
     });
 

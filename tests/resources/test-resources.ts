@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import { trustOwnCa } from './test-helpers';
-
-const jasmineSettings: { config: { [key: string]: string } } = require('../jasmine-api.json');
+import { GetEnvConfigValue } from './env-config';
 
 trustOwnCa();
 
@@ -67,7 +66,8 @@ export class ApiResources {
 
     protected async makeInternalRequest<T>(request: () => Promise<T>): Promise<T> {
         const originalToken = this.token;
-        this.token = jasmineSettings.config.testInternalToken;
+        this.token = GetEnvConfigValue('testInternalToken') as string;
+        console.log(this.token);
         const result = await request();
         this.token = originalToken;
         return result;
@@ -90,6 +90,6 @@ export class ApiResources {
     }
 
     protected get baseUrl(): string {
-        return jasmineSettings.config.baseUrl;
+        return GetEnvConfigValue('baseUrl') as string;
     }
 }

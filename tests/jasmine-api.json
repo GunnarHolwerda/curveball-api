@@ -1,9 +1,4 @@
 {
-    "config": {
-        "baseUrl": "http://localhost:3001/dev",
-        "testApiUrl": "http://localhost:3001",
-        "testInternalToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjY2Q0ZTUxYi02ODY5LTRkNTEtYjNkMS1hZmYxOGRhMTU3NmUifQ.nKkhVxFRjpL9yCUKj1PATXdGTjY5fowyuC9y9YuNjAk"
-    },
     "spec_files": [
         "**/*.api.spec.ts"
     ],

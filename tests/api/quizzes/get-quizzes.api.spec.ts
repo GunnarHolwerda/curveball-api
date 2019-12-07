@@ -18,6 +18,6 @@ describe('GET /quizzes', () => {
         const { quiz } = await quizResources.createQuiz({ title: uuid(), potAmount: 100, auth: false });
         await quizResources.deleteQuiz(quiz.quizId);
         const allQuizzes = await quizResources.allQuizzes();
-        expect(allQuizzes.quizzes.find(a => a.quizId === quiz.quizId)).toBeUndefined('All quizzes returned a deleted quiz');
+        expect(allQuizzes.quizzes.find(a => a.quizId === quiz.quizId), 'All quizzes returned a deleted quiz').toBeUndefined();
     });
 });

@@ -18,7 +18,7 @@ describe('GET /users/{userId}/lives', () => {
 
     it('should retrieve lives for a user who has them', async () => {
         const lives = await userResources.getLives(referrer.userId);
-        expect(lives).toBe(1, 'Did not retrieve a life for a user that has 1 life');
+        expect(lives, 'Did not retrieve a life for a user that has 1 life').toBe(1);
     });
 
     it('should return 403 if requesting a users lives other than your own', async () => {
