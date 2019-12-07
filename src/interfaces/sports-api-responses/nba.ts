@@ -78,8 +78,8 @@ export namespace NBAResponse {
         league: League;
         conference: Conference;
         division: Division;
-        coaches: Coach[];
-        players: PlayerDetail[];
+        coaches: Array<Coach>;
+        players: Array<PlayerDetail>;
     }
     export interface League {
         id: string;
@@ -129,7 +129,7 @@ export namespace NBAResponse {
     export interface SeasonSchedule {
         league: League;
         season: Season;
-        games: Game[];
+        games: Array<Game>;
     }
 
     export interface Venue {
@@ -300,7 +300,7 @@ export namespace NBAResponse {
         fast_break_made: number;
         fast_break_pct: number;
         most_unanswered: MostUnanswered;
-        periods: Period[];
+        periods: Array<Period>;
     }
 
     export interface Coach {
@@ -340,10 +340,10 @@ export namespace NBAResponse {
         bonus: boolean;
         sr_id: string;
         reference: string;
-        scoring: Scoring[];
+        scoring: Array<Scoring>;
         statistics: Statistics;
-        coaches: Coach[];
-        players: Player[];
+        coaches: Array<Coach>;
+        players: Array<Player>;
     }
 
     export interface Official {
@@ -373,6 +373,6 @@ export namespace NBAResponse {
         venue: Venue;
         home: TeamStatistics;
         away: TeamStatistics;
-        officials: Official[];
+        officials: Array<Official>;
     }
 }

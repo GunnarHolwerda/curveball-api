@@ -8,7 +8,7 @@ export namespace NFLResponse {
         id: string;
         name: string;
         alias: string;
-        references: Reference[];
+        references: Array<Reference>;
     }
 
     export interface Venue {
@@ -88,7 +88,7 @@ export namespace NFLResponse {
         rookie_year: number;
         status: string;
         draft: Draft;
-        references: Reference3[];
+        references: Array<Reference3>;
     }
 
     export interface Roster {
@@ -101,9 +101,9 @@ export namespace NFLResponse {
         venue: Venue;
         division: Division;
         conference: Conference;
-        references: Reference2[];
-        coaches: Coach[];
-        players: Player[];
+        references: Array<Reference2>;
+        coaches: Array<Coach>;
+        players: Array<Player>;
         _comment: string;
     }
 
@@ -145,7 +145,7 @@ export namespace NFLResponse {
     export interface Scoring {
         home_points: number;
         away_points: number;
-        periods: Period[];
+        periods: Array<Period>;
     }
 
     export interface Game {
@@ -169,7 +169,7 @@ export namespace NFLResponse {
         id: string;
         sequence: number;
         title: string;
-        games: Game[];
+        games: Array<Game>;
     }
 
     export interface SeasonSchedule {
@@ -177,7 +177,7 @@ export namespace NFLResponse {
         year: number;
         type: string;
         name: string;
-        weeks: Week[];
+        weeks: Array<Week>;
         _comment: string;
     }
 
@@ -299,7 +299,7 @@ export namespace NFLResponse {
 
     export interface Receiving {
         totals: ReceivingTotals;
-        players: ReceivingStatistics[];
+        players: Array<ReceivingStatistics>;
     }
 
     export interface PuntingTotals {
@@ -334,7 +334,7 @@ export namespace NFLResponse {
 
     export interface Punts {
         totals: PuntingTotals;
-        players: PuntingStatistics[];
+        players: Array<PuntingStatistics>;
     }
 
     export interface PuntReturnTotals {
@@ -359,7 +359,7 @@ export namespace NFLResponse {
 
     export interface PuntReturns {
         totals: PuntReturnTotals;
-        players: PuntReturnStatistics[];
+        players: Array<PuntReturnStatistics>;
     }
 
     export interface PenaltyTotals {
@@ -375,7 +375,7 @@ export namespace NFLResponse {
 
     export interface Penalties {
         totals: PenaltyTotals;
-        players: PenaltyStatistics[];
+        players: Array<PenaltyStatistics>;
     }
 
     export interface PassingTotals {
@@ -434,7 +434,7 @@ export namespace NFLResponse {
 
     export interface Passing {
         totals: PassingTotals;
-        players: PassingStatistics[];
+        players: Array<PassingStatistics>;
     }
 
     export interface ReturnTotals {
@@ -449,7 +449,7 @@ export namespace NFLResponse {
 
     export interface MiscReturns {
         totals: ReturnTotals;
-        players: any[];
+        players: Array<any>;
     }
 
     export interface KickoffTotals {
@@ -482,7 +482,7 @@ export namespace NFLResponse {
 
     export interface Kickoffs {
         totals: KickoffTotals;
-        players: KickoffStatistics[];
+        players: Array<KickoffStatistics>;
     }
 
     export interface KickReturnTotals {
@@ -507,7 +507,7 @@ export namespace NFLResponse {
 
     export interface KickReturns {
         totals: KickReturnTotals;
-        players: KickReturnStatistics[];
+        players: Array<KickReturnStatistics>;
     }
 
     export interface InterceptionReturnTotals {
@@ -530,7 +530,7 @@ export namespace NFLResponse {
 
     export interface IntReturns {
         totals: InterceptionReturnTotals;
-        players: InterceptionReturnStatistics[];
+        players: Array<InterceptionReturnStatistics>;
     }
 
     export interface FumbleTotals {
@@ -563,7 +563,7 @@ export namespace NFLResponse {
 
     export interface Fumbles {
         totals: FumbleTotals;
-        players: FumblePlayerStatistics[];
+        players: Array<FumblePlayerStatistics>;
     }
 
     export interface FieldGoalTotals {
@@ -587,7 +587,7 @@ export namespace NFLResponse {
 
     export interface FieldGoals {
         totals: FieldGoalTotals;
-        players: FieldGoalStatistics[];
+        players: Array<FieldGoalStatistics>;
     }
 
     export interface ExtraPointTotals {
@@ -604,7 +604,7 @@ export namespace NFLResponse {
 
     export interface Kicks {
         totals: ExtraPointTotals;
-        players: ExtraPointStatistics[];
+        players: Array<ExtraPointStatistics>;
     }
 
     export interface ConversionTotals {
@@ -619,7 +619,7 @@ export namespace NFLResponse {
 
     export interface Conversions {
         totals: ConversionTotals;
-        players: any[];
+        players: Array<any>;
     }
 
     export interface ExtraPoints {
@@ -691,7 +691,7 @@ export namespace NFLResponse {
 
     export interface Defense {
         totals: DefensiveTotals;
-        players: DefensiveStatistics[];
+        players: Array<DefensiveStatistics>;
     }
 
     export interface Goaltogo {
@@ -799,7 +799,7 @@ export namespace NFLResponse {
 
     export interface Rushing {
         totals: RushingTotals;
-        players: RushingStatistics[];
+        players: Array<RushingStatistics>;
     }
 
     export interface MiscReturnTotals {
@@ -814,7 +814,7 @@ export namespace NFLResponse {
 
     export interface MiscReturns {
         totals: MiscReturnTotals;
-        players: any[];
+        players: Array<any>;
     }
 
     export interface Goaltogo2 {
