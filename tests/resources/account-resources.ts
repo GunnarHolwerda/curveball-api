@@ -1,5 +1,6 @@
 import { ApiResources } from './api-resources';
 import * as uuid from 'uuid/v4';
+import { UserTokenResponse } from './user-resources';
 
 export interface AccountLoginResponse {
     accountId: string;
@@ -10,6 +11,7 @@ export interface AccountLoginResponse {
         id: number;
     };
     token: string;
+    linkedUser: UserTokenResponse | null;
 }
 
 export interface CreateAccountOptions {
@@ -59,5 +61,9 @@ export class AccountResources extends ApiResources {
     ): Promise<AccountLoginResponse> {
         await this.createAccount(email, password, { network: { name: networkName } });
         return this.loginAccount(email, password);
+    }
+
+    public async linkAccountToUser(accountToken: string, userToken: string): Promise<UserTokenResponse> {
+        return this.post<UserTokenResponse>(`/accounts:link`, { accountToken, userToken });
     }
 }
