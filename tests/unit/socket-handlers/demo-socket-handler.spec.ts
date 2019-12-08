@@ -29,13 +29,27 @@ const TestDemoScript: DemoScript = {
     ]
 };
 
+interface QueuedMessages { msDelay: number; callback: Function; }
+interface ExpectedMessages { msDelay: number; validate: Function; }
+
 describe('DemoSocketHandlers', () => {
     let socketHandlers: DemoSocketHandlers;
     let mockSocket: Socket;
     let socket: Socket;
 
     let eventHandlers: { [eventName: string]: (...args: Array<any>) => void } = {};
-    let queuedMessages: Array<{ msDelay: number, callback: Function }> = [];
+    let queuedMessages: Array<QueuedMessages> = [];
+
+    const verifyQueuedMessages = (expectedMessages: Array<ExpectedMessages>, actualMessages: Array<QueuedMessages>): void => {
+        expect(expectedMessages.length, 'Did not receive the number of expected messages').toEqual(actualMessages.length);
+        for (let i = 0; i < expectedMessages.length; i++) {
+            const expectedMessage = expectedMessages[i];
+            const actualMessage = actualMessages[i];
+            expect(expectedMessage.msDelay, 'Message delay did not match expected').toEqual(actualMessage.msDelay);
+            actualMessage.callback();
+            expectedMessage.validate();
+        }
+    };
 
     beforeEach(() => {
         socketHandlers = new DemoSocketHandlers(
@@ -73,19 +87,19 @@ describe('DemoSocketHandlers', () => {
         verify(mockSocket.emit('video', anything())).once();
     });
 
-    it('should emit scripted demo questions at specified intervals', () => {
+    it('should emit scripted demo questions and results at specified intervals', () => {
         socketHandlers.register(socket);
         socket.emit('connect');
 
-        expect(queuedMessages.length, 'Did not queue all questions in script').toEqual(TestDemoScript.schedule.length);
-        for (let i = 0; i < queuedMessages.length; i++) {
-            const queuedMessage = queuedMessages[i];
-            const expectedDelay = TestDemoScript.schedule[i];
-            const expectedQuestion = TestDemoScript.script[i];
-            expect(queuedMessage.msDelay, `Delay does not match expected delay for question ${i}`).toEqual(expectedDelay);
+        expect(queuedMessages.length, 'Did not receive two queued messages per question').toEqual(TestDemoScript.schedule.length * 2);
 
-            queuedMessage.callback();
-            verify(mockSocket.emit('question', expectedQuestion)).once();
-        }
+        const { schedule, script } = TestDemoScript;
+        const expectedMessages: Array<ExpectedMessages> = [
+            { msDelay: schedule[0], validate: () => verify(mockSocket.emit('question', script[0])).once() },
+            { msDelay: schedule[0] + 20000, validate: () => verify(mockSocket.emit('results', anything())).once() },
+            { msDelay: schedule[1], validate: () => verify(mockSocket.emit('question', script[1])).once() },
+            { msDelay: schedule[1] + 20000, validate: () => verify(mockSocket.emit('results', anything())).twice() },
+        ];
+        verifyQueuedMessages(expectedMessages, queuedMessages);
     });
 });

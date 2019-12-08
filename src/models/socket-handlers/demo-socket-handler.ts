@@ -5,7 +5,7 @@ import { DemoScript, DemoQuestion } from '../../interfaces/demo-script';
 const SlamballDemoScript: DemoScript = {
     videoUrl: 'test.mp4',
     name: 'slamball_demo',
-    schedule: [35000, 90000, 125000, 185000],
+    schedule: [35000, 90000],
     script: [
         {
             question: 'What is the color of the sky?',
@@ -62,5 +62,8 @@ export class DemoSocketHandlers extends BaseSocketHandler {
         this.timeoutCallback(() => {
             socket.emit('question', question);
         }, msDelay);
+        this.timeoutCallback(() => {
+            socket.emit('results', question.answers.map(a => ({ ...a, numAnswers: Math.floor(Math.random() * 10000) })));
+        }, msDelay + 20000);
     }
 }
