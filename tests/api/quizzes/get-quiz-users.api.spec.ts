@@ -80,8 +80,8 @@ describe('GET /quizzes/{quizId}/users', () => {
 
     it('should return users who have not submitted an incorrect answer', async () => {
         const { users } = await quizManagement.getCurrentParticipants(quiz.quizId);
-        expect(users.find(u => u.userId === rightUser.userId)).toBeDefined('Unable to find user who only submitted correct answers');
-        expect(users.find(u => u.userId === wrongUser.userId)).toBeUndefined('Found user who answered incorrectly');
+        expect(users.find(u => u.userId === rightUser.userId), 'Unable to find user who only submitted correct answers').toBeDefined();
+        expect(users.find(u => u.userId === wrongUser.userId), 'Found user who answered incorrectly').toBeUndefined();
     });
 
     it('should return 404 if quiz does not exist', async () => {
@@ -91,7 +91,7 @@ describe('GET /quizzes/{quizId}/users', () => {
     it('should only return users who have answered the most recently sent question', async () => {
         await quizManagement.startQuestion(quiz.quizId, questions[1].questionId);
         const { users } = await quizManagement.getCurrentParticipants(quiz.quizId);
-        expect(users.length).toBe(0, 'Did not filter out users who had not answered all questions');
+        expect(users.length, 'Did not filter out users who had not answered all questions').toBe(0);
     });
 
     it('should include users who used a life', async () => {
@@ -99,7 +99,7 @@ describe('GET /quizzes/{quizId}/users', () => {
         userResources.token = wrongUserResponse.token;
         await userResources.useLife(wrongUser.userId, wrongUserQt);
         const { users } = await quizManagement.getCurrentParticipants(quiz.quizId);
-        expect(users.find(u => u.userId === rightUser.userId)).toBeDefined('Unable to find user who only submitted correct answers');
-        expect(users.find(u => u.userId === wrongUser.userId)).toBeDefined('User who used life was excluded');
+        expect(users.find(u => u.userId === rightUser.userId), 'Unable to find user who only submitted correct answers').toBeDefined();
+        expect(users.find(u => u.userId === wrongUser.userId), 'User who used life was excluded').toBeDefined();
     });
 });

@@ -24,7 +24,7 @@ describe('DELETE /users/{userId}/friends/{friendUserId}', () => {
         await userResources.removeFriend(currentUser.userId, friendUser.userId);
         const { requests } = await userResources.getFriends(currentUser.userId);
         const friend = requests.outgoing.find(f => f.friend.userId === friendUser.userId);
-        expect(friend).toBeUndefined('Friend was not marked as deleted');
+        expect(friend, 'Friend was not marked as deleted').toBeUndefined();
     });
 
     it('should remove an incoming friend request', async () => {
@@ -32,7 +32,7 @@ describe('DELETE /users/{userId}/friends/{friendUserId}', () => {
         await friendResources.removeFriend(friendUser.userId, currentUser.userId);
         const { requests } = await friendResources.getFriends(friendUser.userId);
         const incomingRequest = requests.incoming.find(f => f.friend.userId === currentUser.userId);
-        expect(incomingRequest).toBeUndefined('Incoming friend request was not deleted');
+        expect(incomingRequest, 'Incoming friend request was not deleted').toBeUndefined();
     });
 
     it('should remove a friend from both users if both users are friends', async () => {
@@ -40,7 +40,7 @@ describe('DELETE /users/{userId}/friends/{friendUserId}', () => {
         await friendResources.addFriend(friendUser.userId, currentUser.userId);
         const { friends: currentUserFriends } = await userResources.getFriends(currentUser.userId);
         const { friends: friendUserFriends } = await friendResources.getFriends(friendUser.userId);
-        expect(friendUserFriends.length).toEqual(currentUserFriends.length, 'Users are not friends after both requesting each other');
+        expect(friendUserFriends.length, 'Users are not friends after both requesting each other').toEqual(currentUserFriends.length);
     });
 
     it('should return 404 if the friend attempting to delete does not exist', async () => {

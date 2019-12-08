@@ -2,13 +2,13 @@ export namespace NFLResponse {
     export interface Season {
         season: number;
         type: string;
-        weeks: (WeeksEntity)[];
+        weeks: Array<WeeksEntity>;
     }
     export interface WeeksEntity {
         id: string;
         number: number;
-        games: (GamesEntity)[];
-        bye_week?: (string)[];
+        games: Array<GamesEntity>;
+        bye_week?: Array<string>;
     }
     export interface GamesEntity {
         id: string;
@@ -76,8 +76,8 @@ export namespace NFLResponse {
         id: string;
         name: string;
         market: string;
-        players: (PlayersEntity)[];
-        coaches: (CoachesEntity)[];
+        players: Array<PlayersEntity>;
+        coaches: Array<CoachesEntity>;
     }
     export interface PlayersEntity {
         id: string;
@@ -157,7 +157,7 @@ export namespace NFLResponse {
     }
     export interface Touchdowns {
         team: TeamTouchdownStatistics;
-        players?: (PlayerTouchdownStatistics)[] | null;
+        players?: Array<PlayerTouchdownStatistics> | null;
     }
     export interface TeamTouchdownStatistics {
         pass: number;
@@ -192,7 +192,7 @@ export namespace NFLResponse {
     }
     export interface Rushing {
         team: TeamRushingStatistics;
-        players?: (PlayerRushingStatistics)[] | null;
+        players?: Array<PlayerRushingStatistics> | null;
     }
     export interface TeamRushingStatistics {
         att: number;
@@ -238,7 +238,7 @@ export namespace NFLResponse {
     }
     export interface Receiving {
         team: TeamReceivingStats;
-        players?: (PlayerReceivingStats)[] | null;
+        players?: Array<PlayerReceivingStats> | null;
     }
     export interface TeamReceivingStats {
         tar: number;
@@ -276,7 +276,7 @@ export namespace NFLResponse {
     }
     export interface Punting {
         team: TeamPuntingStats;
-        players?: (PlayerPuntingStats)[] | null;
+        players?: Array<PlayerPuntingStats> | null;
     }
     export interface TeamPuntingStats {
         punts: number;
@@ -314,7 +314,7 @@ export namespace NFLResponse {
     }
     export interface PuntReturnOrKickReturn {
         team: TeamReturnStats;
-        players?: (PlayerReturnStatistics)[] | null;
+        players?: Array<PlayerReturnStatistics> | null;
     }
     export interface TeamReturnStats {
         returns: number;
@@ -344,7 +344,7 @@ export namespace NFLResponse {
     }
     export interface Penalty {
         team: TeamPenaltyStatistics;
-        players?: (PlayerPenaltyStatistics)[] | null;
+        players?: Array<PlayerPenaltyStatistics> | null;
     }
     export interface TeamPenaltyStatistics {
         num: number;
@@ -358,7 +358,7 @@ export namespace NFLResponse {
     }
     export interface Passing {
         team: TeamPassingStatistics;
-        players?: (PlayerPassingStatistics)[] | null;
+        players?: Array<PlayerPassingStatistics> | null;
     }
     export interface TeamPassingStatistics {
         att: number;
@@ -412,7 +412,7 @@ export namespace NFLResponse {
     }
     export interface Kickoffs {
         team: TeamKickoffStatistics;
-        players?: (PlayerKickoffStatistics)[] | null;
+        players?: Array<PlayerKickoffStatistics> | null;
     }
     export interface TeamKickoffStatistics {
         kicks: number;
@@ -447,7 +447,7 @@ export namespace NFLResponse {
     }
     export interface Fumbles {
         team: TeamFumbleStatistics;
-        players?: (PlayerFumbleStatistics)[] | null;
+        players?: Array<PlayerFumbleStatistics> | null;
     }
     export interface TeamFumbleStatistics {
         fum: number;
@@ -475,7 +475,7 @@ export namespace NFLResponse {
     }
     export interface FirstDowns {
         team: TeamFirstDownStatistics;
-        players?: (PlayerFirstDownStatistics)[] | null;
+        players?: Array<PlayerFirstDownStatistics> | null;
     }
     export interface TeamFirstDownStatistics {
         num: number;
@@ -491,7 +491,7 @@ export namespace NFLResponse {
     }
     export interface FieldGoal {
         team: TeamFieldGoalStats;
-        players?: (PlayerFieldGoalStats)[] | null;
+        players?: Array<PlayerFieldGoalStats> | null;
     }
     export interface TeamFieldGoalStats {
         att: number;
@@ -528,7 +528,7 @@ export namespace NFLResponse {
     }
     export interface ExtraPoint {
         team: TeamExtraPointStatistics;
-        players?: (PlayerExtraPointStatistics)[] | null;
+        players?: Array<PlayerExtraPointStatistics> | null;
     }
     export interface TeamExtraPointStatistics {
         att: number;
@@ -544,7 +544,7 @@ export namespace NFLResponse {
     }
     export interface Defense {
         team: TeamDefenseStatistics;
-        players?: (PlayerDefenseStatistics)[] | null;
+        players?: Array<PlayerDefenseStatistics> | null;
     }
     export interface TeamDefenseStatistics {
         tackle: number;

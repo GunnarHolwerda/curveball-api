@@ -15,15 +15,15 @@ describe('GET /users/{userId}', () => {
 
     it('should retrieve user info', async () => {
         const response = await userResources.getUser(user.userId);
-        expect(response.user).toBeTruthy('Did not return user object');
-        expect(response['password']).toBeUndefined('Get endpoint retrieved password');
+        expect(response.user, 'Did not return user object').toBeTruthy();
+        expect(response['password'], 'Get endpoint retrieved password').toBeUndefined();
     });
 
     it('should return the stats object', async () => {
         const response = await userResources.getUser(user.userId);
-        expect(response.stats).toBeTruthy('Stats object was not returned');
-        expect(response.stats.winnings).toBe('0', 'Winnings were not 0 for a user who has no wins');
-        expect(response.stats.wins).toBe(0, 'Wins were not 0 for a user who has no wins');
+        expect(response.stats, 'Stats object was not returned').toBeTruthy();
+        expect(response.stats.winnings, 'Winnings were not 0 for a user who has no wins').toBe(0);
+        expect(response.stats.wins, 'Wins were not 0 for a user who has no wins').toBe(0);
     });
 
     it('should return 401 if token not provided', async () => {

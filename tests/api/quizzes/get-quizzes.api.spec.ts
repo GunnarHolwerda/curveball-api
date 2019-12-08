@@ -21,14 +21,14 @@ describe('GET /quizzes', () => {
         const otherAccount = await (new AccountResources()).createAndLoginToAccount();
         const otherQuizManagement = new QuizManagementResources(otherAccount.token);
         const { quizzes } = await otherQuizManagement.allQuizzes();
-        expect(quizzes.find(q => q.quizId === firstAccountQuiz.quiz.quizId))
-            .toBeUndefined('Returned quizzes were not restricted by account');
+        expect(quizzes.find(q => q.quizId === firstAccountQuiz.quiz.quizId), 'Returned quizzes were not restricted by account')
+            .toBeUndefined();
     });
 
     it('should exclude deleted quizzes', async () => {
         const { quiz } = await quizResources.createQuiz({ title: uuid(), potAmount: 100, auth: false });
         await quizResources.deleteQuiz(quiz.quizId);
         const allQuizzes = await quizResources.allQuizzes();
-        expect(allQuizzes.quizzes.find(a => a.quizId === quiz.quizId)).toBeUndefined('All quizzes returned a deleted quiz');
+        expect(allQuizzes.quizzes.find(a => a.quizId === quiz.quizId), 'All quizzes returned a deleted quiz').toBeUndefined();
     });
 });

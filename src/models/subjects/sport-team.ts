@@ -44,7 +44,7 @@ export abstract class SportTeam<T> extends Subject<ISportTeam<T>> {
         });
     }
 
-    async getRelatedSubjects(): Promise<Subject<ISubject>[]> {
+    async getRelatedSubjects(): Promise<Array<Subject<ISubject>>> {
         return SubjectFactory.loadAllExternallyRelatedSubjects(
             this.properties.external_id, SubjectType.sportPlayer
         );

@@ -13,8 +13,8 @@ describe('GET /questions/type', () => {
     describe('?forTopic', () => {
         it('should return only generic question types for Manual type', async () => {
             const { types } = await questionResources.getTypes(KnownQuestionTypes.manual);
-            expect(types.length).toBeGreaterThan(0, 'Did not receive any topics for the Manual type');
-            expect(types.find(t => t.generic === false)).toBeUndefined('Found non generic type for Manual type');
+            expect(types.length, 'Did not receive any topics for the Manual type').toBeGreaterThan(0);
+            expect(types.find(t => t.generic === false), 'Found non generic type for Manual type').toBeUndefined();
         });
 
         it('should return non generic question type with calculator for topic', async () => {
@@ -22,8 +22,11 @@ describe('GET /questions/type', () => {
             const selectedTopic = topics.find(t => t.machineName !== 'any')!;
 
             const { types: typesForCustomTopic } = await questionResources.getTypes(selectedTopic.topicId);
-            expect(typesForCustomTopic.find(t => t.machineName === 'spread'))
-                .toBeDefined('Unable to find custom question type for topic with calculator');
+            expect(
+                typesForCustomTopic.find(t => t.machineName === 'spread'),
+                'Unable to find custom question type for topic with calculator'
+            )
+                .toBeDefined();
         });
     });
 });

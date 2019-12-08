@@ -1,5 +1,4 @@
 import * as Joi from 'joi';
-
 import * as hapi from 'hapi';
 import * as Boom from 'boom';
 import { AccountFactory } from '../../../models/factories/account-factory';

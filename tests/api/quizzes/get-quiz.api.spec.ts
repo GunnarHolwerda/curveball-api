@@ -22,7 +22,7 @@ describe('GET /quizzes/{quizId}', () => {
     it('should retrieve a quiz', async () => {
         const response = await quizResources.getQuiz(quiz.quizId);
         expect(response.quiz.title).toBe(quiz.title);
-        expect(response.quiz.questions.length).toBe(0, 'Quiz with no questions returned questions');
+        expect(response.quiz.questions.length, 'Quiz with no questions returned questions').toBe(0);
     });
 
     it('should return 404 if no quiz exists', async () => {
@@ -59,13 +59,13 @@ describe('GET /quizzes/{quizId}', () => {
 
         it('should return questions if the quiz has questions', async () => {
             const response = await quizResources.getQuiz(quiz.quizId);
-            expect(response.quiz.questions.length).toBe(2, 'Quiz did not return with the number of questions added');
+            expect(response.quiz.questions.length, 'Quiz did not return with the number of questions added').toBe(2);
         });
 
         it('should return questions in order of questionNum', async () => {
             const response = await quizResources.getQuiz(quiz.quizId);
             const responseOrder = response.quiz.questions.map(q => q.questionNum);
-            expect(responseOrder).toEqual([1, 2], 'Questions were not sorted properly');
+            expect(responseOrder, 'Questions were not sorted properly').toEqual([1, 2]);
         });
     });
 });

@@ -24,7 +24,7 @@ describe('DELETE /quizes/{quizId}', () => {
     it('should delete delete the quiz', async () => {
         await quizResources.deleteQuiz(quiz.quizId);
         const deletedQuiz = await quizResources.getQuiz(quiz.quizId);
-        expect(deletedQuiz.quiz.deleted).toBeTruthy('Quiz was not marked as deleted');
+        expect(deletedQuiz.quiz.deleted, 'Quiz was not marked as deleted').toBeTruthy();
     });
 
     it('should return 404 if quiz does not exist', async () => {

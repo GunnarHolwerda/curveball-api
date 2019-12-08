@@ -19,8 +19,8 @@ describe('POST /users_force_login', () => {
 
     it('should return user info and token', async () => {
         const response = await testResources.forceLogin(testPhone);
-        expect(response.user).toEqual(testUser.user, 'Did not return the correct user');
-        expect(response.token).toBeTruthy('Login did not return token');
+        expect(response.user, 'Did not return the correct user').toEqual(testUser.user);
+        expect(response.token, 'Login did not return token').toBeTruthy();
     });
 
     it('should return 404 if phone does not exist', async () => {

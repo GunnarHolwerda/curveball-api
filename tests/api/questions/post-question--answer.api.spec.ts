@@ -59,7 +59,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
             firstQuestion.questionId,
             firstQuestion.choices[0].choiceId
         );
-        expect(response.token).toBeDefined('QT token was not returned by response');
+        expect(response.token, 'QT token was not returned by response').toBeDefined();
     });
 
     it('should have proper qt claims', async () => {
@@ -70,11 +70,11 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
             firstQuestion.choices[0].choiceId,
         );
         const claims: QTClaims & BaseClaims = jwt.decode(response.token) as QTClaims & BaseClaims;
-        expect(claims.iss).toBe(quiz.quizId, 'iss claim was not quizId');
-        expect(claims.sub).toBe(questions.questions[1].questionId, 'sub claim was not set to next question');
-        expect(claims.aud).toBe(userResponse.user.userId, 'aud claim was not set to userId');
-        expect(claims.lifeUsed).toBe(false, 'lifeUsed was true when no life was used');
-        expect(claims.isLastQuestion).toBeFalsy('isLastQuestion was true for non-last question');
+        expect(claims.iss, 'iss claim was not quizId').toBe(quiz.quizId);
+        expect(claims.sub, 'sub claim was not set to next question').toBe(questions.questions[1].questionId);
+        expect(claims.aud, 'aud claim was not set to userId').toBe(userResponse.user.userId);
+        expect(claims.lifeUsed, 'lifeUsed was true when no life was used').toBe(false);
+        expect(claims.isLastQuestion, 'isLastQuestion was true for non-last question').toBeFalsy();
     });
 
     it('should return a token of null after answering last question in quiz', async () => {
@@ -91,7 +91,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
                 response.token
             );
         }
-        expect(response.token).toBeNull('Did not return null for token on last quiz');
+        expect(response.token, 'Did not return null for token on last quiz').toBeNull();
     });
 
     describe('No Authentication Quizzes', () => {
@@ -115,7 +115,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
                 firstQuestion.questionId,
                 getWrongAnswer(firstQuestion.questionId)
             );
-            expect(result.token).toBeTruthy('Did not get token back for not authenticated quiz');
+            expect(result.token, 'Did not get token back for not authenticated quiz').toBeTruthy();
             await quizManagement.startQuestion(quiz.quizId, questions.questions[1].questionId);
             const question = questions.questions[1];
             result = await quizResources.answerQuestion(
@@ -123,7 +123,7 @@ describe('POST /quizzes/{quizId}/questions/{questionId}:answer', () => {
                 question.questionId,
                 getWrongAnswer(question.questionId)
             );
-            expect(result.token).toBeTruthy('Unable to submit to any question with initial QT');
+            expect(result.token, 'Unable to submit to any question with initial QT').toBeTruthy();
         });
 
         it('should return 403 if submitting to quiz that does not match QT', async () => {

@@ -10,6 +10,7 @@
                 "fdescribe"
             ]
         ],
+        "array-type": [true, "generic"],
         "callable-types": true,
         "class-name": true,
         "comment-format": [

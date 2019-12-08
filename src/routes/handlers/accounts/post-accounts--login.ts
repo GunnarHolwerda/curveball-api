@@ -3,6 +3,7 @@ import * as hapi from 'hapi';
 import * as Boom from 'boom';
 import { AccountFactory } from '../../../models/factories/account-factory';
 import { NetworkFactory } from '../../../models/factories/network-factory';
+import { UserFactory } from '../../../models/factories/user-factory';
 
 export const postAcocuntsLoginSchema = Joi.object().keys({
     email: Joi.string().required().description('Email for the account'),
@@ -22,6 +23,9 @@ export async function postAccountsLogin(event: hapi.Request): Promise<object> {
 
     const network = await NetworkFactory.load(account.properties.network_id);
 
+    const linkedUserId = await account.linkedUserId();
+    const user = linkedUserId ? await UserFactory.load(linkedUserId) : undefined;
+
     return {
         id: account.properties.id,
         firstName: account.properties.first_name,
@@ -30,7 +34,11 @@ export async function postAccountsLogin(event: hapi.Request): Promise<object> {
             id: network!.properties.id,
             name: network!.properties.name
         },
-        token: account.generateJwt()
+        token: account.generateJwt(),
+        linkedUser: user ? {
+            user: user.toResponseObject(),
+            token: user.getJWTToken()
+        } : null
     };
 }
 

@@ -23,14 +23,14 @@ describe('POST /users/{userId}/friends/{friendUserId}:recommended', () => {
 
     it('should return recommended friends', async () => {
         const { recommendations } = await userResources.getFriendRecommendations(currentUser.userId, otherUserPhones);
-        expect(recommendations.length).toBe(otherUserPhones.length, 'Was not recommended other users');
+        expect(recommendations.length, 'Was not recommended other users').toBe(otherUserPhones.length);
     });
 
     it('should not return users who are already your friend', async () => {
         const friend = otherUsers[0];
         await userResources.addFriend(currentUser.userId, friend.userId);
         const { recommendations } = await userResources.getFriendRecommendations(currentUser.userId, otherUserPhones);
-        expect(recommendations.length).toBe(otherUserPhones.length - 1, 'Did not exclude added friend');
-        expect(recommendations.find(f => f.userId === friend.userId)).toBeUndefined('Found friend in the recommendations');
+        expect(recommendations.length, 'Did not exclude added friend').toBe(otherUserPhones.length - 1);
+        expect(recommendations.find(f => f.userId === friend.userId), 'Found friend in the recommendations').toBeUndefined();
     });
 });

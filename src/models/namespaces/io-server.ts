@@ -1,11 +1,11 @@
 import * as socketio from 'socket.io';
-
-
 import { Room } from '../../interfaces/room';
 import { ServerHandler } from '../socket-handlers/server-handlers';
 import { ApplicationConfig } from '../config';
 import { Environment } from '../../types/environments';
 import { QuizCache } from '../quiz-cache';
+import { Demos } from '../socket-handlers/demo-socket-handler';
+import { DemoNamespace } from './demo-namespace';
 
 export class IoServer extends Room {
     constructor(private _server: socketio.Server) {
@@ -14,11 +14,7 @@ export class IoServer extends Room {
 
     public async start(): Promise<void> {
         if (ApplicationConfig.nodeEnv !== Environment.prod) {
-            try {
-                await QuizCache.clear();
-            } catch (e) {
-                console.error(`Failed to clear quiz cache`);
-            }
+            await this.prepareDevEnvironment();
         }
         await super.start();
     }
@@ -42,5 +38,20 @@ export class IoServer extends Room {
 
     public async delete(): Promise<void> {
         this.server.close();
+    }
+
+    private async prepareDevEnvironment(): Promise<void> {
+        console.warn('Preparing development environment realtime configuration');
+        try {
+            await QuizCache.clear();
+        } catch (e) {
+            console.error(`Failed to clear quiz cache`);
+        }
+        for (const demo of Object.keys(Demos).map(k => Demos[k])) {
+            console.log(`Creating demo namespace for ${demo.name}`);
+            const namespace = this.getNamespace(demo.name);
+            const demoSpace = new DemoNamespace(namespace, Demos[demo.name]);
+            await demoSpace.start();
+        }
     }
 }

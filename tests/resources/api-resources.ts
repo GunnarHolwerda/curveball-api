@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import { trustOwnCa } from './test-helpers';
-
-const jasmineSettings: { config: { [key: string]: string } } = require('../jasmine-api.json');
+import { GetEnvConfigValue } from './env-config';
 
 trustOwnCa();
 
@@ -82,6 +81,6 @@ export class ApiResources {
     }
 
     protected get baseUrl(): string {
-        return jasmineSettings.config.baseUrl;
+        return GetEnvConfigValue('baseUrl') as string;
     }
 }

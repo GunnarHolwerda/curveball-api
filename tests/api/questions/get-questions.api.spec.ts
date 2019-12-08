@@ -46,8 +46,8 @@ describe('GET /quizzes/{quizId}/questions', () => {
     it('should retrieve only questions for quiz', async () => {
         const response = await quizManagement.getQuestions(quiz.quizId);
         // @ts-ignore
-        expect(response.quiz).toBeUndefined('Quiz was returned from the questions only endpoint');
-        expect(response.questions.length).toBe(2, 'Questions did not return expected number of questions');
+        expect(response.quiz, 'Quiz was returned from the questions only endpoint').toBeUndefined();
+        expect(response.questions.length, 'Questions did not return expected number of questions').toBe(2);
     });
 
     it('should return 404 if no quiz exists', async () => {
@@ -57,6 +57,6 @@ describe('GET /quizzes/{quizId}/questions', () => {
     it('should return questions in order of questionNum', async () => {
         const response = await quizManagement.getQuestions(quiz.quizId);
         const questionOrder = response.questions.map(q => q.questionNum);
-        expect(questionOrder).toEqual([1, 2], 'Questions were not returned in order');
+        expect(questionOrder, 'Questions were not returned in order').toEqual([1, 2]);
     });
 });

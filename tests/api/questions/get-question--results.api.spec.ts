@@ -32,11 +32,11 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
         let numberOfChoicesReturned = 0;
         for (const choiceId in results) {
             if (results.hasOwnProperty(choiceId)) {
-                expect(results[choiceId]).toBeGreaterThanOrEqual(0, 'The question results did not return a valid number of selections');
+                expect(results[choiceId], 'The question results did not return a valid number of selections').toBeGreaterThanOrEqual(0);
                 numberOfChoicesReturned++;
             }
         }
-        expect(numberOfChoicesReturned).toBe(firstQuestion.choices.length, 'Not all choices were returned in results');
+        expect(numberOfChoicesReturned, 'Not all choices were returned in results').toBe(firstQuestion.choices.length);
     });
 
     it('should return the correctAnswer for the question', async () => {
@@ -92,7 +92,7 @@ describe('GET /quizzes/{quizId}/questions/{questionId}:results', () => {
         it('should not return the correctAnswer if there is none', async () => {
             const { quiz, firstQuestion } = startedQuiz;
             const results = await quizManagement.getQuestionResults(quiz.quizId, firstQuestion.questionId);
-            expect(results.correctAnswer).toBeUndefined('Question without answer returned a correctAnswer in the results');
+            expect(results.correctAnswer, 'Question without answer returned a correctAnswer in the results').toBeUndefined();
         });
     });
 

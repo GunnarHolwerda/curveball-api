@@ -19,6 +19,7 @@ export interface IAccountResponse {
 }
 
 export const ACCOUNT_TABLE_NAME = 'account';
+export const ACCOUNT_LINK_TABLE_NAME = 'account_user_link';
 
 export class Account {
     public properties: IAccount;
@@ -39,6 +40,22 @@ export class Account {
 
     public isCorrectPassword(password: string): boolean {
         return bcrypt.compareSync(password, this.properties.password);
+    }
+
+    public async linkUser(userId: string): Promise<void> {
+        const sq = Database.instance.sq;
+        await sq.from(ACCOUNT_LINK_TABLE_NAME).insert({
+            account_id: this._account.id,
+            user_id: userId
+        });
+    }
+
+    public async linkedUserId(): Promise<string | null> {
+        const sq = Database.instance.sq;
+        const result = await sq.from(ACCOUNT_LINK_TABLE_NAME)
+            .where`account_id = ${this._account.id}`
+            .return`user_id`;
+        return result.length === 0 ? null : result.shift()!.user_id;
     }
 
     public generateJwt(): string {

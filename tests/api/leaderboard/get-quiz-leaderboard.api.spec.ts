@@ -20,7 +20,7 @@ describe('GET /quizzes/{quizId}/leaderboard', () => {
 
     it('should return users in desc order by score', async () => {
         const { standings } = await quizResources.getLeaderboard(quizData.quiz.quizId);
-        expect(standings.map(s => s.score)).toEqual(standings.map(s => s.score).sort(), 'Standings were not return in standing order');
+        expect(standings.map(s => s.score), 'Standings were not return in standing order').toEqual(standings.map(s => s.score).sort());
     });
 
     describe('Filters', () => {
@@ -40,9 +40,9 @@ describe('GET /quizzes/{quizId}/leaderboard', () => {
                 friendQuizData = await runFullQuiz({ answeringUsers: [currentUser, friend] });
                 const { standings } = await quizResources.getLeaderboard(friendQuizData.quiz.quizId, { filter: 'friends' });
                 const leaderBoardUsers = standings.map(s => s.user.userId);
-                expect(leaderBoardUsers.length).toBe(2, 'Returned more users than expected');
-                expect(leaderBoardUsers.find(u => currentUser.user.userId === u)).toBeDefined('Did not find current user');
-                expect(leaderBoardUsers.find(u => friend.user.userId === u)).toBeDefined('Did not find friend user');
+                expect(leaderBoardUsers.length, 'Returned more users than expected').toBe(2);
+                expect(leaderBoardUsers.find(u => currentUser.user.userId === u), 'Did not find current user').toBeDefined();
+                expect(leaderBoardUsers.find(u => friend.user.userId === u), 'Did not find friend user').toBeDefined();
             });
 
             it('should exclude friends who have not accepted the friend invite', async () => {
@@ -51,9 +51,9 @@ describe('GET /quizzes/{quizId}/leaderboard', () => {
                 await userResources.addFriend(currentUser.user.userId, inviteOnlyUser.user.userId);
                 const { standings } = await quizResources.getLeaderboard(friendQuizData.quiz.quizId, { filter: 'friends' });
                 const leaderBoardUsers = standings.map(s => s.user.userId);
-                expect(leaderBoardUsers.length).toBe(2, 'Returned more users than expected');
-                expect(leaderBoardUsers.find(u => currentUser.user.userId === u)).toBeDefined('Did not find current user');
-                expect(leaderBoardUsers.find(u => friend.user.userId === u)).toBeDefined('Did not find friend user');
+                expect(leaderBoardUsers.length, 'Returned more users than expected').toBe(2);
+                expect(leaderBoardUsers.find(u => currentUser.user.userId === u), 'Did not find current user').toBeDefined();
+                expect(leaderBoardUsers.find(u => friend.user.userId === u), 'Did not find friend user').toBeDefined();
             });
         });
     });

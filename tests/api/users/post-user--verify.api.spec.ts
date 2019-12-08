@@ -19,9 +19,9 @@ describe('POST /users/{userId}:verify', () => {
 
     it('should return user, token, and stats on success', async () => {
         const verifyResponse = await userResources.verifyUser(userId);
-        expect(verifyResponse.user).toBeTruthy('The user was not returned from the verify call');
-        expect(verifyResponse.stats).toBeTruthy('The stats for the user were not returned');
-        expect(verifyResponse.token).toBeTruthy('Verification did not return token');
+        expect(verifyResponse.user, 'The user was not returned from the verify call').toBeTruthy();
+        expect(verifyResponse.stats, 'The stats for the user were not returned').toBeTruthy();
+        expect(verifyResponse.token, 'Verification did not return token').toBeTruthy();
     });
 
     it('should return 400 if code is invalid', async () => {
@@ -35,13 +35,13 @@ describe('POST /users/{userId}:verify', () => {
     it('should set username if username is provided', async () => {
         const username = Randomstring.generate(7);
         const verifyResponse = await userResources.verifyUser(userId, DevVerificationCode, { username });
-        expect(verifyResponse.user.username).toBe(username, 'Username was not updated');
+        expect(verifyResponse.user.username, 'Username was not updated').toBe(username);
     });
 
     it('should set name if name is provided', async () => {
         const name = Randomstring.generate(7);
         const verifyResponse = await userResources.verifyUser(userId, DevVerificationCode, { username: Randomstring.generate(7), name });
-        expect(verifyResponse.user.name).toBe(name, 'Name was not updated');
+        expect(verifyResponse.user.name, 'Name was not updated').toBe(name);
     });
 
     xit('should be able to verify existing user', async () => {

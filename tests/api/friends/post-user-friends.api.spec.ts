@@ -21,7 +21,7 @@ describe('POST /users/{userId}/friends/{friendUserId}', () => {
         await userResources.addFriend(currentUser.userId, friendUser.userId);
         const { requests } = await userResources.getFriends(currentUser.userId);
         const outgoingFriendRequest = requests.outgoing.find(f => f.friend.userId === friendUser.userId);
-        await expect(outgoingFriendRequest).toBeDefined('Unable to find added friend in friend response');
+        await expect(outgoingFriendRequest, 'Unable to find added friend in friend response').toBeDefined();
     });
 
     it('should return 404 if the friend attempting to add does not exist', async () => {

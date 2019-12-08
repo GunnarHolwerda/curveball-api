@@ -26,14 +26,14 @@ describe('GET /users/{userId}/friends', () => {
         it('should return user as outgoing request if friend user has not requested user', async () => {
             const { requests } = await currentUserResources.getFriends(currentUser.userId);
             const outgoingRequest = requests.outgoing.find(f => f.friend.userId === friendUser.userId);
-            await expect(outgoingRequest).toBeDefined('Friend request was not added to outgoing requests');
+            await expect(outgoingRequest, 'Friend request was not added to outgoing requests').toBeDefined();
         });
 
         it('should only return a user once as an outgoing request despite requesting them multiple times', async () => {
             await currentUserResources.addFriend(currentUser.userId, friendUser.userId);
             const { requests } = await currentUserResources.getFriends(currentUser.userId);
             const outgoingRequests = requests.outgoing.filter(f => f.friend.userId === friendUser.userId);
-            await expect(outgoingRequests.length).toBe(1, 'Outgoing friend requests from the same user was returned more than once');
+            await expect(outgoingRequests.length, 'Outgoing friend requests from the same user was returned more than once').toBe(1);
         });
     });
 
@@ -41,14 +41,14 @@ describe('GET /users/{userId}/friends', () => {
         it('should return user as incoming request if another user requested the current user', async () => {
             const { requests } = await friendUserResources.getFriends(friendUser.userId);
             const incomingRequest = requests.incoming.find(f => f.friend.userId === currentUser.userId);
-            await expect(incomingRequest).toBeDefined('Friend request was not added to incoming requests');
+            await expect(incomingRequest, 'Friend request was not added to incoming requests').toBeDefined();
         });
 
         it('should only return a user once as an incoming request despite being requested multiple times', async () => {
             await currentUserResources.addFriend(currentUser.userId, friendUser.userId);
             const { requests } = await friendUserResources.getFriends(friendUser.userId);
             const incomingRequests = requests.incoming.filter(f => f.friend.userId === currentUser.userId);
-            await expect(incomingRequests.length).toBe(1, 'Incoming friend requests from the same user was returned more than once');
+            await expect(incomingRequests.length, 'Incoming friend requests from the same user was returned more than once').toBe(1);
         });
     });
 
@@ -62,7 +62,7 @@ describe('GET /users/{userId}/friends', () => {
         it('should return any invite a user has sent', async () => {
             const { invites } = await currentUserResources.getFriends(currentUser.userId);
             const invite = invites.filter(i => i.invitePhone === invitePhone);
-            await expect(invite.length).toBe(1, 'Invite was not properly returned');
+            await expect(invite.length, 'Invite was not properly returned').toBe(1);
         });
 
         it('should not return accepted invites', async () => {
@@ -70,7 +70,7 @@ describe('GET /users/{userId}/friends', () => {
             await userResources.createUser(invitePhone);
             const { invites } = await currentUserResources.getFriends(currentUser.userId);
             const invite = invites.filter(i => i.invitePhone === invitePhone);
-            await expect(invite.length).toBe(0, 'Invite was not properly excluded');
+            await expect(invite.length, 'Invite was not properly excluded').toBe(0);
         });
     });
 
@@ -79,7 +79,7 @@ describe('GET /users/{userId}/friends', () => {
             await friendUserResources.addFriend(friendUser.userId, currentUser.userId);
             const { friends } = await currentUserResources.getFriends(currentUser.userId);
             const friend = friends.find(f => f.friend.userId === friendUser.userId);
-            await expect(friend).toBeDefined('Friend request was not added to outgoing requests');
+            await expect(friend, 'Friend request was not added to outgoing requests').toBeDefined();
         });
 
         it('should only return a user once as a friend despite adding them multiple times', async () => {
@@ -87,14 +87,14 @@ describe('GET /users/{userId}/friends', () => {
             await friendUserResources.addFriend(friendUser.userId, currentUser.userId);
             const { friends } = await currentUserResources.getFriends(currentUser.userId);
             const addedFriends = friends.filter(f => f.friend.userId === friendUser.userId);
-            await expect(addedFriends.length).toBe(1, 'Friend was returned more than once');
+            await expect(addedFriends.length, 'Friend was returned more than once').toBe(1);
         });
 
         it('should not return deleted friends', async () => {
             await currentUserResources.removeFriend(currentUser.userId, friendUser.userId);
             const { friends } = await currentUserResources.getFriends(currentUser.userId);
             const friend = friends.find(f => f.friend.userId === friendUser.userId);
-            await expect(friend).toBeUndefined('Found a deleted friend');
+            await expect(friend, 'Found a deleted friend').toBeUndefined();
         });
     });
 });

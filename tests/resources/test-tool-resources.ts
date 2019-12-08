@@ -1,12 +1,11 @@
+import { GetEnvConfigValue } from './env-config';
 import { ApiResources } from './api-resources';
 import { UserTokenResponse } from './user-resources';
-
-const jasmineSettings: { config: { [key: string]: string } } = require('../jasmine-api.json');
 
 export class TestToolResources extends ApiResources {
 
     get baseUrl(): string {
-        return jasmineSettings.config.testApiUrl + '/test';
+        return GetEnvConfigValue('testApiUrl') + '/test';
     }
 
     async generateRandomAnswers(questionId: string, options: { numAnswers: number }): Promise<{ [choiceId: string]: number }> {
