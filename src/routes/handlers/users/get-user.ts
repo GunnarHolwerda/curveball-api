@@ -1,6 +1,6 @@
 
-import * as hapi from 'hapi';
-import * as Boom from 'boom';
+import * as hapi from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
 import { UserFactory } from '../../../models/factories/user-factory';
 import { Analytics } from '../../../models/analytics';
 

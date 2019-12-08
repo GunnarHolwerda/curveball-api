@@ -1,7 +1,7 @@
 
-import * as hapi from 'hapi';
-import * as Joi from 'joi';
-import * as Boom from 'boom';
+import * as hapi from '@hapi/hapi';
+import * as Joi from '@hapi/joi';
+import * as Boom from '@hapi/boom';
 import { TopicFactory } from '../../../models/factories/topic-factory';
 import { QuestionTypeFactory } from '../../../models/factories/question-type-factory';
 import { SubjectSupplier, SubjectSupplierOptions } from '../../../interfaces/subject-supplier';

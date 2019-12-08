@@ -1,6 +1,6 @@
-import * as Joi from 'joi';
-import * as hapi from 'hapi';
-import * as Boom from 'boom';
+import * as Joi from '@hapi/joi';
+import * as hapi from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
 import { UserJwtClaims } from '../../../../interfaces/user-jwt-claims';
 import { FriendInvite } from '../../../../models/entities/friend-invite';
 import { PhoneVerifier } from '../../../../models/phone-verifier';

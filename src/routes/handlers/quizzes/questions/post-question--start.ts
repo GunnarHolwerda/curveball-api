@@ -1,5 +1,5 @@
-import * as hapi from 'hapi';
-import * as Boom from 'boom';
+import * as hapi from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
 import { QuestionFactory } from '../../../../models/factories/question-factory';
 
 export async function postQuestionStart(event: hapi.Request): Promise<object> {

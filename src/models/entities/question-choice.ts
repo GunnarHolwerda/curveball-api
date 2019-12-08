@@ -3,10 +3,10 @@ import { Analyticize, AnalyticsProperties } from '../../interfaces/analyticize';
 import { snakifyKeys } from '../../util/snakify-keys';
 import { omit } from '../../util/omit';
 import { camelizeKeys } from '../../util/camelize-keys';
-import { SubjectFactory } from '../factories/subject-factory';
 import { QuestionFactory } from '../factories/question-factory';
 import { Question } from './question';
 import { SubjectTableResponse } from '../../interfaces/subject-table-response';
+import { SubjectFactory } from '../factories/subject-factory';
 
 export interface IChoice<T = null> {
     choice_id: string;
@@ -51,7 +51,7 @@ export class Choice<TData = null> implements Analyticize {
         const { subject_id } = this.properties;
 
         const response = {
-            ...omit(this.properties, ['is_answer', 'subject_id', 'data']),
+            ...omit<object>(this.properties, ['is_answer', 'subject_id', 'data']),
             subject: subject_id ? await SubjectFactory.loadById(subject_id) : null
         };
         return camelizeKeys(response);

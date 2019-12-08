@@ -1,5 +1,5 @@
-import * as hapi from 'hapi';
-import * as Boom from 'boom';
+import * as hapi from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
 import { QuizFactory } from '../../../models/factories/quiz-factory';
 import { AnswerFactory } from '../../../models/factories/answer-factory';
 import { Database } from '../../../models/database';

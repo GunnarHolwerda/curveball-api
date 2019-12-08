@@ -1,8 +1,8 @@
-import * as hapi from 'hapi';
-import * as Boom from 'boom';
+import * as hapi from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
 import { IoServer } from '../models/namespaces/io-server';
 import { onlyLocalPreHandler } from './pres/only-local';
-import * as Joi from 'joi';
+import * as Joi from '@hapi/joi';
 import { generateRandomAnswers } from './handlers/testing/generate-random-answers';
 import { Sport } from '../models/data-loader/sports-api';
 import { preloadGamesTeamsPlayers } from './handlers/testing/load-teams-players';

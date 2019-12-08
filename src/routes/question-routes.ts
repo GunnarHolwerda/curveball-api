@@ -1,4 +1,4 @@
-import * as hapi from 'hapi';
+import * as hapi from '@hapi/hapi';
 import { IoServer } from '../models/namespaces/io-server';
 import { putQuestionSchema, putQuestions } from './handlers/questions/put-question';
 import { getQuestionTypes, getQuestionTypesQueryParams } from './handlers/questions/types/get-question-types';

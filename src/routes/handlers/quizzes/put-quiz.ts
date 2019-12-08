@@ -1,6 +1,6 @@
-import * as Joi from 'joi';
-import * as Boom from 'boom';
-import * as hapi from 'hapi';
+import * as Joi from '@hapi/joi';
+import * as Boom from '@hapi/boom';
+import * as hapi from '@hapi/hapi';
 import { IQuiz } from '../../../models/entities/quiz';
 import { QuizFactory } from '../../../models/factories/quiz-factory';
 import { snakifyKeys } from '../../../util/snakify-keys';

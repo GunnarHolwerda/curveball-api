@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import * as Boom from 'boom';
+import * as Boom from '@hapi/boom';
 import { UserJwtClaims } from '../interfaces/user-jwt-claims';
 import { AllQtClaims } from '../types/qt';
 import { ApplicationConfig } from '../models/config';

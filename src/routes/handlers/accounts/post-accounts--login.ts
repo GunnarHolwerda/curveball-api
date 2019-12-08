@@ -1,6 +1,6 @@
-import * as Joi from 'joi';
-import * as hapi from 'hapi';
-import * as Boom from 'boom';
+import * as Joi from '@hapi/joi';
+import * as hapi from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
 import { AccountFactory } from '../../../models/factories/account-factory';
 import { NetworkFactory } from '../../../models/factories/network-factory';
 import { UserFactory } from '../../../models/factories/user-factory';

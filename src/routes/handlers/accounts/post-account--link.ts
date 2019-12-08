@@ -1,5 +1,5 @@
-import * as Joi from 'joi';
-import * as hapi from 'hapi';
+import * as Joi from '@hapi/joi';
+import * as hapi from '@hapi/hapi';
 import * as jwt from 'jsonwebtoken';
 import { ApplicationConfig } from '../../../models/config';
 import { AccountFactory } from '../../../models/factories/account-factory';

@@ -1,6 +1,6 @@
 
-import * as hapi from 'hapi';
-import * as Joi from 'joi';
+import * as hapi from '@hapi/hapi';
+import * as Joi from '@hapi/joi';
 import { FriendRecommender } from '../../../../models/friend-recommender';
 import { UserJwtClaims } from '../../../../interfaces/user-jwt-claims';
 import { UserFactory } from '../../../../models/factories/user-factory';

@@ -1,5 +1,5 @@
-import { RouteOptionsPreObject, Request, ResponseToolkit } from 'hapi';
-import * as Boom from 'boom';
+import { RouteOptionsPreObject, Request, ResponseToolkit } from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
 import { UserJwtClaims } from '../../interfaces/user-jwt-claims';
 
 export const onlyCurrentUser: RouteOptionsPreObject = {

@@ -1,6 +1,6 @@
-import * as Joi from 'joi';
-import * as Boom from 'boom';
-import * as hapi from 'hapi';
+import * as Joi from '@hapi/joi';
+import * as Boom from '@hapi/boom';
+import * as hapi from '@hapi/hapi';
 import { IQuestion } from '../../../models/entities/question';
 import { QuestionFactory } from '../../../models/factories/question-factory';
 

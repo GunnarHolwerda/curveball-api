@@ -1,6 +1,6 @@
 
-import * as hapi from 'hapi';
-import * as Boom from 'boom';
+import * as hapi from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
 import { Friend } from '../../../../models/entities/friend';
 import { UserJwtClaims } from '../../../../interfaces/user-jwt-claims';
 import { UserFactory } from '../../../../models/factories/user-factory';

@@ -1,6 +1,6 @@
-import * as hapi from 'hapi';
-import * as Joi from 'joi';
-import * as Boom from 'boom';
+import * as hapi from '@hapi/hapi';
+import * as Joi from '@hapi/joi';
+import * as Boom from '@hapi/boom';
 import { QuestionTypeFactory } from '../../../../models/factories/question-type-factory';
 import { TopicFactory } from '../../../../models/factories/topic-factory';
 import { QuestionType } from '../../../../models/entities/question-type';
