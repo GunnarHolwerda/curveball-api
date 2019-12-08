@@ -1,4 +1,4 @@
-FROM node:8
+FROM node:12
 WORKDIR /usr/local/src/realtime
 
 RUN apt-get update && apt-get install -y postgresql
