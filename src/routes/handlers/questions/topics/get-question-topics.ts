@@ -1,4 +1,4 @@
-import * as hapi from 'hapi';
+import * as hapi from '@hapi/hapi';
 import { TopicFactory } from '../../../../models/factories/topic-factory';
 
 

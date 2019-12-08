@@ -1,4 +1,4 @@
-import { Request } from 'hapi';
+import { Request } from '@hapi/hapi';
 import { QuizFactory } from '../../../models/factories/quiz-factory';
 import { AccountJwtClaims } from '../../../interfaces/account-jwt-claims';
 

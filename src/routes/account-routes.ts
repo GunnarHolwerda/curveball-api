@@ -1,4 +1,4 @@
-import * as hapi from 'hapi';
+import * as hapi from '@hapi/hapi';
 import { IoServer } from '../models/namespaces/io-server';
 import { devRoutes } from './helpers/dev-routes';
 import { postAccountSchema, postAccount } from './handlers/accounts/post-accounts';

@@ -1,7 +1,7 @@
-import * as Joi from 'joi';
+import * as Joi from '@hapi/joi';
 
-import * as hapi from 'hapi';
-import * as Boom from 'boom';
+import * as hapi from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
 import { User } from '../../../models/entities/user';
 import { UserFactory } from '../../../models/factories/user-factory';
 import { Powerup } from '../../../models/entities/powerup';

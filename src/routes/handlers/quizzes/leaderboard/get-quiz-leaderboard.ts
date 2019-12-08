@@ -1,6 +1,6 @@
-import * as hapi from 'hapi';
-import * as Boom from 'boom';
-import * as Joi from 'joi';
+import * as hapi from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
+import * as Joi from '@hapi/joi';
 import { QuizFactory } from '../../../../models/factories/quiz-factory';
 import { UserFactory } from '../../../../models/factories/user-factory';
 import { UserJwtClaims } from '../../../../interfaces/user-jwt-claims';

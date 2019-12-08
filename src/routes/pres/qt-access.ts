@@ -1,5 +1,5 @@
-import { RouteOptionsPreObject, Request, ResponseToolkit } from 'hapi';
-import * as Boom from 'boom';
+import { RouteOptionsPreObject, Request, ResponseToolkit } from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
 import { getQtTokenFromHeader } from './extract-quiz-claims';
 import { UserJwtClaims } from '../../interfaces/user-jwt-claims';
 import { QuizFactory } from '../../models/factories/quiz-factory';

@@ -1,6 +1,6 @@
-import * as Boom from 'boom';
-import * as hapi from 'hapi';
-import * as Joi from 'joi';
+import * as Boom from '@hapi/boom';
+import * as hapi from '@hapi/hapi';
+import * as Joi from '@hapi/joi';
 
 import { IoServer } from '../models/namespaces/io-server';
 import { QuizNamespace } from '../models/namespaces/quiz-namespace';
@@ -45,8 +45,8 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
             validate: {
                 payload: Joi.object().required().keys({
                     quiz: Joi.object().keys({
-                        quizId: Joi.string().description('The id for the quiz')
-                    }).unknown(true).requiredKeys(['quizId']).description('Create a new room for a quiz'),
+                        quizId: Joi.string().required().description('The id for the quiz')
+                    }).unknown(true).description('Create a new room for a quiz'),
                 })
             }
         },

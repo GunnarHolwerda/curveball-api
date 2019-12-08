@@ -1,4 +1,4 @@
-import * as hapi from 'hapi';
+import * as hapi from '@hapi/hapi';
 
 export const devRoutes = (routes: Array<hapi.ServerRoute>): Array<hapi.ServerRoute> => {
     return routes.map(r => {

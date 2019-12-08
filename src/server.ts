@@ -1,7 +1,7 @@
-import * as Hapi from 'hapi';
+import * as Hapi from '@hapi/hapi';
 import * as socketio from 'socket.io';
 import * as fs from 'fs';
-import * as Boom from 'boom';
+import * as Boom from '@hapi/boom';
 import * as redisAdapter from 'socket.io-redis';
 import { ApplicationConfig } from './models/config';
 import { IoServer } from './models/namespaces/io-server';

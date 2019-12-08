@@ -1,6 +1,6 @@
-import * as Joi from 'joi';
-import * as Boom from 'boom';
-import * as hapi from 'hapi';
+import * as Joi from '@hapi/joi';
+import * as Boom from '@hapi/boom';
+import * as hapi from '@hapi/hapi';
 import { UserFactory } from '../../../models/factories/user-factory';
 
 export const postUserForceLoginSchema = Joi.object().keys({

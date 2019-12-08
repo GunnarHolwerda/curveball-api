@@ -1,6 +1,6 @@
-import * as Joi from 'joi';
+import * as Joi from '@hapi/joi';
 
-import * as hapi from 'hapi';
+import * as hapi from '@hapi/hapi';
 import { IQuizResponse, IQuiz, Quiz } from '../../../models/entities/quiz';
 import { QuizFactory } from '../../../models/factories/quiz-factory';
 import { AccountJwtClaims } from '../../../interfaces/account-jwt-claims';

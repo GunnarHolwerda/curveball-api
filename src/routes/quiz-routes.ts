@@ -1,4 +1,4 @@
-import * as hapi from 'hapi';
+import * as hapi from '@hapi/hapi';
 import { IoServer } from '../models/namespaces/io-server';
 import { deleteQuiz } from './handlers/quizzes/delete-quiz';
 import { getQuiz } from './handlers/quizzes/get-quiz';

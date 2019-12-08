@@ -2,8 +2,8 @@ import { QuestionFactory } from '../../../models/factories/question-factory';
 import { User } from '../../../models/entities/user';
 import { generatePhone } from '../../../util/generate-phone';
 import { Answer } from '../../../models/entities/answer';
-import { Request } from 'hapi';
-import * as Boom from 'boom';
+import { Request } from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
 import { UserFactory } from '../../../models/factories/user-factory';
 
 

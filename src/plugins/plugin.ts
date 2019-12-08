@@ -1,4 +1,4 @@
-import * as hapi from 'hapi';
+import * as hapi from '@hapi/hapi';
 
 import { SwaggerConfig } from './configs/swagger';
 import { GoodConfig } from './configs/good';
@@ -58,7 +58,7 @@ export default class Plugins {
     public static async good(server: hapi.Server): Promise<void> {
         await Plugins.register(server, {
             options: GoodConfig,
-            plugin: require('good')
+            plugin: require('@hapi/good')
         });
     }
 

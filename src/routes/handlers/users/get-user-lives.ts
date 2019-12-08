@@ -1,5 +1,5 @@
 
-import * as hapi from 'hapi';
+import * as hapi from '@hapi/hapi';
 import { PowerupFactory } from '../../../models/factories/lives-factory';
 
 export async function getUserLives(event: hapi.Request): Promise<object> {

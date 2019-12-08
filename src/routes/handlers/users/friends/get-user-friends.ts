@@ -1,5 +1,5 @@
 
-import * as hapi from 'hapi';
+import * as hapi from '@hapi/hapi';
 import { UserJwtClaims } from '../../../../interfaces/user-jwt-claims';
 import { FriendFactory } from '../../../../models/factories/friend-factory';
 import { Friend, IFriendResponse } from '../../../../models/entities/friend';
