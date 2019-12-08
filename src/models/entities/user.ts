@@ -74,7 +74,7 @@ export class User implements Analyticize {
     }
 
     public getJWTToken(): string {
-        const claims: Partial<UserJwtClaims> = { userId: this.properties.user_id! };
+        const claims: UserJwtClaims = { userId: this.properties.user_id! };
         return createUserJWT(claims);
     }
 
