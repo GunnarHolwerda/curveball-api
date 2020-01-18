@@ -40,7 +40,7 @@ describe('POST /quizzes/{quizId}/questions', () => {
                     typeId: 1,
                     ticker: 'doo',
                     choices: [
-                        { text: 'Cat', isAnswer: true },
+                        { text: 'Cat', isAnswer: true, score: 3 },
                     ]
                 }
             ]
