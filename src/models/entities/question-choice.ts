@@ -24,7 +24,7 @@ export interface IChoiceResponse<TSubject = SubjectTableResponse | null> {
     text: string;
     score: number;
     subject: TSubject;
-    isAnswer?: boolean;
+    isAnswer: boolean;
 }
 
 export const CHOICES_TABLE_NAME = 'questions_choices';
@@ -52,7 +52,7 @@ export class Choice<TData = null> implements Analyticize {
         const { subject_id } = this.properties;
 
         const response = {
-            ...omit<object>(this.properties, ['is_answer', 'subject_id', 'data']),
+            ...omit<object>(this.properties, ['subject_id', 'data']),
             subject: subject_id ? await SubjectFactory.loadById(subject_id) : null
         };
         return camelizeKeys(response);
