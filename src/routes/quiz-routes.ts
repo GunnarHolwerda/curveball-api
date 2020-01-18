@@ -18,6 +18,7 @@ import { getQuizUsers } from './handlers/quizzes/users/get-quiz-users';
 import { qtPreRouteHandler } from './pres/qt-access';
 import { getQuizLeaderboard } from './handlers/quizzes/leaderboard/get-quiz-leaderboard';
 import { accountQuizVerification } from './pres/account-quiz-verification';
+import { putChoiceSchema, putChoice } from './handlers/quizzes/choices/put-choice';
 
 export function quizRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -78,6 +79,18 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
                 notes: 'Creates and adds questions to a quiz'
             },
             handler: postQuestions
+        },
+        {
+            path: '/quizzes/{quizId}/questions/{questionId}/choices/{choiceId}',
+            method: 'put',
+            options: {
+                auth: 'accountJwt',
+                pre: [accountQuizVerification],
+                validate: { payload: putChoiceSchema },
+                description: 'Update a choice in a quiz question',
+                notes: 'Will update the properties of a choice within a quiz question'
+            },
+            handler: putChoice
         },
         {
             path: '/quizzes/{quizId}/questions',

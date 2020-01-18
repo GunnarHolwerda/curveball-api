@@ -2,9 +2,11 @@ import * as pg from 'pg';
 import sqorn = require('sqorn-pg');
 import { SQF } from 'sqorn-pg/types/sq';
 
-pg.types.setTypeParser(20, function (val): number {
-    return parseInt(val, 10);
-});
+// Int fields
+pg.types.setTypeParser(20, (val) => parseInt(val, 10));
+
+// Numeric Fields
+pg.types.setTypeParser(1700, val => parseFloat(val));
 
 export class Database {
     private activeSchema = '';

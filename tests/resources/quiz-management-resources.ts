@@ -12,6 +12,7 @@ import { IQuizResponse } from '../../src/models/entities/quiz';
 import { QuestionsPayload } from '../../src/routes/handlers/quizzes/questions/post-questions';
 import { QuestionResults } from '../../src/models/entities/question';
 import { IUserResponse } from '../../src/models/entities/user';
+import { IChoiceResponse } from '../../src/models/entities/question-choice';
 
 export class QuizManagementResources extends ApiResources {
     constructor(token: string) {
@@ -68,5 +69,14 @@ export class QuizManagementResources extends ApiResources {
 
     public async deleteQuiz(quizId: string): Promise<void> {
         return this.delete(`/quizzes/${quizId}`);
+    }
+
+    public async updateChoice(
+        quizId: string,
+        questionId: string,
+        choiceId: string,
+        choiceData: Partial<IChoiceResponse>
+    ): Promise<IChoiceResponse> {
+        return this.put(`/quizzes/${quizId}/questions/${questionId}/choices/${choiceId}`, choiceData);
     }
 }

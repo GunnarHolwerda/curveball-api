@@ -44,7 +44,7 @@ export const postQuestionsSchema = Joi.object().keys({
             text: Joi.string().max(64).required().description('Text to be displayed with the choice'),
             isAnswer: Joi.boolean().required().description('Whether the question is the answer or not'),
             subjectId: Joi.number().allow(null).optional().description('The subject id of the subject to associate with this choice'),
-            score: Joi.number().optional().description('The score that the user will earn for selecting this if the question isAnswer'),
+            score: Joi.number().min(0).optional().description('The score that the user will earn for selecting this if the question isAnswer'),
             data: Joi.object().unknown(true).allow(null).description('Additional metadata to store with the choice')
         }).unknown(false))
     }).unknown(false).required())

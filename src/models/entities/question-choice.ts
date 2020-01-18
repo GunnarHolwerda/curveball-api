@@ -22,6 +22,7 @@ export interface IChoiceResponse<TSubject = SubjectTableResponse | null> {
     choiceId: string;
     questionId: string;
     text: string;
+    score: number;
     subject: TSubject;
     isAnswer?: boolean;
 }
