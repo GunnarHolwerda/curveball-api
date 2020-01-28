@@ -1,4 +1,7 @@
 import * as hapi from '@hapi/hapi';
+import * as Inert from '@hapi/inert';
+import * as Vision from '@hapi/vision';
+import * as HapiSwagger from 'hapi-swagger';
 
 import { SwaggerConfig } from './configs/swagger';
 import { GoodConfig } from './configs/good';
@@ -25,14 +28,17 @@ function Plugin() {
 export default class Plugins {
     @Plugin()
     public static async swagger(server: hapi.Server): Promise<void> {
-        await Plugins.register(server, [
-            require('vision'),
-            require('inert'),
+        const plugins = [
+            { plugin: Inert },
+            { plugin: Vision },
             {
                 options: SwaggerConfig,
-                plugin: require('hapi-swagger')
+                plugin: HapiSwagger,
             }
-        ]);
+        ];
+        for (const plugin of plugins) {
+            await Plugins.register(server, plugin);
+        }
     }
 
     @Plugin()
@@ -68,9 +74,10 @@ export default class Plugins {
         }
         await Plugins.jwt2(server);
         await Plugins.good(server);
+        server.validator(require('@hapi/joi'));
     }
 
-    private static async register(server: hapi.Server, plugin: any): Promise<void> {
+    private static async register(server: hapi.Server, plugin: hapi.ServerRegisterPluginObject<any>): Promise<void> {
         try {
             await server.register(plugin);
         } catch (error) {

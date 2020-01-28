@@ -36,12 +36,12 @@ export class Database {
         if (schema !== this.activeSchema) {
             this.activeSchema = schema;
         }
-        console.log('Connected to DB');
         await this._client.connect();
+        console.log('Connected to DB');
     }
 
     public async disconnect(): Promise<void> {
-        console.log('disconnecting from database');
+        console.log('Disconnecting from database');
         await this.sq.end();
     }
 

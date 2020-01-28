@@ -64,8 +64,8 @@ async function start() {
         await server.start();
         console.log('Server running at:', server.info.uri);
     } catch (err) {
+        console.log('An error ocurred', err);
         await Database.instance.disconnect();
-        console.log(err);
         process.exit(1);
     }
 }
