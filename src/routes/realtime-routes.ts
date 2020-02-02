@@ -110,7 +110,7 @@ export function realtimeRoutes(server: hapi.Server, ioServer: IoServer): void {
             validate: {
                 params: {
                     quizId: Joi.string().required().description('The id for the quiz to emit to'),
-                    eventType: Joi.string().allow('question', 'results', 'winners', 'complete').required()
+                    eventType: Joi.string().allow('question', 'results', 'winners', 'completion').required()
                 }
             },
             tags: ['api', 'internal'],

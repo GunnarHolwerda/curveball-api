@@ -9,7 +9,7 @@ export abstract class Room {
     constructor(protected _namespace: socketio.Namespace, protected socketHandlers: BaseSocketHandler) { }
 
     public abstract get numConnected(): Promise<number>;
-    public abstract delete(): void;
+    public abstract delete(): Promise<void>;
 
     public get namespace(): socketio.Namespace {
         return this._namespace;
@@ -22,7 +22,7 @@ export abstract class Room {
             timeout: 15000
         })).on('authenticated', (socket: Socket) => {
             this.numConnected.then(count => {
-                socket.emit(QuizEvents.numConnected, count);
+                socket.emit(QuizEvents.audienceCount, count);
             }).catch(e => {
                 console.error(`Error retrieving num connected users for ${this.namespace}`, e);
             });
