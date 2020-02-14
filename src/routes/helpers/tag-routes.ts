@@ -1,6 +1,6 @@
 import * as hapi from '@hapi/hapi';
 
-export const devRoutes = (routes: Array<hapi.ServerRoute>): Array<hapi.ServerRoute> => {
+export const tagRoutes = (routes: Array<hapi.ServerRoute>): Array<hapi.ServerRoute> => {
     return routes.map(r => {
         r.path = '/dev' + r.path;
         if (!r.options) {
@@ -15,7 +15,9 @@ export const devRoutes = (routes: Array<hapi.ServerRoute>): Array<hapi.ServerRou
             options.tags = ['api'];
         }
         if (options.auth === 'accountJwt') {
-            options.tags.push('internal');
+            options.tags.push('web-app');
+        } else {
+            options.tags.push('mobile-app');
         }
         r.options = options;
         return r;

@@ -12,16 +12,6 @@ import { accountRoutes } from './account-routes';
 
 export function registerRoutes(server: hapi.Server, ioServer: IoServer): void {
     server.route({
-        path: '/',
-        method: 'GET',
-        handler: async () => {
-            return {
-                connecetdUsers: await ioServer.numConnected
-            };
-        }
-    });
-
-    server.route({
         path: '/health-check',
         method: 'GET',
         handler: () => 'ok',

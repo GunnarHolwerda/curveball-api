@@ -19,6 +19,7 @@ import { qtPreRouteHandler } from './pres/qt-access';
 import { getQuizLeaderboard } from './handlers/quizzes/leaderboard/get-quiz-leaderboard';
 import { accountQuizVerification } from './pres/account-quiz-verification';
 import { putChoiceSchema, putChoice } from './handlers/quizzes/choices/put-choice';
+import { tagRoutes } from './helpers/tag-routes';
 
 export function quizRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -210,25 +211,5 @@ export function quizRoutes(server: hapi.Server, _: IoServer): void {
         },
     ];
 
-    const devRoutes = routes.map(r => {
-        r.path = '/dev' + r.path;
-        if (!r.options) {
-            r.options = {};
-        }
-
-        const options: hapi.RouteOptions = r.options as hapi.RouteOptions;
-
-        if (options.tags) {
-            options.tags = [...options.tags!, 'api'];
-        } else {
-            options.tags = ['api'];
-        }
-        if (options.auth === 'ine') {
-            options.tags.push('internal');
-        }
-        r.options = options;
-        return r;
-    });
-
-    devRoutes.forEach(r => server.route(r));
+    tagRoutes(routes).forEach(r => server.route(r));
 }
