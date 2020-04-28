@@ -14,7 +14,7 @@ import { postUserFriendsInvite } from './handlers/users/friends/post-user-friend
 import { getUserFriends } from './handlers/users/friends/get-user-friends';
 import { deleteUserFriend } from './handlers/users/friends/delete-user-friend';
 import { postUserFriendsRecommended } from './handlers/users/friends/post-user-friends--recommended';
-import { devRoutes } from './helpers/dev-routes';
+import { tagRoutes } from './helpers/tag-routes';
 import { getUserPicks } from './handlers/users/picks/get-user-picks';
 
 export function userRoutes(server: hapi.Server, _: IoServer): void {
@@ -144,5 +144,5 @@ export function userRoutes(server: hapi.Server, _: IoServer): void {
         }
     ];
 
-    devRoutes(routes).forEach(r => server.route(r));
+    tagRoutes(routes).forEach(r => server.route(r));
 }

@@ -1,7 +1,7 @@
 import * as hapi from '@hapi/hapi';
 
 import { IoServer } from '../models/namespaces/io-server';
-import { devRoutes } from './helpers/dev-routes';
+import { tagRoutes } from './helpers/tag-routes';
 import { getSubjectsQuerySchema, getSubjects } from './handlers/subjects/get-subjects';
 
 export function subjectRoutes(server: hapi.Server, _: IoServer): void {
@@ -20,5 +20,5 @@ export function subjectRoutes(server: hapi.Server, _: IoServer): void {
         }
     ];
 
-    devRoutes(routes).forEach(r => server.route(r));
+    tagRoutes(routes).forEach(r => server.route(r));
 }

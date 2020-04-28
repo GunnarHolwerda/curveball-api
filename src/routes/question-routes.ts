@@ -3,7 +3,7 @@ import { IoServer } from '../models/namespaces/io-server';
 import { putQuestionSchema, putQuestions } from './handlers/questions/put-question';
 import { getQuestionTypes, getQuestionTypesQueryParams } from './handlers/questions/types/get-question-types';
 import { getQuestionTopics } from './handlers/questions/topics/get-question-topics';
-import { devRoutes } from './helpers/dev-routes';
+import { tagRoutes } from './helpers/tag-routes';
 
 export function questionRoutes(server: hapi.Server, _: IoServer): void {
     const routes: Array<hapi.ServerRoute> = [
@@ -64,5 +64,5 @@ export function questionRoutes(server: hapi.Server, _: IoServer): void {
         }
     ];
 
-    devRoutes(routes).forEach(r => server.route(r));
+    tagRoutes(routes).forEach(r => server.route(r));
 }

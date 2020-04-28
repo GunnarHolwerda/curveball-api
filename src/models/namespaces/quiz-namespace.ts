@@ -4,8 +4,10 @@ import { Room } from '../../interfaces/room';
 import { QuizSocketHandlers } from '../socket-handlers/quiz-socket-handlers';
 import { QuizCache } from '../quiz-cache';
 import { IQuizResponse } from '../entities/quiz';
+import { QuizEvents } from '../../types/events';
 
 export class QuizNamespace extends Room {
+    private audienceCountInterval: NodeJS.Timeout | undefined;
 
     constructor(_namespace: socketio.Namespace, private quiz: IQuizResponse) {
         super(_namespace, new QuizSocketHandlers(quiz));
@@ -18,6 +20,7 @@ export class QuizNamespace extends Room {
             console.error(`Failed to add ${this.quizId} to quizCache`, e);
         }
         await super.start();
+        this.audienceCountInterval = this.initializeAudienceCountInterval();
     }
 
     public get quizId(): string {
@@ -34,8 +37,17 @@ export class QuizNamespace extends Room {
         try {
             await QuizCache.removeQuiz(this.quiz);
             await this.socketHandlers.destroy();
+            if (this.audienceCountInterval) {
+                clearInterval(this.audienceCountInterval);
+            }
         } catch (e) {
             throw new Error('Failed to delete quiz namespace');
         }
+    }
+
+    private initializeAudienceCountInterval(): NodeJS.Timeout {
+        return setInterval(async () => {
+            this._namespace.emit(QuizEvents.audienceCount, await this.numConnected);
+        }, 10000);
     }
 }

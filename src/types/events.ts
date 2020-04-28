@@ -1,5 +1,5 @@
 export enum QuizEvents {
-    numConnected = 'num_connected',
+    audienceCount = 'audience_count',
     userConnected = 'user_connected',
     userDisconnected = 'user_disconnected',
     question = 'question',
